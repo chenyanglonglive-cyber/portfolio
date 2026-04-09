@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实战作品集 - Rico.Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/config.js"></script>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+
+<body class="antialiased selection:bg-brand selection:text-white pb-24">
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
+        
+        <div class="mb-8 p-4 bg-white rounded-2xl shadow-sm text-sm text-textmuted border-l-4 border-brand fade-in">
+            <strong class="text-textmain">这是数据驱动的实战案例库。</strong> 所有的素材和创意最终都要向投放数据负责。
+        </div>
+
+        <section class="fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <h1 class="text-3xl font-black text-textmain">实战作品集</h1>
+                
+                <div class="flex space-x-2">
+                    <button onclick="setPortfolioFilter('all')" data-filter="all" class="portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-textmain text-white">全部</button>
+                    <button onclick="setPortfolioFilter('video')" data-filter="video" class="portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-textmuted border border-stone-200 hover:border-textmain hover:text-textmain">视频素材</button>
+                    <button onclick="setPortfolioFilter('image')" data-filter="image" class="portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-textmuted border border-stone-200 hover:border-textmain hover:text-textmain">静态图片</button>
+                </div>
+            </div>
+
+            <div id="portfolio-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[300px]">
+                <div class="col-span-full flex flex-col items-center justify-center text-stone-400 py-20">
+                    <div class="animate-spin text-4xl mb-4">⏳</div>
+                    <p>正在获取最新作品与数据...</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        let currentFilter = 'all';
+
+        async function loadPortfolio() {
+            const container = document.getElementById('portfolio-container');
+            const works = await api.fetchWorks();
+
+            const filteredWorks = works.filter(w => currentFilter === 'all' || w.type === currentFilter);
+
+            if (filteredWorks.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-textmuted">还没有发布相关作品。</div>`;
+                return;
+            }
+
+            container.innerHTML = filteredWorks.map(w => generateWorkCard(w)).join('');
+        }
+
+        window.setPortfolioFilter = function(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.portfolio-filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.className = "portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-textmain text-white";
+                } else {
+                    btn.className = "portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-textmuted border border-stone-200 hover:border-textmain hover:text-textmain";
+                }
+            });
+            loadPortfolio();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPortfolio();
+        });
+    </script>
+</body>
+
+</html>

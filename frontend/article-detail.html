@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章详情 - Rico.Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/config.js"></script>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+
+<body class="antialiased selection:bg-brand selection:text-white pb-24">
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
+        
+        <div id="article-detail-container" class="fade-in max-w-4xl mx-auto">
+            <a href="insights.html" class="mb-6 flex items-center text-textmuted hover:text-textmain font-medium transition-colors inline-flex">
+                <span class="mr-2">←</span> 返回文章列表
+            </a>
+            
+            <div class="flex flex-col items-center justify-center text-stone-400 py-32">
+                <div class="animate-spin text-4xl mb-4">⏳</div>
+                <p>正在获取文章内容...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        async function loadArticleDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = parseInt(urlParams.get('id'));
+            const container = document.getElementById('article-detail-container');
+
+            if (!id) {
+                container.innerHTML = '<a href="insights.html" class="mb-6 inline-flex text-textmuted">← 返回</a><div>未找到文章 ID参数</div>';
+                return;
+            }
+
+            const articles = await api.fetchArticles();
+            const article = articles.find(a => a.id === id);
+
+            if (!article) {
+                container.innerHTML = '<a href="insights.html" class="mb-6 inline-flex text-textmuted">← 返回</a><div>文章不存在或已下架</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <a href="insights.html" class="mb-6 flex items-center text-textmuted hover:text-textmain font-medium transition-colors inline-flex">
+                    <span class="mr-2">←</span> 返回文章列表
+                </a>
+
+                <div class="mb-8 text-center fade-in">
+                    <div class="text-sm text-brand font-mono mb-3">${article.date}</div>
+                    <h1 class="text-3xl md:text-5xl font-black text-textmain leading-tight">${article.title}</h1>
+                </div>
+
+                <div class="rico-card shadow-lg bg-stone-50 p-2 h-[800px] fade-in" style="animation-delay: 0.1s;">
+                    <div class="w-full h-full bg-white rounded-xl flex flex-col items-center justify-center text-stone-400 border border-stone-200">
+                        <span class="text-4xl mb-3">📄</span>
+                        <p class="font-medium text-lg text-stone-600">全屏文档阅读器</p>
+                        <a href="${article.content_link}" target="_blank" class="mt-4 px-6 py-2 bg-stone-800 text-white rounded hover:bg-black transition-colors">前往源地址阅读完整文章</a>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-center gap-4 fade-in" style="animation-delay: 0.2s;">
+                    <button class="px-6 py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-full font-medium transition-colors" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑ 返回顶部</button>
+                </div>
+            `;
+            document.title = `${article.title} - 洞察复盘`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadArticleDetail();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历 - Rico.Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/config.js"></script>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+
+<body class="antialiased selection:bg-brand selection:text-white pb-24">
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
+        
+        <div class="mb-8 p-4 bg-white rounded-2xl shadow-sm text-sm text-textmuted border-l-4 border-brand fade-in">
+            <strong class="text-textmain">这是全模块化设计的数字简历。</strong> 摒弃了传统的静态排版，采用数据可视化（雷达图）直观展现核心技能。
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="resume-container">
+            <!-- 容器通过 JS 渲染 -->
+        </div>
+
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        function renderResume() {
+            const container = document.getElementById('resume-container');
+            container.innerHTML = `
+                <div class="lg:col-span-1 space-y-8">
+                    <div class="rico-card p-6 fade-in">
+                        <h3 class="text-lg font-bold border-b pb-2 mb-4">基本信息</h3>
+                        <div class="text-center mb-6">
+                            <div class="w-24 h-24 mx-auto rounded-full bg-stone-200 mb-3 flex items-center justify-center text-3xl">🧑‍💻</div>
+                            <h2 class="text-xl font-bold">${db.profile.name}</h2>
+                            <p class="text-sm text-textmuted">${db.profile.title}</p>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between"><span class="text-textmuted">期望职位</span><span class="font-medium">${db.profile.intention.role}</span></div>
+                            <div class="flex justify-between"><span class="text-textmuted">期望薪资</span><span class="font-medium text-brand">${db.profile.intention.salary}</span></div>
+                            <div class="flex justify-between"><span class="text-textmuted">所在城市</span><span class="font-medium">${db.profile.intention.city}</span></div>
+                            <div class="flex justify-between"><span class="text-textmuted">联系邮箱</span><span class="font-medium">${db.profile.contact}</span></div>
+                        </div>
+
+                        <button onclick="openContactModal()" class="mt-6 w-full bg-gradient-to-r from-brand to-indigo-500 hover:from-indigo-600 text-white font-bold py-3.5 px-6 rounded-xl transition-all hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2">
+                            <span class="text-xl">🔓</span> 解锁该英雄
+                        </button>
+                    </div>
+
+                    <div class="rico-card p-6 fade-in" style="animation-delay: 0.1s;">
+                        <h3 class="text-lg font-bold border-b pb-2 mb-4">能力维度图</h3>
+                        <div class="chart-container w-full max-w-sm mx-auto relative h-64 max-h-64">
+                            <canvas id="skillsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="rico-card p-6 fade-in" style="animation-delay: 0.2s;">
+                        <h3 class="text-lg font-bold border-b pb-2 mb-4">生产力工具</h3>
+                        <div class="grid grid-cols-3 gap-3">
+                            ${db.profile.software.map(s => `
+                                <div class="aspect-square bg-stone-50 rounded-xl flex flex-col items-center justify-center p-2 hover:bg-stone-100 transition-colors border border-stone-100 shadow-sm hover:shadow-md">
+                                    <div class="mb-2 transition-transform hover:scale-110">${s.icon}</div>
+                                    <span class="text-xs font-bold text-stone-600">${s.name}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.05s;">
+                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2">📝 个人介绍</h3>
+                        <p class="text-stone-600 leading-relaxed text-justify">
+                            ${db.profile.bio}
+                        </p>
+                    </div>
+
+                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.1s;">
+                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">🚀 核心专项项目</h3>
+                        <div class="border-l-2 border-stone-200 ml-3 space-y-8">
+                            ${db.profile.projects.map(p => `
+                                <div class="relative pl-6">
+                                    <div class="absolute w-3 h-3 bg-orange-500 rounded-full -left-[7px] top-1.5 border-2 border-white"></div>
+                                    <div class="text-sm font-mono text-orange-600 mb-1">${p.time}</div>
+                                    <h4 class="text-lg font-bold text-textmain">${p.name}</h4>
+                                    <p class="mt-2 text-stone-600 leading-relaxed">${p.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.2s;">
+                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">💼 工作经历</h3>
+                        <div class="border-l-2 border-stone-200 ml-3 space-y-8">
+                            ${db.profile.workExp.map(w => `
+                                <div class="relative pl-6">
+                                    <div class="absolute w-3 h-3 bg-brand rounded-full -left-[7px] top-1.5 border-2 border-white"></div>
+                                    <div class="text-sm font-mono text-brand mb-1">${w.time}</div>
+                                    <h4 class="text-lg font-bold text-textmain">${w.company} <span class="text-textmuted font-normal text-base ml-2">| ${w.role}</span></h4>
+                                    <p class="mt-2 text-stone-600 leading-relaxed">${w.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.3s;">
+                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">🎓 教育经历</h3>
+                        ${db.profile.edu.map(e => `
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-stone-50 p-4 rounded-xl border border-stone-100">
+                                <div>
+                                    <h4 class="text-lg font-bold text-textmain">${e.school}</h4>
+                                    <p class="text-textmuted">${e.major} · ${e.degree}</p>
+                                </div>
+                                <div class="mt-2 sm:mt-0 text-right">
+                                    <div class="text-sm font-mono text-textmuted">${e.time}</div>
+                                    <div class="text-sm font-medium text-brand mt-1">🏅 ${e.honor}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // 画雷达图
+            const ctx = document.getElementById('skillsChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: db.profile.skills.labels,
+                        datasets: [{
+                            label: '能力维度',
+                            data: db.profile.skills.values,
+                            backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                            borderColor: '#4f46e5',
+                            pointBackgroundColor: '#4f46e5',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#4f46e5',
+                            borderWidth: 2,
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(0,0,0,0.05)' },
+                                grid: { color: 'rgba(0,0,0,0.05)' },
+                                pointLabels: { font: { size: 12, family: 'sans-serif' }, color: '#78716c' },
+                                ticks: { display: false, min: 0, max: 100 }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderResume();
+        });
+    </script>
+</body>
+
+</html>

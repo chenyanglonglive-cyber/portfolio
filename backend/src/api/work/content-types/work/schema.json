@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "works",
+  "info": {
+    "singularName": "work",
+    "pluralName": "works",
+    "displayName": "work"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "spend": {
+      "type": "decimal"
+    },
+    "roi": {
+      "type": "decimal"
+    },
+    "ctr": {
+      "type": "string"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "video",
+        "image"
+      ]
+    },
+    "cover": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "video_url": {
+      "type": "string"
+    },
+    "feishu_url": {
+      "type": "string"
+    },
+    "analysis": {
+      "type": "string"
+    },
+    "cvr": {
+      "type": "string"
+    },
+    "launch_time": {
+      "type": "date"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "game": {
+      "type": "string"
+    }
+  }
+}
