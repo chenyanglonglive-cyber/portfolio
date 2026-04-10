@@ -14,20 +14,23 @@
 
     <!-- Main Content Area -->
     <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
-        
+
         <section class="mb-16 fade-in">
-            <div class="rico-card p-8 md:p-12 flex flex-col md:flex-row items-center md:items-start gap-8 bg-gradient-to-br from-white to-stone-50">
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-brand to-purple-400 flex-shrink-0 flex items-center justify-center text-white text-5xl font-bold shadow-lg" id="profile-avatar">
+            <div
+                class="rico-card p-8 md:p-12 flex flex-col md:flex-row items-center md:items-start gap-8 bg-gradient-to-br from-white to-stone-50">
+                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-brand to-purple-400 flex-shrink-0 flex items-center justify-center text-white text-5xl font-bold shadow-lg"
+                    id="profile-avatar">
                 </div>
                 <div class="flex-1 text-center md:text-left">
                     <h1 class="text-3xl md:text-5xl font-black text-textmain mb-2" id="profile-name"></h1>
                     <h2 class="text-xl md:text-2xl font-medium text-textmuted mb-4" id="profile-title"></h2>
                     <p class="text-base text-textmain mb-6 max-w-2xl leading-relaxed" id="profile-slogan"></p>
-                    
+
                     <div class="flex flex-wrap justify-center md:justify-start gap-2 mb-8" id="profile-tags">
                     </div>
 
-                    <button onclick="openContactModal()" class="bg-brand hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-md flex items-center justify-center gap-2 mx-auto md:mx-0">
+                    <button onclick="openContactModal()"
+                        class="bg-brand hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-md flex items-center justify-center gap-2 mx-auto md:mx-0">
                         <span>📩</span> 获取联系方式
                     </button>
                 </div>
@@ -36,14 +39,25 @@
 
         <section class="fade-in" style="animation-delay: 0.1s;">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-                <h2 class="text-2xl font-bold text-textmain">精选动态 & 作品</h2>
-                
-                <div class="flex bg-stone-200/50 p-1 rounded-full overflow-x-auto no-scrollbar w-full sm:w-auto" id="filter-buttons">
-                    <button data-filter="recommend" onclick="setFeedFilter('recommend')" class="feed-filter-btn filter-active px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors">🌟 推荐</button>
-                    <button data-filter="high-spend" onclick="setFeedFilter('high-spend')" class="feed-filter-btn bg-white text-textmuted px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ml-1">🔥 高消耗</button>
-                    <button data-filter="video" onclick="setFeedFilter('video')" class="feed-filter-btn bg-white text-textmuted px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ml-1">▶ 视频素材</button>
-                    <button data-filter="image" onclick="setFeedFilter('image')" class="feed-filter-btn bg-white text-textmuted px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ml-1">🖼️ 图片素材</button>
-                    <button data-filter="article" onclick="setFeedFilter('article')" class="feed-filter-btn bg-white text-textmuted px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ml-1">📝 文章</button>
+                <h2 class="text-2xl font-bold text-textmain">作品</h2>
+
+                <div class="flex bg-stone-200/50 p-1 rounded-full overflow-x-auto no-scrollbar w-full sm:w-auto"
+                    id="filter-buttons">
+                    <button data-filter="recommend" onclick="setFeedFilter('recommend')"
+                        class="feed-filter-btn filter-active px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors">🌟
+                        推荐</button>
+                    <button data-filter="high-spend" onclick="setFeedFilter('high-spend')"
+                        class="feed-filter-btn bg-white text-textmuted px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ml-1">🔥
+                        高消耗</button>
+                    <button data-filter="video" onclick="setFeedFilter('video')"
+                        class="feed-filter-btn bg-white text-textmuted px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ml-1">▶
+                        视频素材</button>
+                    <button data-filter="image" onclick="setFeedFilter('image')"
+                        class="feed-filter-btn bg-white text-textmuted px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ml-1">🖼️
+                        图片素材</button>
+                    <button data-filter="article" onclick="setFeedFilter('article')"
+                        class="feed-filter-btn bg-white text-textmuted px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ml-1">📝
+                        文章</button>
                 </div>
             </div>
 
@@ -74,7 +88,7 @@
         async function loadFeed() {
             const feedContainer = document.getElementById('feed-container');
             const items = await api.fetchFeedItems(currentFilter);
-            
+
             if (items.length === 0) {
                 feedContainer.innerHTML = `<div class="col-span-full text-center py-10 text-textmuted">没有找到相关数据，请去 Strapi 后台发布几条。</div>`;
                 return;
@@ -91,7 +105,7 @@
             feedContainer.innerHTML = itemsHTML;
         }
 
-        window.setFeedFilter = function(filter) {
+        window.setFeedFilter = function (filter) {
             currentFilter = filter;
             document.querySelectorAll('.feed-filter-btn').forEach(btn => {
                 btn.classList.remove('filter-active', 'bg-white', 'text-textmain');

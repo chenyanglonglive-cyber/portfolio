@@ -74,8 +74,8 @@
 
                 <div class="lg:col-span-2 space-y-8">
                     <div class="rico-card p-8 fade-in" style="animation-delay: 0.05s;">
-                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2">📝 个人介绍</h3>
-                        <p class="text-stone-600 leading-relaxed text-justify">
+                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2" id="bio-title">📝 ${db.profile.bio_title || '个人介绍'}</h3>
+                        <p class="text-stone-600 leading-relaxed text-justify" id="bio-content">
                             ${db.profile.bio}
                         </p>
                     </div>
@@ -161,8 +161,17 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             renderResume();
+            
+            // 异步加载动态简介数据
+            const bioData = await api.fetchAbout();
+            if (bioData) {
+                const titleEl = document.getElementById('bio-title');
+                const contentEl = document.getElementById('bio-content');
+                if (titleEl) titleEl.innerText = `📝 ${bioData.title}`;
+                if (contentEl) contentEl.innerText = bioData.content;
+            }
         });
     </script>
 </body>

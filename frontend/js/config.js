@@ -8,6 +8,7 @@ const db = {
         title: "买量广告视频设计师",
         slogan: "以数据驱动创意，用AI重塑工作流，专注打造百万级消耗的高ROI爆款素材。",
         bio: "拥有丰富的买量广告视觉设计与投放素材优化经验，专注于出海游戏及应用的增长业务。擅长将抽象的投放数据（如ROI、CTR、CVR）转化为直观的创意迭代策略。熟练掌握传统后期工作流（Pr、Ae、C4D），并深度整合了AI生成技术（Midjourney、Stable Diffusion），能独立完成从前期脚本策划、中期视觉表现到后期包装及A/B测试的完整素材生命周期。致力于用数据赋能创意，打造高转化的爆款视觉资产。",
+        bio_title: "个人介绍",
         tags: ["高ROI操盘手", "AI视频流转", "爆款制造者"],
         intention: { role: "资深广告创意设计 / 投放创意BP", salary: "25k-35k", city: "广州 / 深圳" },
         contact: "rico.design@example.com",

@@ -65,6 +65,26 @@ const api = {
             return db.articles;
         }
     },
+
+    async fetchAbout() {
+        try {
+            const res = await fetch(`${CONFIG.API_URL}/api/abouts`);
+            if (res.ok) {
+                const aboutData = await res.json();
+                if (aboutData.data && aboutData.data.length > 0) {
+                    const item = aboutData.data[0];
+                    return {
+                        title: item.title || db.profile.bio_title,
+                        content: item.content || db.profile.bio
+                    };
+                }
+            }
+            return { title: db.profile.bio_title, content: db.profile.bio };
+        } catch (error) {
+            console.warn("未能连接到 Strapi 后端读取简介数据。", error);
+            return { title: db.profile.bio_title, content: db.profile.bio };
+        }
+    },
     
     // 供首页和推荐列表使用
     async fetchFeedItems(filterType) {
