@@ -17,7 +17,7 @@
       "required": true
     },
     "content": {
-      "type": "text",
+      "type": "blocks",
       "required": true
     }
   }

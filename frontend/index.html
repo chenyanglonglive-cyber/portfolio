@@ -61,11 +61,34 @@
                 </div>
             </div>
 
-            <!-- 数据在后台无感抓取，初始状态为骨架屏或Loading -->
+            <!-- 数据在后台无感抓取，初始状态为骨架屏 -->
             <div id="feed-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[300px]">
-                <div class="col-span-full flex flex-col items-center justify-center text-stone-400 py-20">
-                    <div class="animate-spin text-4xl mb-4">⏳</div>
-                    <p>正在获取最新作品与数据...</p>
+                <!-- 骨架屏卡片 1 -->
+                <div class="rico-card animate-pulse overflow-hidden">
+                    <div class="w-full h-64 bg-stone-100"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-4 bg-stone-100 rounded w-1/4"></div>
+                        <div class="h-6 bg-stone-100 rounded w-3/4"></div>
+                        <div class="h-4 bg-stone-100 rounded w-full"></div>
+                    </div>
+                </div>
+                <!-- 骨架屏卡片 2 -->
+                <div class="rico-card animate-pulse overflow-hidden">
+                    <div class="w-full h-64 bg-stone-100"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-4 bg-stone-100 rounded w-1/4"></div>
+                        <div class="h-6 bg-stone-100 rounded w-3/4"></div>
+                        <div class="h-4 bg-stone-100 rounded w-full"></div>
+                    </div>
+                </div>
+                <!-- 骨架屏卡片 3 -->
+                <div class="rico-card animate-pulse overflow-hidden">
+                    <div class="w-full h-64 bg-stone-100"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-4 bg-stone-100 rounded w-1/4"></div>
+                        <div class="h-6 bg-stone-100 rounded w-3/4"></div>
+                        <div class="h-4 bg-stone-100 rounded w-full"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -75,34 +98,83 @@
     <script src="js/api.js"></script>
     <script src="js/common.js"></script>
     <script>
-        // 瞬间同步渲染顶栏和个人信息（零等待体验）
-        document.getElementById('profile-avatar').innerText = db.profile.name.charAt(0);
-        document.getElementById('profile-name').innerText = db.profile.name;
-        document.getElementById('profile-title').innerText = db.profile.title;
-        document.getElementById('profile-slogan').innerText = db.profile.slogan;
-        document.getElementById('profile-tags').innerHTML = db.profile.tags.map(tag => `<span class="px-4 py-1.5 rounded-full bg-stone-100 text-stone-700 text-sm font-medium border border-stone-200"># ${tag}</span>`).join('');
-
         let currentFilter = 'recommend';
 
-        // 异步加载列表数据
-        async function loadFeed() {
-            const feedContainer = document.getElementById('feed-container');
-            const items = await api.fetchFeedItems(currentFilter);
+        function syncProfile() {
+            const nameEl = document.getElementById('profile-name');
+            const titleEl = document.getElementById('profile-title');
+            const sloganEl = document.getElementById('profile-slogan');
+            const avatarEl = document.getElementById('profile-avatar');
+            const tagsEl = document.getElementById('profile-tags');
 
-            if (items.length === 0) {
-                feedContainer.innerHTML = `<div class="col-span-full text-center py-10 text-textmuted">没有找到相关数据，请去 Strapi 后台发布几条。</div>`;
-                return;
+            if (db.profile.name) {
+                if (avatarEl) avatarEl.innerText = db.profile.name.charAt(0);
+                if (nameEl) nameEl.innerText = db.profile.name;
+                if (titleEl) titleEl.innerText = db.profile.title;
+                if (sloganEl) sloganEl.innerText = db.profile.slogan;
+                if (tagsEl && db.profile.tags) {
+                    tagsEl.innerHTML = db.profile.tags.map(tag => `<span class="px-4 py-1.5 rounded-full bg-stone-100 text-stone-700 text-sm font-medium border border-stone-200"># ${tag}</span>`).join('');
+                }
             }
+        }
+
+        // 将逻辑封装进 initPage，供 SPA 路由调用
+        window.initPage = async function() {
+            // 1. 尝试从缓存渲染个人信息
+            const cachedProfile = localStorage.getItem('resume_full_cache');
+            if (cachedProfile) {
+                try {
+                    db.profile = JSON.parse(cachedProfile);
+                    syncProfile();
+                } catch(e) {}
+            }
+            syncProfile();
+            
+            // 2. 【核心优化】双轨制加载：先拿缓存渲染内容，不再等那 5 秒
+            const cachedWorks = api.cache.get('works');
+            const cachedArticles = api.cache.get('articles');
+            if (cachedWorks || cachedArticles) {
+                // 如果有缓存，先渲染一波
+                let items = [];
+                const works = cachedWorks || [];
+                const articles = cachedArticles || [];
+                if (currentFilter === 'recommend') items = works.sort((a,b)=>b.spend-a.spend).slice(0,3).concat(articles);
+                else if (currentFilter === 'article') items = articles;
+                else items = works.filter(w => w.type === currentFilter || currentFilter === 'all' || currentFilter === 'recommend');
+                
+                renderToFeed(items);
+            }
+            
+            // 3. 后台执行真实的 API 同步（会在 5 秒后完成并由 DOM 守卫判定是否更新）
+            loadFeed();
+        };
+
+        // 抽取渲染逻辑为通用函数
+        function renderToFeed(items) {
+            const feedContainer = document.getElementById('feed-container');
+            if (!feedContainer || !items.length) return;
 
             let itemsHTML = '';
             items.forEach(item => {
-                if (item.spend !== undefined) {
-                    itemsHTML += generateWorkCard(item);
-                } else {
-                    itemsHTML += generateArticleCard(item);
-                }
+                if (item.spend !== undefined) itemsHTML += generateWorkCard(item);
+                else itemsHTML += generateArticleCard(item);
             });
-            feedContainer.innerHTML = itemsHTML;
+
+            if (feedContainer.innerHTML.trim() !== itemsHTML.trim()) {
+                feedContainer.innerHTML = itemsHTML;
+            }
+        }
+
+        async function loadFeed() {
+            const feedContainer = document.getElementById('feed-container');
+            if (!feedContainer) return;
+
+            const items = await api.fetchFeedItems(currentFilter);
+            if (items.length > 0) {
+                renderToFeed(items);
+            } else if (!feedContainer.innerHTML.trim()) {
+                feedContainer.innerHTML = `<div class="col-span-full text-center py-10 text-textmuted">没有找到相关数据，请去 Strapi 后台发布几条。</div>`;
+            }
         }
 
         window.setFeedFilter = function (filter) {
@@ -112,12 +184,8 @@
                 if (btn.dataset.filter === filter) btn.classList.add('filter-active');
                 else btn.classList.add('bg-white', 'text-textmuted');
             });
-            // 切换后直接用内存过滤或者重新显示，为了保持简单直接再掉取即可
             loadFeed();
         }
-
-        // 启动请求
-        setTimeout(loadFeed, 50); // 微调确保主线程优先渲染页面骨架
     </script>
 </body>
 
