@@ -98,14 +98,29 @@ function formatMoney(num) {
     return num >= 10000 ? (num / 10000).toFixed(1) + 'w' : num;
 }
 
+/**
+ * 智能返回上一页，如果无来源则跳转到保底 URL
+ * @param {Event} e 
+ * @param {string} fallbackUrl 
+ */
+function goBack(e, fallbackUrl) {
+    if (document.referrer && document.referrer.includes(window.location.host)) {
+        e.preventDefault();
+        history.back();
+    } else if (fallbackUrl) {
+        // 如果没有 referrer，则跳转到提供的保底 URL
+        window.location.href = fallbackUrl;
+    }
+}
+
 function generateWorkCard(item) {
     const isVideo = item.type === 'video';
     const icon = isVideo ? '▶' : '🖼️';
     const bgStyle = item.coverUrl ? `background-image: url('${item.coverUrl}'); background-size: cover; background-position: center; border:none;` : '';
 
     let mediaContent = '';
-    if (!item.coverUrl && isVideo && item.doc && item.doc !== '#') {
-        mediaContent = `<video src="${item.doc}#t=0.001" class="absolute inset-0 w-full h-full object-cover" preload="metadata" muted playsinline></video>`;
+    if (!item.coverUrl && isVideo && item.videoUrl && item.videoUrl !== '#') {
+        mediaContent = `<video src="${item.videoUrl}#t=0.001" class="absolute inset-0 w-full h-full object-cover" preload="metadata" muted playsinline></video>`;
     }
 
     return `
@@ -235,13 +250,17 @@ async function ajaxNavigate(url) {
 // 拦截全局链接点击
 document.addEventListener('click', (e) => {
     const link = e.target.closest('a');
-    if (!link || !link.href) return;
+    if (!link || !link.href || link.href.startsWith('javascript:') || link.getAttribute('target')) return;
     
-    const url = new URL(link.href);
-    // 只拦截同域名的内部链接，且不带 # 的
-    if (url.origin === window.location.origin && !link.getAttribute('target') && !url.hash && !link.href.includes('detail.html')) {
-        e.preventDefault();
-        ajaxNavigate(link.href);
+    try {
+        const url = new URL(link.href);
+        // 只拦截同域名的内部链接，且不带 # 的
+        if (url.origin === window.location.origin && !url.hash && !link.href.includes('detail.html')) {
+            e.preventDefault();
+            ajaxNavigate(link.href);
+        }
+    } catch (err) {
+        // 如果 URL 解析失败（例如 mailto: 或其他协议），则不进行 AJAX 导航
     }
 });
 

@@ -36,9 +36,18 @@ const api = {
                             coverUrl = attr.url ? (attr.url.startsWith('http') ? attr.url : CONFIG.API_URL + attr.url) : null;
                         }
                         return {
-                            id: item.id, type: item.type || 'video', title: item.title,
-                            spend: item.spend || 0, roi: item.roi || 0, ctr: item.ctr + '%' || '-',
-                            cvr: item.cvr + '%' || '-', game: item.game || '-', doc: item.video_url || '#',
+                            id: item.id,
+                            type: item.type || 'video',
+                            title: item.title,
+                            spend: item.spend || 0,
+                            roi: item.roi || 0,
+                            ctr: item.ctr || '-',
+                            cvr: item.cvr || '-',
+                            game: item.game || '-',
+                            launch_time: item.launch_time || '-',
+                            platform: item.platform || '-',
+                            videoUrl: item.video_url || '#',
+                            feishuUrl: item.feishu_url || '',
                             coverUrl: coverUrl
                         };
                     });

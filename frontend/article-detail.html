@@ -16,8 +16,8 @@
     <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
         
         <div id="article-detail-container" class="fade-in max-w-4xl mx-auto">
-            <a href="insights.html" class="mb-6 flex items-center text-textmuted hover:text-textmain font-medium transition-colors inline-flex">
-                <span class="mr-2">←</span> 返回文章列表
+            <a href="insights.html" onclick="goBack(event, 'insights.html')" class="mb-6 flex items-center text-textmuted hover:text-textmain font-medium transition-colors inline-flex">
+                <span class="mr-2">←</span> 返回
             </a>
             
             <div class="flex flex-col items-center justify-center text-stone-400 py-32">
@@ -50,8 +50,8 @@
             }
 
             container.innerHTML = `
-                <a href="insights.html" class="mb-6 flex items-center text-textmuted hover:text-textmain font-medium transition-colors inline-flex">
-                    <span class="mr-2">←</span> 返回文章列表
+                <a href="insights.html" onclick="goBack(event, 'insights.html')" class="mb-6 flex items-center text-textmuted hover:text-textmain font-medium transition-colors inline-flex">
+                    <span class="mr-2">←</span> 返回
                 </a>
 
                 <div class="mb-8 text-center fade-in">
