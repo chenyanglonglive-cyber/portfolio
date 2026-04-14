@@ -104,11 +104,18 @@ function formatMoney(num) {
  * @param {string} fallbackUrl 
  */
 function goBack(e, fallbackUrl) {
-    if (document.referrer && document.referrer.includes(window.location.host)) {
+    const isLocal = window.location.protocol === 'file:';
+    const hasReferrer = document.referrer && (
+        document.referrer.includes(window.location.host) || 
+        document.referrer.includes('localhost') || 
+        document.referrer.includes('127.0.0.1')
+    );
+
+    if (hasReferrer || (window.history.length > 1 && !isLocal)) {
         e.preventDefault();
         history.back();
     } else if (fallbackUrl) {
-        // 如果没有 referrer，则跳转到提供的保底 URL
+        // 如果由于刷新导致历史丢失，才跳转到保底页面
         window.location.href = fallbackUrl;
     }
 }

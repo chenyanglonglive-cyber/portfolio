@@ -38,8 +38,8 @@ const api = {
                         return {
                             id: item.id,
                             type: item.type || 'video',
-                            title: item.title,
-                            spend: item.spend || 0,
+                            title: item.title || '无标题',
+                            spend: Number(item.spend) || 0,
                             roi: item.roi || 0,
                             ctr: item.ctr || '-',
                             cvr: item.cvr || '-',

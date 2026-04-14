@@ -1,0 +1,12 @@
+{
+  "public": ".",
+  "rewrites": [
+    { "source": "/portfolio-detail", "destination": "/portfolio-detail.html" },
+    { "source": "/article-detail", "destination": "/article-detail.html" },
+    { "source": "/insights", "destination": "/insights.html" },
+    { "source": "/portfolio", "destination": "/portfolio.html" },
+    { "source": "/resume", "destination": "/resume.html" }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
+}
