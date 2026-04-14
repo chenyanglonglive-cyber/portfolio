@@ -210,68 +210,12 @@ function renderInlineNodes(children) {
     }).join('');
 }
 
-// SPA 异步路由核心逻辑
-async function ajaxNavigate(url) {
-    try {
-        const response = await fetch(url);
-        const html = await response.text();
-        const parser = new DOMParser();
-        const newDoc = parser.parseFromString(html, 'text/html');
-        
-        // 1. 替换标题和主体内容
-        document.title = newDoc.title;
-        const newContent = newDoc.getElementById('app-content');
-        const currentContent = document.getElementById('app-content');
-        if (newContent && currentContent) {
-            currentContent.innerHTML = newContent.innerHTML;
-        }
-
-        // 2. 更新 URL 且不刷新页面
-        window.history.pushState(null, '', url);
-
-        // 3. 重新渲染全局组件（更新菜单高亮状态）
-        const nav = document.querySelector('nav');
-        const modal = document.getElementById('contact-modal');
-        if (nav) nav.remove();
-        if (modal) modal.remove();
-        renderGlobalComponents();
-        
-        // 4. 执行新页面的初始化脚本
-        if (window.initPage) window.initPage();
-        
-        // 滚回顶部
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (err) {
-        console.error('SPA 导航失败，退回到传统刷新', err);
-        window.location.href = url;
-    }
-}
-
-// 拦截全局链接点击
-document.addEventListener('click', (e) => {
-    const link = e.target.closest('a');
-    if (!link || !link.href || link.href.startsWith('javascript:') || link.getAttribute('target')) return;
-    
-    try {
-        const url = new URL(link.href);
-        // 只拦截同域名的内部链接，且不带 # 的
-        if (url.origin === window.location.origin && !url.hash && !link.href.includes('detail.html')) {
-            e.preventDefault();
-            ajaxNavigate(link.href);
-        }
-    } catch (err) {
-        // 如果 URL 解析失败（例如 mailto: 或其他协议），则不进行 AJAX 导航
-    }
-});
-
-// 处理浏览器前进后退
-window.addEventListener('popstate', () => {
-    ajaxNavigate(window.location.href);
-});
+// 处理浏览器前进后退 (传统模式下此监听器通常不再需要，但保留为空或移除均可)
+// window.addEventListener('popstate', () => { ... });
 
 document.addEventListener('DOMContentLoaded', () => {
     // 自动在任何引入该脚本的页面注入导航和弹窗结构
     renderGlobalComponents();
-    // 执行页面特有的初始化逻辑
+    // 执行页面特有的初始化逻辑 (每个页面刷新后都会重新执行自己的脚本)
     if (window.initPage) window.initPage();
 });
