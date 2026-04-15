@@ -4,18 +4,18 @@ const CONFIG = {
 
 const db = {
     profile: {
-        name: "Rico",
-        title: "买量广告视频设计师",
-        slogan: "以数据驱动创意，用AI重塑工作流，专注打造百万级消耗的高ROI爆款素材。",
-        bio: "拥有丰富的买量广告视觉设计与投放素材优化经验，专注于出海游戏及应用的增长业务。擅长将抽象的投放数据（如ROI、CTR、CVR）转化为直观的创意迭代策略。熟练掌握传统后期工作流（Pr、Ae、C4D），并深度整合了AI生成技术（Midjourney、Stable Diffusion），能独立完成从前期脚本策划、中期视觉表现到后期包装及A/B测试的完整素材生命周期。致力于用数据赋能创意，打造高转化的爆款视觉资产。",
-        bio_title: "个人介绍",
-        tags: ["高ROI操盘手", "AI视频流转", "爆款制造者"],
-        intention: { role: "资深广告创意设计 / 投放创意BP", salary: "25k-35k", city: "广州 / 深圳" },
-        contact: "rico.design@example.com",
+        name: "王晨阳",
+        title: "资深广告创意设计师 / AI 工作流负责人",
+        slogan: "9年深耕广告设计，以数据驱动创意，用 AI 重塑增长，专注百万级消耗高 ROI 爆款素材。",
+        bio: "拥有 9 年买量广告创意背景，从动画专业毕业进阶为企业级 AI 发展负责人。擅长将 IP 沉淀与现代买量策略结合，创造单条消耗 510w+ 的行业标杆。深度钻研 AI 在视频流中的落地应用，主导企业级 AI 工作流搭建与团队赋能，具备从脚本策划、视觉表现到 AI 提效的全链路项目管理能力。",
+        bio_title: "核心优势",
+        tags: ["9年资深操盘", "AI 工作流负责人", "爆款素材专家"],
+        intention: { role: "资深广告创意设计 / AI 数字化专家", salary: "25k-28k", city: "北京" },
+        contact: "459361040@qq.com",
         phone: "+86 138-8888-8888",
         skills: {
-            labels: ['视频剪辑&包装', '创意策划', '投放数据分析', 'AI生图/视频', '3D视觉渲染', '文案脚本'],
-            values: [95, 88, 92, 90, 75, 85]
+            labels: ['合成制作剪辑', '创意策划', '投放数据分析', 'AI生图/视频', '3D视觉渲染', '文案脚本'],
+            values: [96, 95, 92, 98, 30, 90]
         },
         software: [
             { name: "Ps", desc: "Photoshop", icon: '<div class="w-10 h-10 rounded shadow-md bg-[#001e36] border-2 border-[#31a8ff] text-[#31a8ff] flex items-center justify-center font-bold text-lg tracking-tighter select-none">Ps</div>' },
@@ -26,14 +26,17 @@ const db = {
             { name: "SD", desc: "Stable Diffusion", icon: '<div class="w-10 h-10 rounded shadow-md bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-base ring-1 ring-white/20 select-none">SD</div>' }
         ],
         workExp: [
-            { time: "2023.05 - 至今", company: "某头部出海游戏发行商", role: "高级创意设计师", desc: "统筹北美区SLG产品素材产出，累计经手消耗突破 5000 万人民币。主导引入 AI 工作流，提升 40% 产能。" },
-            { time: "2021.07 - 2023.05", company: "某知名买量代理公司", role: "广告视频设计师", desc: "负责信息流广告视频制作（抖音/快手/广点通），单条素材最高创造 300 万+ 利润，连续三个季度获评最佳创意。" }
+            { time: "2023.09 - 2026.06.15", company: "北京爱乐游", role: "买量视频创意 / AI 发展负责人", desc: "核心负责买量视频创意、脚本撰写及视频制作，从单一素材产出逐步成长为公司 AI 发展负责人。深度参与海外及国内小游戏核心项目，具备全流程项目操盘与团队 AI 赋能能力。" },
+            { time: "2021.07 - 2023.05", company: "某知名买量代理公司", role: "广告视频设计师", desc: "负责快手、抖音、广点通等多平台信息流视频制作。单条素材最高创造 300 万+ 利润，连续获得季度最佳项目奖项。" }
         ],
         projects: [
-            { time: "2024.01", name: "《CyberCity》北美S级首发视觉统筹", desc: "搭建全套素材模板体系，首日消耗破 20 万刀，7日ROI达 135%。" }
+            { time: "2024.10", name: "《雷霆战机》10周年品牌焕新买量", desc: "主导“情怀向”策略吸引老用户回归。抖音消耗 510万+，单月最高 240万+，产出 10W+ 爆款素材十余条。单条贺炜诗意解说素材消耗 60万+（数据保持至今）。首日 ROI 20%，7天回本。" },
+            { time: "2025.01", name: "公司级 AI 提效体系搭建（负责人）", desc: "调研并评估 AI 路径，设计视频制作全流程 AI 工作流并输出全员培训文档。推动 AI 在创意、美术及后期环节的落地应用，显著提升团队生产效率。" },
+            { time: "2023.12", name: "海外益智问答系列（Trivia Bible / Movie Star）", desc: "独立负责全站设计师职责，精准定位北美及巴西市场。通过 MJ 制作高质量美术素材。项目月收入 3万美元，成功实现小团队运营成本全覆盖。" },
+            { time: "2024.05", name: "微信小游戏《无敌冲冲冲》", desc: "负责核心角色技能动画制作、可复用公共素材输出。管理项目买量广告制作，协助实现 50万级规模的消耗覆盖。" }
         ],
         edu: [
-            { time: "2017.09 - 2021.06", school: "广州美术学院", major: "数字媒体艺术", degree: "本科", honor: "校级优秀毕业生" }
+            { time: "2011.09 - 2015.06", school: "成都大学", major: "动画", degree: "本科", honor: "2次 三好学生" }
         ]
     },
     works: [
