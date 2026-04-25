@@ -1,18 +1,18 @@
 // 渲染全站统一导航和弹窗
 function renderGlobalComponents() {
     const navHTML = `
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <a href="index.html" class="flex-shrink-0 flex items-center gap-2">
-                    <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white font-bold">R.</div>
-                    <span class="font-bold text-xl tracking-tight hidden sm:block text-black">Rico.NFT</span>
+    <nav class="fixed top-3 left-3 right-3 z-50 glass-nav rounded-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-3">
+                    <img src="images/logo.png" alt="Logo" class="w-10 h-10 rounded-md" style="image-rendering: pixelated;">
+                    <span class="font-black text-xl tracking-tight hidden sm:block text-white" style="font-family: 'Press Start 2P', monospace; font-size: 0.75rem;">Alessio</span>
                 </a>
-                <div class="flex space-x-2 sm:space-x-6 overflow-x-auto no-scrollbar items-center">
-                    <a href="index.html" id="nav-home" class="px-3 sm:px-4 py-2 font-bold text-textmuted hover:text-black transition-colors whitespace-nowrap">首页</a>
-                    <a href="resume.html" id="nav-resume" class="px-3 sm:px-4 py-2 font-bold text-textmuted hover:text-black transition-colors whitespace-nowrap">简历</a>
-                    <a href="portfolio.html" id="nav-portfolio" class="px-3 sm:px-4 py-2 font-bold text-textmuted hover:text-black transition-colors whitespace-nowrap">作品集</a>
-                    <a href="insights.html" id="nav-insights" class="px-3 sm:px-4 py-2 font-bold text-textmuted hover:text-black transition-colors whitespace-nowrap">复盘文章</a>
+                <div class="flex space-x-2 sm:space-x-8 overflow-x-auto no-scrollbar items-center">
+                    <a href="index.html" id="nav-home" class="relative px-3 sm:px-4 py-3 font-bold text-textmuted hover:text-white transition-colors whitespace-nowrap">首页</a>
+                    <a href="resume.html" id="nav-resume" class="relative px-3 sm:px-4 py-3 font-bold text-textmuted hover:text-white transition-colors whitespace-nowrap">简历</a>
+                    <a href="portfolio.html" id="nav-portfolio" class="relative px-3 sm:px-4 py-3 font-bold text-textmuted hover:text-white transition-colors whitespace-nowrap">作品集</a>
+                    <a href="insights.html" id="nav-insights" class="relative px-3 sm:px-4 py-3 font-bold text-textmuted hover:text-white transition-colors whitespace-nowrap">灵感文章</a>
                 </div>
             </div>
         </div>
@@ -21,20 +21,20 @@ function renderGlobalComponents() {
 
     const modalHTML = `
     <div id="contact-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center">
-        <div class="absolute inset-0 bg-stone-900/40 backdrop-blur-sm transition-opacity" onclick="closeContactModal()"></div>
-        <div id="contact-modal-content" class="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 transform transition-all duration-300 scale-95 opacity-0 text-center">
-            <button onclick="closeContactModal()" class="absolute top-4 right-4 text-stone-400 hover:text-textmain transition-colors text-2xl leading-none">&times;</button>
-            <div class="text-4xl mb-3 drop-shadow-md">🎉</div>
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" onclick="closeContactModal()"></div>
+        <div id="contact-modal-content" class="relative rico-card p-8 max-w-sm w-full mx-4 transform transition-all duration-300 scale-95 opacity-0 text-center">
+            <button onclick="closeContactModal()" class="absolute top-4 right-4 text-stone-400 hover:text-white transition-colors text-2xl leading-none">&times;</button>
+            <div class="text-4xl mb-3 drop-shadow-md">🔓</div>
             <h3 class="text-2xl font-black text-textmain mb-1">英雄已解锁</h3>
             <p class="text-sm text-textmuted mb-6">获取联系方式，开启您的爆款增长之旅</p>
-            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-brand to-purple-400 flex flex-col items-center justify-center text-white shadow-lg mb-6 border-4 border-white ring-4 ring-indigo-50">
+            <div class="w-24 h-24 mx-auto rounded-md bg-gradient-to-tr from-[#ff465a] to-[#c246ff] flex flex-col items-center justify-center text-white shadow-lg mb-6 border border-[#ff465a]/70">
                 <span class="text-3xl font-bold" id="modal-avatar-text">${db.profile.name.charAt(0)}</span>
             </div>
-            <div class="bg-stone-50 rounded-2xl p-4 mb-6 border border-stone-100">
+            <div class="bg-stone-50 rounded-md p-4 mb-6 border border-stone-100">
                 <div class="text-xs text-textmuted mb-1 uppercase tracking-wider">联系电话 (微信同号)</div>
                 <div class="text-2xl font-bold text-brand tracking-wide" id="modal-phone">${db.profile.phone}</div>
             </div>
-            <button onclick="copyPhone()" class="w-full bg-textmain hover:bg-black text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2">
+            <button onclick="copyPhone()" class="w-full cyber-button font-bold py-3 px-6 rounded-md transition-colors flex items-center justify-center gap-2">
                 <span id="copy-icon">📋</span> <span id="copy-text">一键复制号码</span>
             </button>
         </div>
@@ -131,31 +131,32 @@ function generateWorkCard(item) {
     }
 
     return `
-    <a href="portfolio-detail.html?id=${item.id}" class="fade-in block group overflow-hidden bg-white border border-stone-200 hover:shadow-2xl transition-all duration-300 rounded-[2rem] flex flex-col h-[28rem]">
-        <div class="relative w-full flex-1 overflow-hidden">
+    <a href="portfolio-detail.html?id=${item.id}" class="rico-card fade-in block group overflow-hidden transition-all duration-300 flex flex-col h-[26rem]">
+        <div class="relative w-full flex-1 overflow-hidden min-h-0">
             ${mediaContent}
             <div class="absolute inset-0 z-0 bg-stone-100 transition-transform duration-700 group-hover:scale-105" style="${bgStyle}"></div>
-            <div class="${(item.coverUrl || mediaContent) ? 'absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors z-10' : ''}"></div>
+            <div class="${(item.coverUrl || mediaContent) ? 'absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent transition-colors z-10' : ''}"></div>
             <div class="absolute inset-0 flex items-center justify-center z-20">
-                <div class="text-4xl text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 drop-shadow-lg ${(item.coverUrl || mediaContent) ? 'bg-black/40 w-16 h-16 rounded-full flex items-center justify-center' : ''}">
+                <div class="text-4xl text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 drop-shadow-lg ${(item.coverUrl || mediaContent) ? 'bg-black/50 w-16 h-16 rounded-md border border-[#c246ff]/60 flex items-center justify-center' : ''}">
                     ${icon}
                 </div>
             </div>
         </div>
-        <div class="p-6 bg-white z-30 flex flex-col justify-between shrink-0 h-32">
+        <div class="p-5 z-30 flex flex-col justify-between shrink-0 h-36 border-t border-[#ff465a]/20">
             <div>
-                <h3 class="font-black text-xl text-black leading-tight line-clamp-1 mb-1">${item.title}</h3>
+                <div class="text-xs cyber-title mb-1">${isVideo ? '视频作品' : '图片素材'}</div>
+                <h3 class="font-black text-xl text-white leading-tight line-clamp-1 mb-1">${item.title}</h3>
                 <div class="flex items-center gap-2 text-sm font-bold text-stone-500">
-                    <span class="w-5 h-5 rounded-full bg-gradient-to-tr from-brand to-purple-500 text-white flex items-center justify-center text-[10px]">R</span>
+                    <span class="w-5 h-5 rounded bg-gradient-to-tr from-[#ff465a] to-[#c246ff] text-white flex items-center justify-center text-[10px]">A</span>
                     @Rico.Design
                 </div>
             </div>
             <div class="flex justify-between items-end mt-2">
                 <div>
                     <div class="text-[10px] text-stone-400 font-bold uppercase tracking-wider mb-0.5">${item.game !== '-' ? item.game : item.type} ROI</div>
-                    <div class="font-black text-lg text-black inline-flex items-center gap-1"><span class="text-xs text-stone-500">🔥 消耗 ${formatMoney(item.spend)}</span> ${item.roi}</div>
+                    <div class="font-black text-lg text-white inline-flex items-center gap-1"><span class="text-xs text-stone-500">🔥 消耗 ${formatMoney(item.spend)}</span> ${item.roi}</div>
                 </div>
-                <div class="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center text-stone-400 hover:text-red-500 hover:border-red-500 transition-colors">
+                <div class="w-8 h-8 rounded border border-[#c246ff]/40 flex items-center justify-center text-[#c246ff] hover:text-[#ff465a] hover:border-[#ff465a] transition-colors">
                     ♥
                 </div>
             </div>
@@ -165,21 +166,21 @@ function generateWorkCard(item) {
 
 function generateArticleCard(item) {
     return `
-    <a href="article-detail.html?id=${item.id}" class="fade-in block flex flex-col h-[28rem] border border-stone-200 hover:border-black hover:shadow-2xl transition-all duration-300 rounded-[2rem] bg-white overflow-hidden group">
-        <div class="w-full h-48 bg-stone-100 relative overflow-hidden shrink-0">
-            <div class="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
+    <a href="article-detail.html?id=${item.id}" class="rico-card fade-in block flex flex-col h-[26rem] transition-all duration-300 overflow-hidden group">
+        <div class="w-full h-44 bg-stone-100 relative overflow-hidden shrink-0">
+            <div class="absolute inset-0 bg-gradient-to-br from-[#20133b] to-[#3b1126] flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
                 <span class="text-6xl">📝</span>
             </div>
         </div>
         <div class="p-6 flex flex-col flex-1 text-left">
             <div class="flex items-center gap-2 text-sm font-bold text-stone-500 mb-3">
-                <span class="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center text-[10px]">R</span>
+                <span class="w-5 h-5 rounded bg-[#c246ff] text-white flex items-center justify-center text-[10px]">A</span>
                 @Rico.Design
             </div>
-            <h3 class="font-black text-xl text-black leading-tight mb-2 line-clamp-2">${item.title}</h3>
+            <h3 class="font-black text-xl text-white leading-tight mb-2 line-clamp-2">${item.title}</h3>
             <p class="text-sm text-textmuted line-clamp-3 leading-relaxed mb-4 flex-1">${item.summary}</p>
-            <div class="font-black text-sm text-black flex items-center gap-1 uppercase tracking-wider">
-                ${item.date} <span class="ml-auto flex items-center justify-center w-8 h-8 rounded-full border border-stone-200 group-hover:bg-black group-hover:text-white transition-colors">→</span>
+            <div class="font-black text-sm text-white flex items-center gap-1 uppercase tracking-wider">
+                ${item.date} <span class="ml-auto flex items-center justify-center w-8 h-8 rounded border border-[#c246ff]/40 group-hover:bg-[#c246ff] group-hover:text-white transition-colors">→</span>
             </div>
         </div>
     </a>`;

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,243 +9,212 @@
     <link rel="stylesheet" href="css/global.css">
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: '#6366f1',
-                        textmain: '#1c1917',
-                        textmuted: '#78716c',
-                    }
-                }
-            }
+            theme: { extend: { colors: {
+                brand: '#8B5CF6', 'neon-purple': '#8B5CF6', 'neon-red': '#FF4D4F',
+                'neon-orange': '#FF9E3D', 'neon-green': '#00E5A8', textmain: '#ffffff', textmuted: '#8A8A8A',
+            }}}
         }
     </script>
+    <style>
+        .main-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 1.2fr;
+            grid-template-rows: 1fr auto auto;
+            grid-template-areas:
+                "char profile  rightcol"
+                "btns works    works"
+                ".    works    works";
+            gap: 10px;
+            height: 100%;
+        }
+        .area-char { grid-area: char; }
+        .area-profile { grid-area: profile; }
+        .area-rightcol { grid-area: rightcol; }
+        .area-btns { grid-area: btns; }
+        .area-works { grid-area: works; }
+    </style>
 </head>
+<body class="antialiased selection:bg-brand selection:text-white">
+    <main id="app-content" class="relative z-10 pt-[72px] min-h-screen flex items-start justify-center px-6 py-4">
+        <div class="relative w-full max-w-[1400px]" style="height: calc(100vh - 88px);">
+            <div class="absolute inset-0 z-0 pointer-events-none">
+                <img src="images/bg1.png" alt="" class="w-full h-full object-fill">
+            </div>
+            <div class="relative z-10 h-full main-grid p-5">
 
-<body class="antialiased selection:bg-black selection:text-white pb-24 bg-white text-black">
-
-    <!-- Main Content Area -->
-    <main id="app-content" class="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
-
-        <!-- Image 2 Style Hero Section -->
-        <section class="mb-24 fade-in pt-4 px-4 sm:px-0">
-            <!-- The Black Box is the absolute largest container -->
-            <div class="relative w-full max-w-7xl mx-auto border-[4px] md:border-[5px] border-black bg-white flex flex-col px-6 py-8 md:px-12 md:py-12 overflow-hidden min-h-[500px] md:min-h-[650px]">
-                
-                <!-- 1. The Background PORTFOLIO text -->
-                <!-- It shares the exact same horizontal boundaries as the rest of the content -->
-                <div class="absolute inset-0 z-0 flex items-center justify-center px-6 md:px-12 pointer-events-none">
-                    <div class="w-full flex justify-between select-none" style="font-family: 'Times New Roman', Times, serif; transform: scaleY(1.3);">
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">P</span>
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">O</span>
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">R</span>
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">T</span>
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">F</span>
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">O</span>
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">L</span>
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">I</span>
-                        <span class="text-[18vw] md:text-[14vw] leading-none font-black text-black">O</span>
+                <!-- LEFT: Character -->
+                <div class="area-char char-area relative rounded-lg overflow-hidden">
+                    <img src="images/character-BG.jpg" alt="" class="char-bg rounded-lg">
+                    <img src="images/character.png" alt="Alessio" class="char-figure">
+                    <div class="chevron-deco">
+                        <svg width="32" height="20" viewBox="0 0 32 20" fill="none"><path d="M2 2L16 16L30 2" stroke="#FF4D4F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </div>
                 </div>
 
-                <!-- 2. The Portrait Image -->
-                <!-- Completely inside the black box, above the text, forced to start 30% from the top to ensure margin -->
-                <div class="absolute top-[25%] md:top-[30%] bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none flex justify-center w-full max-w-[600px]">
-                    <img src="photo.png" alt="Wang Chenyang" class="w-auto h-full object-contain drop-shadow-xl" style="max-height: 100%;">
-                </div>
-
-                <!-- 3. The Left-Aligned Labels & Button (z-20) -->
-                <!-- Strict flex-column layout enforcing the shared left-alignment padding -->
-                <div class="relative z-20 flex flex-col h-full flex-grow pointer-events-none w-full">
-                    <!-- Top section -->
-                    <div class="pointer-events-auto">
-                        <h2 class="text-3xl md:text-5xl font-black text-black mb-2 tracking-wide" id="profile-name">王晨阳</h2>
-                        <h3 class="text-sm md:text-xl font-bold text-stone-700" id="profile-title">资深广告创意设计师 / AI 工作流负责人</h3>
-                    </div>
-
-                    <!-- Spacer -->
-                    <div class="flex-grow"></div>
-
-                    <!-- Bottom section: Slogan -->
-                    <div class="pointer-events-auto w-full md:w-96 mb-6">
-                         <p class="text-sm md:text-base font-bold text-stone-800 leading-relaxed bg-white/40 backdrop-blur-md p-2 rounded-lg" id="profile-slogan">9年深耕广告设计，以数据驱动创意，用AI重塑增长，专注百万级消耗高ROI爆款素材。</p>
-                    </div>
-
-                    <!-- Bottom section: Tags & Button -->
-                    <div class="pointer-events-auto flex items-end justify-between w-full">
-                        <div class="flex flex-wrap gap-2 md:gap-3" id="profile-tags">
-                            <span class="px-4 py-2 md:px-6 md:py-2.5 rounded-full bg-white/80 backdrop-blur-md text-black text-xs md:text-sm font-bold border-[2px] border-black">爆款专家</span>
-                            <span class="px-4 py-2 md:px-6 md:py-2.5 rounded-full bg-white/80 backdrop-blur-md text-black text-xs md:text-sm font-bold border-[2px] border-black">爆款专家</span>
+                <!-- MIDDLE-TOP: Profile -->
+                <div class="area-profile cyber-frame overflow-hidden">
+                    <div class="panel-bg"><img src="images/profile-panel.png" alt=""></div>
+                    <div class="panel-content p-5 flex flex-col h-full overflow-y-auto no-scrollbar">
+                        <h3 class="cyber-title cyber-title--red text-[0.5rem] mb-3"><span class="text-neon-orange mr-1">›</span> PLAYER PROFILE</h3>
+                        <h1 class="text-3xl font-black leading-none mb-1" id="profile-name">王晨阳</h1>
+                        <div class="text-lg font-black text-neon-red mb-2">Alessio</div>
+                        <div class="cyber-tag mb-3 text-[0.7rem]" id="profile-title">资深广告创意设计师 / AI 工作流负责人</div>
+                        <p class="text-xs leading-6 text-gray-300 mb-3" id="profile-slogan">9年深耕广告设计，以数据驱动创意，用 AI 重塑增长，专注百万级消耗高 ROI 爆款素材。</p>
+                        <div class="grid grid-cols-4 gap-2 mb-3">
+                            <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-value">9+</div><div class="stat-label">行业经验</div></div>
+                            <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M6 9H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3M18 9h3a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-3M6 3h12v6a6 6 0 0 1-12 0V3zM9 21h6M12 15v6"/></svg></div><div class="stat-value">5000+</div><div class="stat-label">累计优化素材</div></div>
+                            <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="stat-value">100+</div><div class="stat-label">合作项目</div></div>
+                            <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z"/></svg></div><div class="stat-value">120W+</div><div class="stat-label">素材总消耗</div></div>
                         </div>
-                        
-                        <!-- Ensure button strictly aligns right within the box's padding -->
-                        <button onclick="openContactModal()" class="bg-white hover:bg-black hover:text-white text-black font-black py-3 px-6 md:py-4 md:px-10 rounded-[1rem] border-[3px] border-black transition-colors shadow-none text-sm md:text-xl shrink-0">
+                        <div class="flex flex-wrap gap-2 mb-3" id="profile-tags"></div>
+                        <a href="resume.html" class="cyber-btn cyber-btn--download w-full py-2.5 px-5 rounded text-sm font-black mt-auto shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             下载简历
-                        </button>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Contact + System Info stacked -->
+                <div class="area-rightcol flex flex-col gap-3 overflow-hidden">
+                    <div class="cyber-frame flex-1">
+                        <div class="panel-bg"><img src="images/contact-panel.png" alt=""></div>
+                        <div class="panel-content p-4">
+                            <h3 class="cyber-title cyber-title--orange text-[0.45rem] mb-3">// CONTACT</h3>
+                            <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13L2 4"/></svg></div><span id="contact-email" class="text-xs">rico.design@email.com</span></div>
+                            <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><span id="contact-city" class="text-xs">中国 · 北京</span></div>
+                            <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M15 6v2a3 3 0 1 1-6 0V6"/><path d="M6 10h12l1.5 8H4.5L6 10z"/></svg></div><span class="text-xs">/RicoDesign</span></div>
+                        </div>
+                    </div>
+                    <div class="cyber-frame flex-1">
+                        <div class="panel-bg"><img src="images/info-panel.png" alt=""></div>
+                        <div class="panel-content p-4">
+                            <h3 class="cyber-title cyber-title--orange text-[0.45rem] mb-3">// SYSTEM INFO</h3>
+                            <div class="system-info-row"><span class="system-info-label">STATUS:</span><span class="system-info-value text-green-400">ONLINE ●</span></div>
+                            <div class="system-info-row"><span class="system-info-label">ROLE:</span><span class="system-info-value">CREATIVE DESIGNER</span></div>
+                            <div class="system-info-row"><span class="system-info-label">WEAPON:</span><span class="system-info-value">AI + DESIGN</span></div>
+                            <div class="system-info-row"><span class="system-info-label">MISSION:</span><span class="system-info-value">CREATE IMPACT</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEFT-BUTTONS -->
+                <div class="area-btns grid grid-cols-2 gap-2 content-start">
+                    <button onclick="openContactModal()" class="cyber-btn cyber-btn--unlock py-2 px-2 rounded text-[0.7rem]">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        解锁该英雄
+                    </button>
+                    <a href="resume.html" class="cyber-btn cyber-btn--download py-2 px-2 rounded text-[0.7rem]">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        下载简历
+                    </a>
+                </div>
+
+                <!-- BOTTOM: MY WORKS feed -->
+                <div class="area-works cyber-frame overflow-hidden">
+                    <div class="panel-bg"><img src="images/work-panel.png" alt=""></div>
+                    <div class="panel-content p-4 flex flex-col h-full">
+                        <div class="flex items-center justify-between gap-2 mb-3 shrink-0">
+                            <h2 class="cyber-title cyber-title--purple text-[0.45rem] whitespace-nowrap">// MY WORKS</h2>
+                            <div class="flex gap-1.5 overflow-x-auto no-scrollbar" id="filter-buttons">
+                                <button data-filter="recommend" onclick="setFeedFilter('recommend')" class="feed-filter-btn filter-active text-[0.65rem] px-2 py-1">精选</button>
+                                <button data-filter="high-spend" onclick="setFeedFilter('high-spend')" class="feed-filter-btn text-[0.65rem] px-2 py-1">🔥 高消耗</button>
+                                <button data-filter="image" onclick="setFeedFilter('image')" class="feed-filter-btn text-[0.65rem] px-2 py-1">🖼 图片</button>
+                                <button data-filter="video" onclick="setFeedFilter('video')" class="feed-filter-btn text-[0.65rem] px-2 py-1">💡 创意</button>
+                                <button data-filter="article" onclick="setFeedFilter('article')" class="feed-filter-btn text-[0.65rem] px-2 py-1">📄 文章</button>
+                            </div>
+                        </div>
+                        <div id="feed-container" class="space-y-3 flex-1 overflow-y-auto no-scrollbar min-h-0">
+                            <div class="rico-card animate-pulse" style="min-height:120px"></div>
+                            <div class="rico-card animate-pulse" style="min-height:120px"></div>
+                        </div>
+                        <div class="mt-2 flex items-center justify-center gap-2 scroll-hint shrink-0">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+                            向下滑动查看更多作品
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
                     </div>
                 </div>
 
             </div>
-        </section>
-
-        <section class="fade-in" style="animation-delay: 0.1s;">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-                <h2 class="text-2xl font-bold text-textmain">作品</h2>
-
-                <div class="flex bg-transparent p-1 rounded-full overflow-x-auto no-scrollbar w-full sm:w-auto gap-2"
-                    id="filter-buttons">
-                    <button data-filter="recommend" onclick="setFeedFilter('recommend')"
-                        class="feed-filter-btn filter-active px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors border-2">🚀 Recommend</button>
-                    <button data-filter="high-spend" onclick="setFeedFilter('high-spend')"
-                        class="feed-filter-btn px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors border-2 ml-1">🔥 高消耗</button>
-                    <button data-filter="video" onclick="setFeedFilter('video')"
-                        class="feed-filter-btn px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors border-2 ml-1">▶ 视频素材</button>
-                    <button data-filter="image" onclick="setFeedFilter('image')"
-                        class="feed-filter-btn px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors border-2 ml-1">🖼️ 图片素材</button>
-                    <button data-filter="article" onclick="setFeedFilter('article')"
-                        class="feed-filter-btn px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors border-2 ml-1">📝 文章</button>
-                </div>
-            </div>
-
-            <!-- 数据在后台无感抓取，初始状态为骨架屏 -->
-            <div id="feed-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[300px]">
-                <!-- 骨架屏卡片 1 -->
-                <div class="rico-card animate-pulse overflow-hidden">
-                    <div class="w-full h-64 bg-stone-100"></div>
-                    <div class="p-6 space-y-3">
-                        <div class="h-4 bg-stone-100 rounded w-1/4"></div>
-                        <div class="h-6 bg-stone-100 rounded w-3/4"></div>
-                        <div class="h-4 bg-stone-100 rounded w-full"></div>
-                    </div>
-                </div>
-                <!-- 骨架屏卡片 2 -->
-                <div class="rico-card animate-pulse overflow-hidden">
-                    <div class="w-full h-64 bg-stone-100"></div>
-                    <div class="p-6 space-y-3">
-                        <div class="h-4 bg-stone-100 rounded w-1/4"></div>
-                        <div class="h-6 bg-stone-100 rounded w-3/4"></div>
-                        <div class="h-4 bg-stone-100 rounded w-full"></div>
-                    </div>
-                </div>
-                <!-- 骨架屏卡片 3 -->
-                <div class="rico-card animate-pulse overflow-hidden">
-                    <div class="w-full h-64 bg-stone-100"></div>
-                    <div class="p-6 space-y-3">
-                        <div class="h-4 bg-stone-100 rounded w-1/4"></div>
-                        <div class="h-6 bg-stone-100 rounded w-3/4"></div>
-                        <div class="h-4 bg-stone-100 rounded w-full"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
+        </div>
     </main>
 
     <script src="js/api.js"></script>
     <script src="js/common.js"></script>
     <script>
         let currentFilter = 'recommend';
-
         function syncProfile() {
-            const nameEl = document.getElementById('profile-name');
-            const titleEl = document.getElementById('profile-title');
-            const sloganEl = document.getElementById('profile-slogan');
-            const avatarEl = document.getElementById('profile-avatar');
+            const p = db.profile;
+            const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.innerText = val; };
+            set('profile-name', p.name); set('profile-title', p.title); set('profile-slogan', p.slogan);
+            set('contact-email', p.contact || 'rico.design@email.com');
+            set('contact-city', `中国 · ${p.intention?.city || '北京'}`);
             const tagsEl = document.getElementById('profile-tags');
-
-            if (db.profile.name) {
-                if (nameEl) nameEl.innerText = db.profile.name;
-                if (titleEl) titleEl.innerText = db.profile.title;
-                if (sloganEl) sloganEl.innerText = db.profile.slogan;
-                if (tagsEl && db.profile.tags) {
-                    tagsEl.innerHTML = db.profile.tags.map(tag => `<span class="px-5 py-2 rounded-full bg-stone-100 text-black text-sm font-bold border border-stone-200">${tag}</span>`).join('');
-                }
-            }
+            if (tagsEl && p.tags) tagsEl.innerHTML = p.tags.map(t => `<span class="cyber-tag text-[0.65rem]">${t}</span>`).join('');
         }
 
-        // 将逻辑封装进 initPage，供 SPA 路由调用
-        window.initPage = async function() {
-            // 1. 尝试从缓存渲染个人信息
-            const cachedProfile = localStorage.getItem('resume_full_cache');
-            if (cachedProfile) {
-                try {
-                    db.profile = JSON.parse(cachedProfile);
-                    syncProfile();
-                } catch(e) {}
-            }
-            syncProfile();
-            
-            // 2. 【核心优化】双轨制加载：先拿缓存渲染内容，不再等那 5 秒
-            const cachedWorks = api.cache.get('works');
-            const cachedArticles = api.cache.get('articles');
-            if (cachedWorks || cachedArticles) {
-                // 如果有缓存，先渲染一波
-                let items = [];
-                const works = cachedWorks || [];
-                const articles = cachedArticles || [];
-                if (currentFilter === 'recommend') items = works.sort((a,b)=>b.spend-a.spend).slice(0,3).concat(articles);
-                else if (currentFilter === 'article') items = articles;
-                else items = works.filter(w => w.type === currentFilter || currentFilter === 'all' || currentFilter === 'recommend');
-                
-                renderToFeed(items);
-            }
-            
-            // 3. 后台执行真实的 API 同步（会在 5 秒后完成并由 DOM 守卫判定是否更新）
-            loadFeed();
+        const svgIcons = {
+            play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#8B5CF6" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+            image: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00E5A8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+            article: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+            views: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+            likes: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
         };
 
-        // 抽取渲染逻辑为通用函数
+        function typeLabel(item) {
+            if (item.spend === undefined) return { icon: svgIcons.article, text: '文章策划' };
+            return item.type === 'video' ? { icon: svgIcons.play, text: '视频作品' } : { icon: svgIcons.image, text: '图片素材' };
+        }
+
+        function renderHomeItem(item, index) {
+            const isArticle = item.spend === undefined;
+            const cover = item.coverUrl ? `background-image:url('${item.coverUrl}')` : `background:linear-gradient(135deg, rgba(139,92,246,0.3), rgba(255,77,79,0.15))`;
+            const tl = typeLabel(item);
+            return `<a href="${isArticle ? `article-detail.html?id=${item.id}` : `portfolio-detail.html?id=${item.id}`}" class="rico-card group">
+                <div class="card-thumb" style="${cover}"></div>
+                <div class="card-body">
+                    <div><div class="card-type">${tl.icon} ${tl.text}</div><h3 class="card-title">${item.title}</h3></div>
+                    <div class="flex items-end justify-between">
+                        <div class="card-metrics"><span class="metric-views">${svgIcons.views} ${formatMoney(item.spend || 0)}</span><span class="metric-likes">${svgIcons.likes} ${item.roi || '-'}</span></div>
+                        <div class="card-number">${String(index + 1).padStart(2, '0')}</div>
+                    </div>
+                </div></a>`;
+        }
+
         function renderToFeed(items) {
             const feedContainer = document.getElementById('feed-container');
             if (!feedContainer || !items.length) return;
-
-            let itemsHTML = '';
-            items.forEach(item => {
-                if (item.spend !== undefined) itemsHTML += generateWorkCard(item);
-                else itemsHTML += generateArticleCard(item);
-            });
-
-            if (feedContainer.innerHTML.trim() !== itemsHTML.trim()) {
-                feedContainer.innerHTML = itemsHTML;
-            }
+            feedContainer.innerHTML = items.map((item, i) => renderHomeItem(item, i)).join('');
         }
 
         async function loadFeed() {
-            const feedContainer = document.getElementById('feed-container');
-            if (!feedContainer) return;
-
             const items = await api.fetchFeedItems(currentFilter);
-            if (items.length > 0) {
-                renderToFeed(items);
-            } else if (!feedContainer.innerHTML.trim()) {
-                feedContainer.innerHTML = `<div class="col-span-full text-center py-10 text-textmuted">没有找到相关数据，请去 Strapi 后台发布几条。</div>`;
-            }
+            const feedContainer = document.getElementById('feed-container');
+            if (items.length > 0) renderToFeed(items);
+            else if (feedContainer) feedContainer.innerHTML = '<div class="text-center py-10 text-textmuted">没有找到相关数据</div>';
         }
 
         window.setFeedFilter = function (filter) {
             currentFilter = filter;
-            document.querySelectorAll('.feed-filter-btn').forEach(btn => {
-                btn.classList.remove('filter-active', 'bg-black', 'text-white', 'border-black');
-                if (btn.dataset.filter === filter) {
-                    btn.classList.add('filter-active', 'bg-black', 'text-white', 'border-black');
-                } else {
-                    btn.classList.add('bg-white', 'text-textmuted', 'border-stone-200');
-                }
-            });
+            document.querySelectorAll('.feed-filter-btn').forEach(btn => btn.classList.toggle('filter-active', btn.dataset.filter === filter));
             loadFeed();
         }
-        
-        // Initialize explicit first styling
-        setTimeout(() => {
-             document.querySelectorAll('.feed-filter-btn').forEach(btn => {
-                if (btn.classList.contains('filter-active')) {
-                    btn.classList.add('bg-black', 'text-white', 'border-black');
-                } else {
-                    btn.classList.add('bg-white', 'text-textmuted', 'border-stone-200');
-                }
-             })
-        }, 100);
+
+        window.initPage = async function () {
+            const c = localStorage.getItem('resume_full_cache');
+            if (c) { try { db.profile = JSON.parse(c); } catch(e){} }
+            syncProfile();
+            const cw = api.cache.get('works'), ca = api.cache.get('articles');
+            if (cw || ca) {
+                const works = cw || [], articles = ca || [];
+                let items = [];
+                if (currentFilter === 'recommend') items = works.sort((a,b)=>b.spend-a.spend).slice(0,5).concat(articles);
+                else if (currentFilter === 'article') items = articles;
+                else items = works.filter(w=>w.type===currentFilter||currentFilter==='all');
+                renderToFeed(items);
+            }
+            loadFeed();
+        };
     </script>
 </body>
-
 </html>
