@@ -16,125 +16,175 @@
         }
     </script>
     <style>
-        .main-grid {
-            display: grid;
-            grid-template-columns: 280px 1fr 1.2fr;
-            grid-template-rows: 1fr auto auto;
-            grid-template-areas:
-                "char profile  rightcol"
-                "btns works    works"
-                ".    works    works";
-            gap: 10px;
+        .scroll-wrapper {
+            position: relative;
+            z-index: 10;
             height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
-        .area-char { grid-area: char; }
-        .area-profile { grid-area: profile; }
-        .area-rightcol { grid-area: rightcol; }
-        .area-btns { grid-area: btns; }
-        .area-works { grid-area: works; }
+        .scroll-wrapper::-webkit-scrollbar { display: none; }
+        .scroll-wrapper { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .page-flex {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            min-height: 100%;
+        }
+        .left-col {
+            width: 280px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 88px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-self: flex-start;
+        }
+        .right-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .top-panels {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .top-panels .profile-col { flex: 1; min-width: 0; }
+        .top-panels .info-col {
+            width: 30%;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .works-sticky {
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 88px);
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-brand selection:text-white">
     <main id="app-content" class="relative z-10 pt-[72px] min-h-screen flex items-start justify-center px-6 py-4">
-        <div class="relative w-full max-w-[1400px]" style="height: calc(100vh - 88px);">
+        <div class="relative w-full max-w-7xl" style="height: calc(100vh - 88px);">
             <div class="absolute inset-0 z-0 pointer-events-none">
                 <img src="images/bg1.png" alt="" class="w-full h-full object-fill">
             </div>
-            <div class="relative z-10 h-full main-grid p-5">
 
-                <!-- LEFT: Character -->
-                <div class="area-char char-area relative rounded-lg overflow-hidden">
-                    <img src="images/character-BG.jpg" alt="" class="char-bg rounded-lg">
-                    <img src="images/character.png" alt="Alessio" class="char-figure">
-                    <div class="chevron-deco">
-                        <svg width="32" height="20" viewBox="0 0 32 20" fill="none"><path d="M2 2L16 16L30 2" stroke="#FF4D4F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                </div>
+            <div class="scroll-wrapper" id="scroll-wrapper">
+                <div class="page-flex">
 
-                <!-- MIDDLE-TOP: Profile -->
-                <div class="area-profile cyber-frame overflow-hidden">
-                    <div class="panel-bg"><img src="images/profile-panel.png" alt=""></div>
-                    <div class="panel-content p-5 flex flex-col h-full overflow-y-auto no-scrollbar">
-                        <h3 class="cyber-title cyber-title--red text-[0.5rem] mb-3"><span class="text-neon-orange mr-1">›</span> PLAYER PROFILE</h3>
-                        <h1 class="text-3xl font-black leading-none mb-1" id="profile-name">王晨阳</h1>
-                        <div class="text-lg font-black text-neon-red mb-2">Alessio</div>
-                        <div class="cyber-tag mb-3 text-[0.7rem]" id="profile-title">资深广告创意设计师 / AI 工作流负责人</div>
-                        <p class="text-xs leading-6 text-gray-300 mb-3" id="profile-slogan">9年深耕广告设计，以数据驱动创意，用 AI 重塑增长，专注百万级消耗高 ROI 爆款素材。</p>
-                        <div class="grid grid-cols-4 gap-2 mb-3">
-                            <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-value">9+</div><div class="stat-label">行业经验</div></div>
-                            <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M6 9H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3M18 9h3a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-3M6 3h12v6a6 6 0 0 1-12 0V3zM9 21h6M12 15v6"/></svg></div><div class="stat-value">5000+</div><div class="stat-label">累计优化素材</div></div>
-                            <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="stat-value">100+</div><div class="stat-label">合作项目</div></div>
-                            <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z"/></svg></div><div class="stat-value">120W+</div><div class="stat-label">素材总消耗</div></div>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mb-3" id="profile-tags"></div>
-                        <a href="resume.html" class="cyber-btn cyber-btn--download w-full py-2.5 px-5 rounded text-sm font-black mt-auto shrink-0">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            下载简历
-                        </a>
-                    </div>
-                </div>
-
-                <!-- RIGHT COLUMN: Contact + System Info stacked -->
-                <div class="area-rightcol flex flex-col gap-3 overflow-hidden">
-                    <div class="cyber-frame flex-1">
-                        <div class="panel-bg"><img src="images/contact-panel.png" alt=""></div>
-                        <div class="panel-content p-4">
-                            <h3 class="cyber-title cyber-title--orange text-[0.45rem] mb-3">// CONTACT</h3>
-                            <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13L2 4"/></svg></div><span id="contact-email" class="text-xs">rico.design@email.com</span></div>
-                            <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><span id="contact-city" class="text-xs">中国 · 北京</span></div>
-                            <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M15 6v2a3 3 0 1 1-6 0V6"/><path d="M6 10h12l1.5 8H4.5L6 10z"/></svg></div><span class="text-xs">/RicoDesign</span></div>
-                        </div>
-                    </div>
-                    <div class="cyber-frame flex-1">
-                        <div class="panel-bg"><img src="images/info-panel.png" alt=""></div>
-                        <div class="panel-content p-4">
-                            <h3 class="cyber-title cyber-title--orange text-[0.45rem] mb-3">// SYSTEM INFO</h3>
-                            <div class="system-info-row"><span class="system-info-label">STATUS:</span><span class="system-info-value text-green-400">ONLINE ●</span></div>
-                            <div class="system-info-row"><span class="system-info-label">ROLE:</span><span class="system-info-value">CREATIVE DESIGNER</span></div>
-                            <div class="system-info-row"><span class="system-info-label">WEAPON:</span><span class="system-info-value">AI + DESIGN</span></div>
-                            <div class="system-info-row"><span class="system-info-label">MISSION:</span><span class="system-info-value">CREATE IMPACT</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LEFT-BUTTONS -->
-                <div class="area-btns grid grid-cols-2 gap-2 content-start">
-                    <button onclick="openContactModal()" class="cyber-btn cyber-btn--unlock py-2 px-2 rounded text-[0.7rem]">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        解锁该英雄
-                    </button>
-                    <a href="resume.html" class="cyber-btn cyber-btn--download py-2 px-2 rounded text-[0.7rem]">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        下载简历
-                    </a>
-                </div>
-
-                <!-- BOTTOM: MY WORKS feed -->
-                <div class="area-works cyber-frame overflow-hidden">
-                    <div class="panel-bg"><img src="images/work-panel.png" alt=""></div>
-                    <div class="panel-content p-4 flex flex-col h-full">
-                        <div class="flex items-center justify-between gap-2 mb-3 shrink-0">
-                            <h2 class="cyber-title cyber-title--purple text-[0.45rem] whitespace-nowrap">// MY WORKS</h2>
-                            <div class="flex gap-1.5 overflow-x-auto no-scrollbar" id="filter-buttons">
-                                <button data-filter="recommend" onclick="setFeedFilter('recommend')" class="feed-filter-btn filter-active text-[0.65rem] px-2 py-1">精选</button>
-                                <button data-filter="high-spend" onclick="setFeedFilter('high-spend')" class="feed-filter-btn text-[0.65rem] px-2 py-1">🔥 高消耗</button>
-                                <button data-filter="image" onclick="setFeedFilter('image')" class="feed-filter-btn text-[0.65rem] px-2 py-1">🖼 图片</button>
-                                <button data-filter="video" onclick="setFeedFilter('video')" class="feed-filter-btn text-[0.65rem] px-2 py-1">💡 创意</button>
-                                <button data-filter="article" onclick="setFeedFilter('article')" class="feed-filter-btn text-[0.65rem] px-2 py-1">📄 文章</button>
+                    <!-- LEFT COLUMN (sticky) -->
+                    <div class="left-col">
+                        <div class="char-area relative rounded-lg overflow-hidden flex-1">
+                            <img src="images/character-BG.jpg" alt="" class="char-bg rounded-lg">
+                            <img src="images/character.png" alt="Alessio" class="char-figure">
+                            <div class="chevron-deco">
+                                <svg width="32" height="20" viewBox="0 0 32 20" fill="none"><path d="M2 2L16 16L30 2" stroke="#FF4D4F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </div>
                         </div>
-                        <div id="feed-container" class="space-y-3 flex-1 overflow-y-auto no-scrollbar min-h-0">
-                            <div class="rico-card animate-pulse" style="min-height:120px"></div>
-                            <div class="rico-card animate-pulse" style="min-height:120px"></div>
+                        <button onclick="openContactModal()" class="cyber-btn cyber-btn--unlock rounded shrink-0" style="height:42px;"></button>
+                    </div>
+
+                    <!-- RIGHT COLUMN -->
+                    <div class="right-col">
+
+                        <!-- TOP: Profile + Contact/Info -->
+                        <div class="top-panels">
+                            <div class="profile-col cyber-panel">
+                                <div class="relative shrink-0">
+                                    <img src="images/prefix-panel-top.jpg" class="w-full h-auto block">
+                                    <div class="absolute inset-0 flex items-start px-6 pt-3">
+                                        <div class="panel-title mb-0 w-full text-left"><span class="text-neon-orange mr-1">›</span> PLAYER PROFILE</div>
+                                    </div>
+                                </div>
+                                <div class="panel-mid overflow-y-auto no-scrollbar pt-2 pb-5 flex flex-col h-full">
+                                    <h1 class="text-3xl font-black leading-none mb-1 mt-2" id="profile-name">王晨阳</h1>
+                                    <div class="text-lg font-black text-neon-red mb-2">Alessio</div>
+                                    <div class="cyber-tag mb-3 text-[1rem]" id="profile-title">资深广告创意设计师 / AI 工作流负责人</div>
+                                    <p class="text-xs leading-6 text-gray-300 mb-3" id="profile-slogan">9年深耕广告设计，以数据驱动创意，用 AI 重塑增长，专注百万级消耗高 ROI 爆款素材。</p>
+                                    <div class="grid grid-cols-4 gap-2 mb-3">
+                                        <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-value">9+</div><div class="stat-label">行业经验</div></div>
+                                        <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M6 9H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3M18 9h3a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-3M6 3h12v6a6 6 0 0 1-12 0V3zM9 21h6M12 15v6"/></svg></div><div class="stat-value">5000+</div><div class="stat-label">累计优化素材</div></div>
+                                        <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="stat-value">100+</div><div class="stat-label">合作项目</div></div>
+                                        <div class="stat-box"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="#FF9E3D" stroke="#FF9E3D" stroke-width="0.5"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z"/></svg></div><div class="stat-value">120W+</div><div class="stat-label">素材总消耗</div></div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2 mb-3" id="profile-tags"></div>
+                                    <a href="resume.html" class="cyber-btn cyber-btn--download rounded shrink-0 self-start mt-auto" style="height:42px; min-width:120px;"></a>
+                                </div>
+                                <img src="images/prefix-panel-bottom.jpg" class="w-full h-auto block shrink-0">
+                            </div>
+                            <div class="info-col">
+                                <div class="cyber-panel flex-1">
+                                    <div class="relative shrink-0">
+                                        <img src="images/prefix-panel-top.jpg" class="w-full h-auto block">
+                                        <div class="absolute inset-0 flex items-start px-6 pt-3">
+                                            <div class="panel-title mb-0 w-full text-left">// CONTACT</div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-mid pt-2 pb-4">
+                                        <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13L2 4"/></svg></div><span id="contact-email" class="text-[1rem]">rico.design@email.com</span></div>
+                                        <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><span id="contact-city" class="text-[1rem]">中国 · 北京</span></div>
+                                        <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M15 6v2a3 3 0 1 1-6 0V6"/><path d="M6 10h12l1.5 8H4.5L6 10z"/></svg></div><span class="text-[1rem]">/RicoDesign</span></div>
+                                    </div>
+                                    <img src="images/prefix-panel-bottom.jpg" class="w-full h-auto block shrink-0">
+                                </div>
+                                <div class="cyber-panel flex-1">
+                                    <div class="relative shrink-0">
+                                        <img src="images/prefix-panel-top.jpg" class="w-full h-auto block">
+                                        <div class="absolute inset-0 flex items-start px-6 pt-3">
+                                            <div class="panel-title mb-0 w-full text-left">// SYSTEM INFO</div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-mid pt-2 pb-4">
+                                        <div class="system-info-row"><span class="system-info-label">STATUS:</span><span class="system-info-value text-green-400">ONLINE ●</span></div>
+                                        <div class="system-info-row"><span class="system-info-label">ROLE:</span><span class="system-info-value">CREATIVE DESIGNER</span></div>
+                                        <div class="system-info-row"><span class="system-info-label">WEAPON:</span><span class="system-info-value">AI + DESIGN</span></div>
+                                        <div class="system-info-row"><span class="system-info-label">MISSION:</span><span class="system-info-value">CREATE IMPACT</span></div>
+                                    </div>
+                                    <img src="images/prefix-panel-bottom.jpg" class="w-full h-auto block shrink-0">
+                                </div>
+                            </div>
                         </div>
-                        <div class="mt-2 flex items-center justify-center gap-2 scroll-hint shrink-0">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
-                            向下滑动查看更多作品
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+
+                        <!-- MY WORKS (sticky) -->
+                        <div class="works-sticky cyber-panel">
+                            <div class="relative shrink-0">
+                                <img src="images/prefix-panel-top.jpg" class="w-full h-auto block">
+                                <div class="absolute inset-0 flex items-start justify-between px-6 pt-3">
+                                    <div class="panel-title mb-0 text-left">// MY WORKS</div>
+                                    <div class="flex gap-1.5 overflow-x-auto no-scrollbar" id="filter-buttons" style="margin-top: -4px;">
+                                        <button data-filter="recommend" onclick="setFeedFilter('recommend')" class="feed-filter-btn filter-active text-[1rem] px-2 py-1">精选</button>
+                                        <button data-filter="high-spend" onclick="setFeedFilter('high-spend')" class="feed-filter-btn text-[1rem] px-2 py-1">🔥 高消耗</button>
+                                        <button data-filter="image" onclick="setFeedFilter('image')" class="feed-filter-btn text-[1rem] px-2 py-1">🖼 图片</button>
+                                        <button data-filter="video" onclick="setFeedFilter('video')" class="feed-filter-btn text-[1rem] px-2 py-1">💡 创意</button>
+                                        <button data-filter="article" onclick="setFeedFilter('article')" class="feed-filter-btn text-[1rem] px-2 py-1">📄 文章</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-mid flex-col pt-4 pb-4 overflow-hidden h-full">
+                                <div id="feed-container" class="flex-1 overflow-y-auto no-scrollbar min-h-0 w-full" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start;">
+                                    <div class="rico-card animate-pulse" style="min-height:120px"></div>
+                                    <div class="rico-card animate-pulse" style="min-height:120px"></div>
+                                </div>
+                                <div class="mt-2 flex items-center justify-center gap-2 scroll-hint shrink-0 text-xs">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+                                    向下滑动查看更多作品
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+                                </div>
+                            </div>
+                            <img src="images/prefix-panel-bottom.jpg" class="w-full h-auto block shrink-0">
                         </div>
+
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
@@ -150,7 +200,7 @@
             set('contact-email', p.contact || 'rico.design@email.com');
             set('contact-city', `中国 · ${p.intention?.city || '北京'}`);
             const tagsEl = document.getElementById('profile-tags');
-            if (tagsEl && p.tags) tagsEl.innerHTML = p.tags.map(t => `<span class="cyber-tag text-[0.65rem]">${t}</span>`).join('');
+            if (tagsEl && p.tags) tagsEl.innerHTML = p.tags.map(t => `<span class="cyber-tag text-[1rem]">${t}</span>`).join('');
         }
 
         const svgIcons = {
@@ -170,7 +220,7 @@
             const isArticle = item.spend === undefined;
             const cover = item.coverUrl ? `background-image:url('${item.coverUrl}')` : `background:linear-gradient(135deg, rgba(139,92,246,0.3), rgba(255,77,79,0.15))`;
             const tl = typeLabel(item);
-            return `<a href="${isArticle ? `article-detail.html?id=${item.id}` : `portfolio-detail.html?id=${item.id}`}" class="rico-card group">
+            return `<a href="${isArticle ? `article-detail?id=${item.id}` : `portfolio-detail?id=${item.id}`}" class="rico-card group">
                 <div class="card-thumb" style="${cover}"></div>
                 <div class="card-body">
                     <div><div class="card-type">${tl.icon} ${tl.text}</div><h3 class="card-title">${item.title}</h3></div>
@@ -214,6 +264,21 @@
                 renderToFeed(items);
             }
             loadFeed();
+
+            // Scroll delegation: when outer wrapper is maxed out, forward scroll to feed-container
+            const sw = document.getElementById('scroll-wrapper');
+            const fc = document.getElementById('feed-container');
+            if (sw && fc) {
+                sw.addEventListener('wheel', (e) => {
+                    const maxScroll = sw.scrollHeight - sw.clientHeight;
+                    const atBottom = sw.scrollTop >= maxScroll - 1;
+                    const atTop = sw.scrollTop <= 0;
+                    if ((atBottom && e.deltaY > 0) || (atTop && e.deltaY < 0 && fc.scrollTop > 0)) {
+                        e.preventDefault();
+                        fc.scrollTop += e.deltaY;
+                    }
+                }, { passive: false });
+            }
         };
     </script>
 </body>

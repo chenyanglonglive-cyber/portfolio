@@ -11,176 +11,355 @@
     <link rel="stylesheet" href="css/global.css">
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: '#6366f1',
-                        textmain: '#1c1917',
-                        textmuted: '#78716c',
-                    }
-                }
-            }
+            theme: { extend: { colors: {
+                brand: '#8B5CF6', 'neon-purple': '#8B5CF6', 'neon-red': '#FF4D4F',
+                'neon-orange': '#FF9E3D', 'neon-green': '#00E5A8', textmain: '#ffffff', textmuted: '#8A8A8A',
+            }}}
         }
     </script>
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background-color: #0a0a0a;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Background image similar to index.html */
+        .page-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .page-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.5;
+        }
+
+        .page {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            padding: 20px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding-top: 88px; /* account for nav */
+        }
+
+        .left {
+            width: 360px;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .left-inner {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right {
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .right-scroll {
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 8px;
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Custom Scrollbar */
+        .right-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .right-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        .right-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 77, 79, 0.5);
+            border-radius: 3px;
+        }
+        .right-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 77, 79, 0.8);
+        }
+
+        /* CSS classes removed as they are now in global.css */
+
+        /* Adjustments for short screens */
+        @media (max-height: 900px) {
+            .left-inner {
+                overflow-y: auto;
+                /* Allow content to push beyond 100% and scroll */
+                justify-content: flex-start;
+            }
+            .left-inner::-webkit-scrollbar { width: 0; display: none; }
+            .ability { 
+                flex: 0 0 300px; /* Force minimum 300px height */
+            }
+        }
+
+
+        .list-item-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 77, 79, 0.15);
+            border: 1px solid rgba(255, 77, 79, 0.5);
+            color: #FF4D4F;
+            font-size: 10px;
+            border-radius: 4px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        /* Tool icon */
+        .tool-icon-box {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            transition: all 0.3s ease;
+        }
+        .tool-icon-box:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        /* Timeline */
+        .timeline-dot {
+            position: absolute;
+            left: -5px;
+            top: 4px; /* Align with date */
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #FF4D4F;
+        }
+        .timeline-line {
+            border-left: 1px solid rgba(255, 77, 79, 0.3);
+            margin-left: 10px;
+            padding-left: 20px;
+        }
+    </style>
 </head>
 
-<body class="antialiased selection:bg-brand selection:text-white pb-24">
+<body class="antialiased selection:bg-brand selection:text-white" onload="renderResume()">
 
-    <!-- Main Content Area -->
-    <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
+    <div class="page-bg">
+        <img src="images/bg1.png" alt="">
+    </div>
+
+    <div class="page pt-[88px]">
+        <!-- Navigation will be injected by common.js here -->
         
-        <div class="mb-8 p-4 bg-white rounded-2xl shadow-sm text-sm text-textmuted border-l-4 border-brand fade-in">
-            <strong class="text-textmain">这是全模块化设计的数字简历。</strong> 摒弃了传统的静态排版，采用数据可视化（雷达图）直观展现核心技能。
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="resume-container">
+        <div class="content" id="resume-container" style="max-width: 1280px;">
             <!-- 容器通过 JS 渲染 -->
         </div>
-
-    </main>
+    </div>
 
     <script src="js/api.js"></script>
     <script src="js/common.js"></script>
     <script>
+        function createPanel(title, contentHTML) {
+            return `
+                <div class="cyber-panel">
+                    <div class="relative shrink-0">
+                        <img src="images/prefix-panel-top.jpg" class="w-full h-auto block">
+                        <div class="absolute inset-0 flex items-start px-6 pt-3">
+                            <div class="panel-title mb-0 w-full text-left">${title}</div>
+                        </div>
+                    </div>
+                    <div class="panel-mid">
+                        ${contentHTML}
+                    </div>
+                    <img src="images/prefix-panel-bottom.jpg" class="w-full h-auto block shrink-0">
+                </div>
+            `;
+        }
+
         function renderResume() {
             const container = document.getElementById('resume-container');
-            if (!container) return; // 防护：防止在局部加载时由于 DOM 还没到位导致的报错
-            container.innerHTML = `
-                <div class="lg:col-span-1 space-y-8">
-                    <div class="rico-card p-6 fade-in">
-                        <h3 class="text-lg font-bold border-b pb-2 mb-4">基本信息</h3>
-                        <div class="text-center mb-6">
-                            <div class="w-24 h-24 mx-auto rounded-full bg-stone-200 mb-3 flex items-center justify-center text-3xl">🧑‍💻</div>
-                            <h2 class="text-xl font-bold">${db.profile.name || '...'}</h2>
-                            <p class="text-sm text-textmuted">${db.profile.title || '...'}</p>
-                        </div>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex justify-between"><span class="text-textmuted">期望职位</span><span class="font-medium">${db.profile.intention.role || '...'}</span></div>
-                            <div class="flex justify-between"><span class="text-textmuted">期望薪资</span><span class="font-medium text-brand">${db.profile.intention.salary || '...'}</span></div>
-                            <div class="flex justify-between"><span class="text-textmuted">所在城市</span><span class="font-medium">${db.profile.intention.city || '...'}</span></div>
-                            <div class="flex justify-between"><span class="text-textmuted">联系邮箱</span><span class="font-medium">${db.profile.contact || '...'}</span></div>
-                        </div>
+            if (!container) return; 
 
-                        <button onclick="openContactModal()" class="mt-6 w-full bg-gradient-to-r from-brand to-indigo-500 hover:from-indigo-600 text-white font-bold py-3.5 px-6 rounded-xl transition-all hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2">
-                            <span class="text-xl">🔓</span> 解锁该英雄
-                        </button>
+            // Basic Info
+            const basicInfoContent = `
+                <div class="flex flex-col items-center mb-6 mt-4">
+                    <div class="relative w-32 h-32 mb-2 rounded-full border-2 border-[#8B5CF6] overflow-hidden flex items-center justify-center bg-[#1a1528]">
+                        <!-- Using character.png as avatar -->
+                        <img src="images/character.png" alt="Avatar" class="h-full object-cover">
                     </div>
-
-                    <div class="rico-card p-6 fade-in" style="animation-delay: 0.1s;">
-                        <h3 class="text-lg font-bold border-b pb-2 mb-4">能力维度图</h3>
-                        <div class="chart-container w-full max-w-sm mx-auto relative h-64 max-h-64">
-                            <canvas id="skillsChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="rico-card p-6 fade-in" style="animation-delay: 0.2s;">
-                        <h3 class="text-lg font-bold border-b pb-2 mb-4">生产力工具</h3>
-                        <div class="grid grid-cols-3 gap-3">
-                            ${db.profile.software.length ? db.profile.software.map(s => `
-                                <div class="aspect-square bg-stone-50 rounded-xl flex flex-col items-center justify-center p-2 hover:bg-stone-100 transition-colors border border-stone-100 shadow-sm hover:shadow-md">
-                                    <div class="mb-2 transition-transform hover:scale-110">${s.icon}</div>
-                                    <span class="text-xs font-bold text-stone-600">${s.name}</span>
-                                </div>
-                            `).join('') : '<div class="col-span-3 text-center py-4 text-stone-300">通过后加载数据...</div>'}
-                        </div>
-                    </div>
+                    <h2 class="text-2xl font-black text-white leading-none mb-1">${db.profile.name || '...'}</h2>
+                    <div class="text-neon-red font-bold text-lg mb-2">Alessio</div>
+                    <div class="cyber-tag text-[0.8rem] text-white px-3 py-1 bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 rounded">${db.profile.title || '...'}</div>
                 </div>
+                <div class="space-y-4 text-sm mb-4">
+                    <div class="flex justify-between items-center"><span class="text-textmuted flex items-center gap-2"><span>💼</span> 期望职位</span><span class="font-medium text-white text-right">${db.profile.intention.role || '...'}</span></div>
+                    <div class="flex justify-between items-center"><span class="text-textmuted flex items-center gap-2"><span>💰</span> 期望薪资</span><span class="font-bold text-[#8B5CF6]">${db.profile.intention.salary || '...'}</span></div>
+                    <div class="flex justify-between items-center"><span class="text-textmuted flex items-center gap-2"><span>📍</span> 所在城市</span><span class="font-medium text-white">${db.profile.intention.city || '...'}</span></div>
+                    <div class="flex justify-between items-center"><span class="text-textmuted flex items-center gap-2"><span>✉️</span> 联系邮箱</span><span class="font-medium text-white">${db.profile.contact || '...'}</span></div>
+                </div>
+                <button onclick="openContactModal()" class="w-full mt-auto mb-4 py-3 rounded text-white font-bold bg-[#FF4D4F]/20 border border-[#FF4D4F] hover:bg-[#FF4D4F]/40 transition-colors flex justify-center items-center gap-2">
+                    <span>🔒</span> 解锁该英雄
+                </button>
+            `;
 
-                <div class="lg:col-span-2 space-y-8">
-                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.05s;">
-                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2" id="bio-title">📝 ${db.profile.bio_title || '个人介绍'}</h3>
-                        <div class="text-stone-600 leading-relaxed text-justify" id="bio-content">
-                            ${db.profile.bio_html || `
-                                <div class="animate-pulse space-y-3 py-1">
-                                    <div class="h-4 bg-stone-100 rounded w-full"></div>
-                                    <div class="h-4 bg-stone-100 rounded w-5/6"></div>
-                                    <div class="h-4 bg-stone-100 rounded w-full"></div>
-                                    <div class="h-4 bg-stone-100 rounded w-3/4"></div>
-                                </div>
-                            `}
-                        </div>
-                    </div>
-
-                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.1s;">
-                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">🚀 核心专项项目</h3>
-                        <div class="border-l-2 border-stone-200 ml-3 space-y-8">
-                            ${db.profile.projects.length ? db.profile.projects.map(p => `
-                                <div class="relative pl-6">
-                                    <div class="absolute w-3 h-3 bg-orange-500 rounded-full -left-[7px] top-1.5 border-2 border-white"></div>
-                                    <div class="text-sm font-mono text-orange-600 mb-1">${p.time}</div>
-                                    <h4 class="text-lg font-bold text-textmain">${p.name}</h4>
-                                    <p class="mt-2 text-stone-600 leading-relaxed">${p.desc}</p>
-                                </div>
-                            `).join('') : '<div class="pl-6 text-stone-400">正在异步同步中...</div>'}
-                        </div>
-                    </div>
-
-                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.2s;">
-                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">💼 工作经历</h3>
-                        <div class="border-l-2 border-stone-200 ml-3 space-y-8">
-                            ${db.profile.workExp.length ? db.profile.workExp.map(w => `
-                                <div class="relative pl-6">
-                                    <div class="absolute w-3 h-3 bg-brand rounded-full -left-[7px] top-1.5 border-2 border-white"></div>
-                                    <div class="text-sm font-mono text-brand mb-1">${w.time}</div>
-                                    <h4 class="text-lg font-bold text-textmain">${w.company} <span class="text-textmuted font-normal text-base ml-2">| ${w.role}</span></h4>
-                                    <p class="mt-2 text-stone-600 leading-relaxed">${w.desc}</p>
-                                </div>
-                            `).join('') : '<div class="pl-6 text-stone-400">正在异步同步中...</div>'}
-                        </div>
-                    </div>
-
-                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.3s;">
-                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">🎓 教育经历</h3>
-                        ${db.profile.edu.length ? db.profile.edu.map(e => `
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-stone-50 p-4 rounded-xl border border-stone-100">
-                                <div>
-                                    <h4 class="text-lg font-bold text-textmain">${e.school}</h4>
-                                    <p class="text-textmuted">${e.major} · ${e.degree}</p>
-                                </div>
-                                <div class="mt-2 sm:mt-0 text-right">
-                                    <div class="text-sm font-mono text-textmuted">${e.time}</div>
-                                    <div class="text-sm font-medium text-brand mt-1">🏅 ${e.honor}</div>
-                                </div>
-                            </div>
-                        `).join('') : '<div class="text-center text-stone-400">正在异步同步中...</div>'}
-                    </div>
+            // Ability
+            const abilityContent = `
+                <div class="flex-1 relative w-full h-full min-h-[150px] flex items-center justify-center my-1">
+                    <canvas id="skillsChart"></canvas>
                 </div>
             `;
 
-            // 画雷达图
-            const ctx = document.getElementById('skillsChart');
-            if (ctx && db.profile.skills.labels.length) {
-                new Chart(ctx, {
-                    type: 'radar',
-                    data: {
-                        labels: db.profile.skills.labels,
-                        datasets: [{
-                            label: '能力维度',
-                            data: db.profile.skills.values,
-                            backgroundColor: 'rgba(79, 70, 229, 0.2)',
-                            borderColor: '#4f46e5',
-                            pointBackgroundColor: '#4f46e5',
-                            pointBorderColor: '#fff',
-                            borderWidth: 2,
-                        }]
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        scales: {
-                            r: {
-                                grid: { color: 'rgba(0,0,0,0.05)' },
-                                pointLabels: { font: { size: 12 }, color: '#78716c' },
-                                ticks: { display: false, min: 0, max: 100 }
-                            }
+            // Tools
+            const toolsContent = `
+                <div class="grid grid-cols-3 gap-2 pb-2 pt-2">
+                    ${db.profile.software.length ? db.profile.software.map(s => `
+                        <div class="tool-icon-box">
+                            <div class="text-2xl mb-1">${s.icon}</div>
+                            <span class="text-[10px] text-stone-400 font-bold uppercase">${s.name}</span>
+                        </div>
+                    `).join('') : '<div class="col-span-3 text-center py-2 text-stone-500">Loading...</div>'}
+                </div>
+            `;
+
+            // Advantages (Bio)
+            const advantagesContent = `
+                <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2 mt-4" id="bio-title">💎 ${db.profile.bio_title || '我的优势'}</h3>
+                <div class="text-stone-300 leading-relaxed text-sm space-y-4 mb-4" id="bio-content">
+                    ${db.profile.bio_html || '<div class="animate-pulse text-stone-500">Loading...</div>'}
+                </div>
+            `;
+
+            // Projects
+            const projectsContent = `
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-4">🚀 核心专项项目</h3>
+                <div class="timeline-line space-y-8 mb-4">
+                    ${db.profile.projects.length ? db.profile.projects.map(p => `
+                        <div class="relative">
+                            <div class="timeline-dot"></div>
+                            <div class="text-xs font-mono text-[#FF4D4F] mb-1">${p.time}</div>
+                            <h4 class="text-base font-bold text-white mb-2">${p.name}</h4>
+                            <p class="text-sm text-stone-400 leading-relaxed">${p.desc}</p>
+                        </div>
+                    `).join('') : '<div class="text-stone-500">Loading...</div>'}
+                </div>
+            `;
+
+            // Work Resume & Education
+            const workContent = `
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-4">💼 工作经历</h3>
+                <div class="timeline-line space-y-8 mb-8">
+                    ${db.profile.workExp.length ? db.profile.workExp.map(w => `
+                        <div class="relative">
+                            <div class="timeline-dot" style="background: #8B5CF6;"></div>
+                            <div class="text-xs font-mono text-[#8B5CF6] mb-1">${w.time}</div>
+                            <h4 class="text-base font-bold text-white mb-1">${w.company}</h4>
+                            <div class="text-sm text-stone-400 mb-2">${w.role}</div>
+                            <p class="text-sm text-stone-500 leading-relaxed">${w.desc}</p>
+                        </div>
+                    `).join('') : '<div class="text-stone-500">Loading...</div>'}
+                </div>
+                
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-8">🎓 教育经历</h3>
+                <div class="space-y-4 mb-4">
+                    ${db.profile.edu.length ? db.profile.edu.map(e => `
+                        <div class="bg-white/5 border border-white/10 rounded-lg p-4 flex justify-between items-center">
+                            <div>
+                                <h4 class="text-base font-bold text-white">${e.school}</h4>
+                                <div class="text-sm text-stone-400">${e.major} · ${e.degree}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-mono text-stone-500">${e.time}</div>
+                                <div class="text-xs text-[#00E5A8] mt-1">${e.honor}</div>
+                            </div>
+                        </div>
+                    `).join('') : '<div class="text-stone-500">Loading...</div>'}
+                </div>
+            `;
+
+            container.innerHTML = `
+                <aside class="left">
+                    <div class="left-inner">
+                        <section class="basic-info fade-in" style="flex: 0 0 auto;">${createPanel('// BASIC INFO', basicInfoContent)}</section>
+                        <section class="ability fade-in" style="flex: 1; min-height: 0;">${createPanel('// ABILITY RADAR', abilityContent)}</section>
+                        <section class="tools fade-in" style="flex: 0 0 auto;" style="animation-delay: 0.2s;">${createPanel('// TOOLS', toolsContent)}</section>
+                    </div>
+                </aside>
+                <main class="right">
+                    <div class="right-scroll">
+                        <section class="advantages fade-in">${createPanel('// MY ADVANTAGES', advantagesContent)}</section>
+                        <section class="projects fade-in" style="animation-delay: 0.1s;">${createPanel('// KEY PROJECTS', projectsContent)}</section>
+                        <section class="resume fade-in" style="animation-delay: 0.2s;">${createPanel('// WORK RESUME', workContent)}</section>
+                    </div>
+                </main>
+            `;
+
+            // Draw Radar Chart
+            setTimeout(() => {
+                const ctx = document.getElementById('skillsChart');
+                if (ctx && db.profile.skills.labels.length) {
+                    new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: db.profile.skills.labels,
+                            datasets: [{
+                                data: db.profile.skills.values,
+                                backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                                borderColor: '#8B5CF6',
+                                pointBackgroundColor: '#8B5CF6',
+                                pointBorderColor: '#fff',
+                                borderWidth: 1,
+                            }]
                         },
-                        plugins: { legend: { display: false } }
-                    }
-                });
-            }
+                        options: {
+                            maintainAspectRatio: false,
+                            scales: {
+                                r: {
+                                    grid: { color: 'rgba(255,255,255,0.1)' },
+                                    angleLines: { color: 'rgba(255,255,255,0.1)' },
+                                    pointLabels: { font: { size: 10, family: 'Inter' }, color: '#8A8A8A' },
+                                    ticks: { display: false, min: 0, max: 100 }
+                                }
+                            },
+                            plugins: { legend: { display: false } }
+                        }
+                    });
+                }
+            }, 50);
         }
 
         window.initPage = function() {
-            // 1. 尝试从缓存加载
             const cachedBio = localStorage.getItem('resume_bio_cache');
             if (cachedBio) {
                 try {
@@ -190,10 +369,8 @@
                 } catch(e) {}
             }
 
-            // 2. 初始渲染
             renderResume();
             
-            // 3. 异步拉取最新数据
             api.fetchAbout().then(bioData => {
                 if (bioData) {
                     const html = renderBlocks(bioData.content);
@@ -202,10 +379,24 @@
                         db.profile.bio_html = html;
                         const titleEl = document.getElementById('bio-title');
                         const contentEl = document.getElementById('bio-content');
-                        if (titleEl) titleEl.innerText = `📝 ${bioData.title}`;
+                        if (titleEl) titleEl.innerText = `💎 ${bioData.title}`;
                         if (contentEl) {
                             contentEl.classList.add('fade-in');
                             contentEl.innerHTML = html;
+                            
+                            // Style list items in the bio specifically for advantages
+                            const listItems = contentEl.querySelectorAll('li');
+                            listItems.forEach((li, index) => {
+                                li.innerHTML = `<span class="list-item-number">${index + 1}</span>${li.innerHTML}`;
+                                li.style.listStyle = 'none';
+                                li.style.marginBottom = '12px';
+                                li.style.display = 'flex';
+                            });
+                            const uls = contentEl.querySelectorAll('ul, ol');
+                            uls.forEach(ul => {
+                                ul.style.listStyle = 'none';
+                                ul.style.marginLeft = '0';
+                            });
                         }
                         localStorage.setItem('resume_bio_cache', JSON.stringify({ title: bioData.title, html: html }));
                     }
@@ -214,5 +405,4 @@
         };
     </script>
 </body>
-
 </html>

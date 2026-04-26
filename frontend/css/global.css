@@ -51,6 +51,30 @@ body::after {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* --- Cyber Panel Structure (Spliced Images) --- */
+.cyber-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.panel-mid {
+    flex: 1;
+    background: url('../images/prefix-panel-min.jpg') repeat-y center top;
+    background-size: 100% auto;
+    padding: 0 24px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.panel-title {
+    color: #FF4D4F;
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    font-family: var(--body-font);
+}
+
 /* --- Fade In Animation --- */
 .fade-in { animation: fadeIn 0.5s ease-out forwards; }
 @keyframes fadeIn {
@@ -148,7 +172,8 @@ body::after {
     cursor: pointer;
     border: none;
     background-color: transparent;
-    background-size: 100% 100%;
+    background-size: contain;
+    background-position: center;
     background-repeat: no-repeat;
     transition: filter 0.2s, transform 0.1s;
     font-family: var(--body-font);
@@ -168,10 +193,16 @@ body::after {
 
 .cyber-btn--download {
     background-image: url('../images/down-file-bt.jpg');
+    background-size: 100% 100%;
+    height: 42px;
+    flex-shrink: 0;
 }
 
 .cyber-btn--unlock {
     background-image: url('../images/unlock-bt.jpg');
+    background-size: 100% 100%;
+    height: 42px;
+    flex-shrink: 0;
 }
 
 .cyber-btn--filter-active {
@@ -261,17 +292,17 @@ body::after {
    SYSTEM INFO
    ============================================ */
 .system-info-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.2em;
     margin-bottom: 0.6rem;
     font-family: var(--pixel-font);
     font-size: 0.55rem;
     line-height: 1.8;
 }
 
-.system-info-label { color: var(--muted); }
-.system-info-value { color: #fff; }
+.system-info-label { color: var(--muted); white-space: nowrap; }
+.system-info-value { color: #fff; text-align: left; }
 
 /* ============================================
    CONTACT
@@ -311,6 +342,12 @@ body::after {
     color: inherit;
 }
 
+/* Square aspect-ratio + vertical layout only for feed cards on home page */
+#feed-container .rico-card {
+    flex-direction: column;
+    aspect-ratio: 1 / 1;
+}
+
 .rico-card:hover {
     background: rgba(25, 25, 50, 0.8);
     border-color: rgba(139, 92, 246, 0.4);
@@ -319,8 +356,8 @@ body::after {
 }
 
 .rico-card .card-thumb {
-    width: 42%;
-    min-height: 140px;
+    width: 100%;
+    height: 55%;
     background-size: cover;
     background-position: center;
     position: relative;
@@ -331,34 +368,37 @@ body::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, transparent 60%, rgba(5, 4, 11, 0.7));
+    background: linear-gradient(to bottom, transparent 60%, rgba(5, 4, 11, 0.7));
 }
 
 .rico-card .card-body {
     flex: 1;
-    padding: 1rem 1.2rem;
+    padding: 0.6rem 0.8rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    min-height: 0;
 }
 
 .card-type {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: var(--neon-purple);
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.2rem;
     display: flex;
     align-items: center;
     gap: 0.3rem;
 }
 
+/* Fixed icon sizes — not affected by dynamic scaling */
 .card-type svg {
     width: 14px;
     height: 14px;
+    flex-shrink: 0;
 }
 
 .card-title {
-    font-size: 1rem;
+    font-size: 0.85rem;
     font-weight: 900;
     color: #fff;
     line-height: 1.3;
@@ -371,15 +411,17 @@ body::after {
 .card-metrics {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    font-size: 0.75rem;
+    gap: 0.8rem;
+    font-size: 0.7rem;
     color: var(--muted);
     font-weight: 700;
 }
 
+/* Fixed icon sizes — not affected by dynamic scaling */
 .card-metrics svg {
     width: 14px;
     height: 14px;
+    flex-shrink: 0;
     vertical-align: middle;
     margin-right: 2px;
 }
@@ -389,7 +431,7 @@ body::after {
 
 .card-number {
     font-family: var(--pixel-font);
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 900;
     color: var(--neon-orange);
     text-shadow: 0 0 8px rgba(255, 158, 61, 0.4);
