@@ -98,6 +98,11 @@ function formatMoney(num) {
     return num >= 10000 ? (num / 10000).toFixed(1) + 'w' : num;
 }
 
+function pageUrl(page, params = '') {
+    const suffix = window.location.protocol === 'file:' ? '.html' : '';
+    return `${page}${suffix}${params}`;
+}
+
 /**
  * 智能返回上一页，如果无来源则跳转到保底 URL
  * @param {Event} e 
@@ -131,7 +136,7 @@ function generateWorkCard(item) {
     }
 
     return `
-    <a href="portfolio-detail.html?id=${item.id}" class="rico-card fade-in block group overflow-hidden transition-all duration-300 flex flex-col h-[26rem]">
+    <a href="${pageUrl('portfolio-detail', `?id=${item.id}`)}" class="rico-card fade-in block group overflow-hidden transition-all duration-300 flex flex-col h-[26rem]">
         <div class="relative w-full flex-1 overflow-hidden min-h-0">
             ${mediaContent}
             <div class="absolute inset-0 z-0 bg-stone-100 transition-transform duration-700 group-hover:scale-105" style="${bgStyle}"></div>
@@ -166,7 +171,7 @@ function generateWorkCard(item) {
 
 function generateArticleCard(item) {
     return `
-    <a href="article-detail.html?id=${item.id}" class="rico-card fade-in block flex flex-col h-[26rem] transition-all duration-300 overflow-hidden group">
+    <a href="${pageUrl('article-detail', `?id=${item.id}`)}" class="rico-card fade-in block flex flex-col h-[26rem] transition-all duration-300 overflow-hidden group">
         <div class="w-full h-44 bg-stone-100 relative overflow-hidden shrink-0">
             <div class="absolute inset-0 bg-gradient-to-br from-[#20133b] to-[#3b1126] flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
                 <span class="text-6xl">📝</span>

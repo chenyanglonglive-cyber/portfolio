@@ -1,40 +1,76 @@
 const api = {
-    // 辅助方法：生成简单的内容哈希，用于对比数据是否有变动
     _hash(obj) {
         return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))).substring(0, 32);
     },
 
-    // 缓存管理器（公开供页面瞬时回显）
     cache: {
         get(key) {
             try {
                 const data = localStorage.getItem(`cache_${key}`);
                 return data ? JSON.parse(data) : null;
-            } catch(e) { return null; }
+            } catch (e) {
+                return null;
+            }
         },
         set(key, data) {
-            localStorage.setItem(`cache_${key}`, JSON.stringify(data));
+            try {
+                localStorage.setItem(`cache_${key}`, JSON.stringify(data));
+            } catch (e) {}
+        }
+    },
+
+    _getItem(obj) {
+        return obj && obj.attributes ? { id: obj.id, ...obj.attributes } : (obj || {});
+    },
+
+    _absoluteUrl(url) {
+        if (!url) return null;
+        if (url.startsWith('#')) return url;
+        if (url.startsWith('//')) return window.location.protocol + url;
+        return url.startsWith('http') ? url : CONFIG.API_URL + url;
+    },
+
+    _mediaUrl(mediaField) {
+        if (!mediaField) return null;
+
+        let media = mediaField;
+        if (media.data !== undefined) media = media.data;
+        if (Array.isArray(media)) media = media[0];
+        if (!media) return null;
+
+        const attr = media.attributes || media;
+        const directUrl = attr.url;
+        const formatUrl =
+            attr.formats?.large?.url ||
+            attr.formats?.medium?.url ||
+            attr.formats?.small?.url ||
+            attr.formats?.thumbnail?.url;
+
+        return this._absoluteUrl(directUrl || formatUrl);
+    },
+
+    async _fetchJson(path, timeoutMs = 4500) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+            const res = await fetch(`${CONFIG.API_URL}${path}`, { signal: controller.signal });
+            if (!res.ok) return null;
+            return await res.json();
+        } finally {
+            clearTimeout(timeoutId);
         }
     },
 
     async fetchWorks() {
         const cacheKey = 'works';
         const cached = this.cache.get(cacheKey);
-        
+
         try {
-            const res = await fetch(`${CONFIG.API_URL}/api/works?populate=*`);
-            if (res.ok) {
-                const worksData = await res.json();
-                if (worksData.data) {
+            const worksData = await this._fetchJson('/api/works?populate=*');
+            if (worksData && Array.isArray(worksData.data)) {
                     const items = worksData.data.map(obj => {
-                        const item = obj.attributes || obj;
-                        item.id = obj.id;
-                        let coverUrl = null;
-                        if (item.cover && item.cover.data) {
-                            const media = Array.isArray(item.cover.data) ? item.cover.data[0] : item.cover.data;
-                            const attr = media.attributes || media;
-                            coverUrl = attr.url ? (attr.url.startsWith('http') ? attr.url : CONFIG.API_URL + attr.url) : null;
-                        }
+                        const item = this._getItem(obj);
                         return {
                             id: item.id,
                             type: item.type || 'video',
@@ -46,19 +82,17 @@ const api = {
                             game: item.game || '-',
                             launch_time: item.launch_time || '-',
                             platform: item.platform || '-',
-                            videoUrl: item.video_url || '#',
+                            videoUrl: this._absoluteUrl(item.video_url) || '#',
                             feishuUrl: item.feishu_url || '',
-                            coverUrl: coverUrl
+                            coverUrl: this._mediaUrl(item.cover)
                         };
                     });
-                    
-                    // 如果内容没变，不更新
+
                     if (cached && this._hash(cached) === this._hash(items)) return cached;
-                    
+
                     this.cache.set(cacheKey, items);
                     return items;
                 }
-            }
             return cached || db.works;
         } catch (error) {
             return cached || db.works;
@@ -68,24 +102,26 @@ const api = {
     async fetchArticles() {
         const cacheKey = 'articles';
         const cached = this.cache.get(cacheKey);
-        
+
         try {
-            const res = await fetch(`${CONFIG.API_URL}/api/articles?populate=*`);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.data) {
+            const data = await this._fetchJson('/api/articles?populate=*');
+            if (data && Array.isArray(data.data)) {
                     const items = data.data.map(obj => {
-                        const item = obj.attributes || obj;
+                        const item = this._getItem(obj);
+                        const createdAt = item.createdAt || obj.createdAt;
                         return {
-                            id: obj.id, title: item.title, summary: item.summary,
-                            date: item.publish_date || obj.attributes.createdAt.split('T')[0]
+                            id: item.id || obj.id,
+                            title: item.title || '无标题',
+                            summary: item.summary || '',
+                            date: item.publish_date || (createdAt ? createdAt.split('T')[0] : '')
                         };
                     });
+
                     if (cached && this._hash(cached) === this._hash(items)) return cached;
+
                     this.cache.set(cacheKey, items);
                     return items;
                 }
-            }
             return cached || db.articles;
         } catch (error) {
             return cached || db.articles;
@@ -95,13 +131,13 @@ const api = {
     async fetchAbout() {
         const cacheKey = 'about';
         const cached = this.cache.get(cacheKey);
-        
+
         try {
-            const res = await fetch(`${CONFIG.API_URL}/api/abouts`);
-            if (res.ok) {
-                const aboutData = await res.json();
-                if (aboutData.data && aboutData.data.length > 0) {
-                    const item = aboutData.data[0].attributes || aboutData.data[0];
+            const aboutData = await this._fetchJson('/api/abouts');
+            if (aboutData) {
+                const aboutItems = Array.isArray(aboutData.data) ? aboutData.data : [aboutData.data].filter(Boolean);
+                if (aboutItems.length > 0) {
+                    const item = this._getItem(aboutItems[0]);
                     const data = { title: item.title, content: item.content };
                     if (cached && this._hash(cached) === this._hash(data)) return cached;
                     this.cache.set(cacheKey, data);
@@ -113,11 +149,19 @@ const api = {
             return cached || { title: "", content: "" };
         }
     },
-    
+
     async fetchFeedItems(filterType) {
-        let works = await this.fetchWorks();
-        let articles = await this.fetchArticles();
-        if (filterType === 'recommend') return [...works].sort((a, b) => b.spend - a.spend).slice(0, 3).concat(articles);
+        const [worksResult, articlesResult] = await Promise.allSettled([
+            this.fetchWorks(),
+            this.fetchArticles()
+        ]);
+
+        const works = worksResult.status === 'fulfilled' ? worksResult.value : (this.cache.get('works') || db.works);
+        const articles = articlesResult.status === 'fulfilled' ? articlesResult.value : (this.cache.get('articles') || db.articles);
+
+        if (filterType === 'recommend') {
+            return [...works].sort((a, b) => b.spend - a.spend).slice(0, 3).concat(articles);
+        }
         if (filterType === 'high-spend') return [...works].sort((a, b) => b.spend - a.spend);
         if (filterType === 'article') return articles;
         return works.filter(w => w.type === filterType);

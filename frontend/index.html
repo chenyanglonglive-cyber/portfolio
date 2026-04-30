@@ -216,11 +216,16 @@
             return item.type === 'video' ? { icon: svgIcons.play, text: '视频作品' } : { icon: svgIcons.image, text: '图片素材' };
         }
 
+        function detailHref(page, id) {
+            const suffix = window.location.protocol === 'file:' ? '.html' : '';
+            return `${page}${suffix}?id=${id}`;
+        }
+
         function renderHomeItem(item, index) {
             const isArticle = item.spend === undefined;
             const cover = item.coverUrl ? `background-image:url('${item.coverUrl}')` : `background:linear-gradient(135deg, rgba(139,92,246,0.3), rgba(255,77,79,0.15))`;
             const tl = typeLabel(item);
-            return `<a href="${isArticle ? `article-detail?id=${item.id}` : `portfolio-detail?id=${item.id}`}" class="rico-card group">
+            return `<a href="${isArticle ? detailHref('article-detail', item.id) : detailHref('portfolio-detail', item.id)}" class="rico-card group">
                 <div class="card-thumb" style="${cover}"></div>
                 <div class="card-body">
                     <div><div class="card-type">${tl.icon} ${tl.text}</div><h3 class="card-title">${item.title}</h3></div>
@@ -238,10 +243,14 @@
         }
 
         async function loadFeed() {
-            const items = await api.fetchFeedItems(currentFilter);
             const feedContainer = document.getElementById('feed-container');
-            if (items.length > 0) renderToFeed(items);
-            else if (feedContainer) feedContainer.innerHTML = '<div class="text-center py-10 text-textmuted">没有找到相关数据</div>';
+            try {
+                const items = await api.fetchFeedItems(currentFilter);
+                if (items.length > 0) renderToFeed(items);
+                else if (feedContainer) feedContainer.innerHTML = '<div class="text-center py-10 text-textmuted">没有找到相关数据</div>';
+            } catch (error) {
+                if (feedContainer) feedContainer.innerHTML = '<div class="text-center py-10 text-textmuted">数据加载失败，请稍后刷新</div>';
+            }
         }
 
         window.setFeedFilter = function (filter) {
