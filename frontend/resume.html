@@ -14,9 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: '#6366f1',
-                        textmain: '#1c1917',
-                        textmuted: '#78716c',
+                        brand: '#c246ff',
+                        textmain: '#f8f2ff',
+                        textmuted: '#aaa3b7',
                     }
                 }
             }
@@ -24,19 +24,14 @@
     </script>
 </head>
 
-<body class="antialiased selection:bg-brand selection:text-white pb-24">
-
-    <!-- Main Content Area -->
-    <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
-        
-        <div class="mb-8 p-4 bg-white rounded-2xl shadow-sm text-sm text-textmuted border-l-4 border-brand fade-in">
-            <strong class="text-textmain">这是全模块化设计的数字简历。</strong> 摒弃了传统的静态排版，采用数据可视化（雷达图）直观展现核心技能。
+<body class="antialiased selection:bg-brand selection:text-white pb-16">
+    <main id="app-content" class="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
+        <div class="cyber-frame mb-8 p-4 text-sm text-textmuted fade-in">
+            <strong class="cyber-title text-base mr-2">// DIGITAL RESUME</strong>
+            模块化简历面板，用数据、项目和工具能力展示完整创意链路。
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="resume-container">
-            <!-- 容器通过 JS 渲染 -->
-        </div>
-
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="resume-container"></div>
     </main>
 
     <script src="js/api.js"></script>
@@ -44,110 +39,103 @@
     <script>
         function renderResume() {
             const container = document.getElementById('resume-container');
-            if (!container) return; // 防护：防止在局部加载时由于 DOM 还没到位导致的报错
+            if (!container) return;
             container.innerHTML = `
-                <div class="lg:col-span-1 space-y-8">
+                <div class="lg:col-span-1 space-y-6">
                     <div class="rico-card p-6 fade-in">
-                        <h3 class="text-lg font-bold border-b pb-2 mb-4">基本信息</h3>
+                        <h3 class="cyber-title text-lg mb-5">› PLAYER CARD</h3>
                         <div class="text-center mb-6">
-                            <div class="w-24 h-24 mx-auto rounded-full bg-stone-200 mb-3 flex items-center justify-center text-3xl">🧑‍💻</div>
-                            <h2 class="text-xl font-bold">${db.profile.name || '...'}</h2>
-                            <p class="text-sm text-textmuted">${db.profile.title || '...'}</p>
+                            <div class="w-28 h-28 mx-auto rounded-md bg-gradient-to-br from-[#ff465a] to-[#c246ff] p-[1px] mb-4">
+                                <div class="w-full h-full rounded-md bg-[#090915] flex items-center justify-center text-4xl font-black">${(db.profile.name || '王').charAt(0)}</div>
+                            </div>
+                            <h2 class="text-3xl font-black">${db.profile.name || '...'}</h2>
+                            <p class="text-sm text-textmuted mt-2">${db.profile.title || '...'}</p>
                         </div>
                         <div class="space-y-3 text-sm">
-                            <div class="flex justify-between"><span class="text-textmuted">期望职位</span><span class="font-medium">${db.profile.intention.role || '...'}</span></div>
-                            <div class="flex justify-between"><span class="text-textmuted">期望薪资</span><span class="font-medium text-brand">${db.profile.intention.salary || '...'}</span></div>
-                            <div class="flex justify-between"><span class="text-textmuted">所在城市</span><span class="font-medium">${db.profile.intention.city || '...'}</span></div>
-                            <div class="flex justify-between"><span class="text-textmuted">联系邮箱</span><span class="font-medium">${db.profile.contact || '...'}</span></div>
+                            <div class="flex justify-between gap-4"><span class="text-textmuted">期望职位</span><span class="font-bold text-right">${db.profile.intention.role || '...'}</span></div>
+                            <div class="flex justify-between gap-4"><span class="text-textmuted">期望薪资</span><span class="font-bold text-brand">${db.profile.intention.salary || '...'}</span></div>
+                            <div class="flex justify-between gap-4"><span class="text-textmuted">所在城市</span><span class="font-bold">${db.profile.intention.city || '...'}</span></div>
+                            <div class="flex justify-between gap-4"><span class="text-textmuted">联系邮箱</span><span class="font-bold text-right">${db.profile.contact || '...'}</span></div>
                         </div>
-
-                        <button onclick="openContactModal()" class="mt-6 w-full bg-gradient-to-r from-brand to-indigo-500 hover:from-indigo-600 text-white font-bold py-3.5 px-6 rounded-xl transition-all hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2">
-                            <span class="text-xl">🔓</span> 解锁该英雄
+                        <button onclick="openContactModal()" class="cyber-button mt-6 w-full font-bold py-3.5 px-6 rounded-md transition-all flex items-center justify-center gap-2">
+                            <span>🔓</span> 解锁联系方式
                         </button>
                     </div>
 
                     <div class="rico-card p-6 fade-in" style="animation-delay: 0.1s;">
-                        <h3 class="text-lg font-bold border-b pb-2 mb-4">能力维度图</h3>
+                        <h3 class="cyber-title text-lg mb-5">// ABILITY RADAR</h3>
                         <div class="chart-container w-full max-w-sm mx-auto relative h-64 max-h-64">
                             <canvas id="skillsChart"></canvas>
                         </div>
                     </div>
 
                     <div class="rico-card p-6 fade-in" style="animation-delay: 0.2s;">
-                        <h3 class="text-lg font-bold border-b pb-2 mb-4">生产力工具</h3>
+                        <h3 class="cyber-title text-lg mb-5">// TOOL KIT</h3>
                         <div class="grid grid-cols-3 gap-3">
                             ${db.profile.software.length ? db.profile.software.map(s => `
-                                <div class="aspect-square bg-stone-50 rounded-xl flex flex-col items-center justify-center p-2 hover:bg-stone-100 transition-colors border border-stone-100 shadow-sm hover:shadow-md">
-                                    <div class="mb-2 transition-transform hover:scale-110">${s.icon}</div>
-                                    <span class="text-xs font-bold text-stone-600">${s.name}</span>
+                                <div class="cyber-frame aspect-square flex flex-col items-center justify-center p-2">
+                                    <div class="mb-2">${s.icon}</div>
+                                    <span class="text-xs font-bold text-textmuted">${s.name}</span>
                                 </div>
-                            `).join('') : '<div class="col-span-3 text-center py-4 text-stone-300">通过后加载数据...</div>'}
+                            `).join('') : '<div class="col-span-3 text-center py-4 text-textmuted">正在加载工具数据...</div>'}
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-2 space-y-8">
-                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.05s;">
-                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2" id="bio-title">📝 ${db.profile.bio_title || '个人介绍'}</h3>
-                        <div class="text-stone-600 leading-relaxed text-justify" id="bio-content">
-                            ${db.profile.bio_html || `
-                                <div class="animate-pulse space-y-3 py-1">
-                                    <div class="h-4 bg-stone-100 rounded w-full"></div>
-                                    <div class="h-4 bg-stone-100 rounded w-5/6"></div>
-                                    <div class="h-4 bg-stone-100 rounded w-full"></div>
-                                    <div class="h-4 bg-stone-100 rounded w-3/4"></div>
-                                </div>
-                            `}
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="rico-card p-7 fade-in" style="animation-delay: 0.05s;">
+                        <h3 class="cyber-title text-xl mb-5" id="bio-title">// ${db.profile.bio_title || '核心优势'}</h3>
+                        <div class="text-textmuted leading-8 text-justify" id="bio-content">
+                            ${db.profile.bio_html || `<p>${db.profile.bio || '正在加载个人介绍...'}</p>`}
                         </div>
                     </div>
 
-                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.1s;">
-                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">🚀 核心专项项目</h3>
-                        <div class="border-l-2 border-stone-200 ml-3 space-y-8">
+                    <div class="rico-card p-7 fade-in" style="animation-delay: 0.1s;">
+                        <h3 class="cyber-title text-xl mb-6">// CORE PROJECTS</h3>
+                        <div class="space-y-6">
                             ${db.profile.projects.length ? db.profile.projects.map(p => `
-                                <div class="relative pl-6">
-                                    <div class="absolute w-3 h-3 bg-orange-500 rounded-full -left-[7px] top-1.5 border-2 border-white"></div>
-                                    <div class="text-sm font-mono text-orange-600 mb-1">${p.time}</div>
-                                    <h4 class="text-lg font-bold text-textmain">${p.name}</h4>
-                                    <p class="mt-2 text-stone-600 leading-relaxed">${p.desc}</p>
+                                <div class="relative pl-6 border-l border-[#ff465a]/45">
+                                    <div class="absolute w-3 h-3 bg-[#ff465a] -left-[7px] top-1.5 shadow-[0_0_14px_rgba(255,70,90,.75)]"></div>
+                                    <div class="text-sm font-mono text-brand mb-1">${p.time}</div>
+                                    <h4 class="text-xl font-black text-textmain">${p.name}</h4>
+                                    <p class="mt-2 text-textmuted leading-7">${p.desc}</p>
                                 </div>
-                            `).join('') : '<div class="pl-6 text-stone-400">正在异步同步中...</div>'}
+                            `).join('') : '<div class="text-textmuted">正在同步项目数据...</div>'}
                         </div>
                     </div>
 
-                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.2s;">
-                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">💼 工作经历</h3>
-                        <div class="border-l-2 border-stone-200 ml-3 space-y-8">
+                    <div class="rico-card p-7 fade-in" style="animation-delay: 0.2s;">
+                        <h3 class="cyber-title text-xl mb-6">// WORK EXPERIENCE</h3>
+                        <div class="space-y-6">
                             ${db.profile.workExp.length ? db.profile.workExp.map(w => `
-                                <div class="relative pl-6">
-                                    <div class="absolute w-3 h-3 bg-brand rounded-full -left-[7px] top-1.5 border-2 border-white"></div>
+                                <div class="relative pl-6 border-l border-[#c246ff]/45">
+                                    <div class="absolute w-3 h-3 bg-[#c246ff] -left-[7px] top-1.5 shadow-[0_0_14px_rgba(194,70,255,.75)]"></div>
                                     <div class="text-sm font-mono text-brand mb-1">${w.time}</div>
-                                    <h4 class="text-lg font-bold text-textmain">${w.company} <span class="text-textmuted font-normal text-base ml-2">| ${w.role}</span></h4>
-                                    <p class="mt-2 text-stone-600 leading-relaxed">${w.desc}</p>
+                                    <h4 class="text-xl font-black text-textmain">${w.company} <span class="text-textmuted font-normal text-base ml-2">| ${w.role}</span></h4>
+                                    <p class="mt-2 text-textmuted leading-7">${w.desc}</p>
                                 </div>
-                            `).join('') : '<div class="pl-6 text-stone-400">正在异步同步中...</div>'}
+                            `).join('') : '<div class="text-textmuted">正在同步工作经历...</div>'}
                         </div>
                     </div>
 
-                    <div class="rico-card p-8 fade-in" style="animation-delay: 0.3s;">
-                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">🎓 教育经历</h3>
+                    <div class="rico-card p-7 fade-in" style="animation-delay: 0.3s;">
+                        <h3 class="cyber-title text-xl mb-6">// EDUCATION</h3>
                         ${db.profile.edu.length ? db.profile.edu.map(e => `
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-stone-50 p-4 rounded-xl border border-stone-100">
+                            <div class="cyber-frame p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
                                 <div>
-                                    <h4 class="text-lg font-bold text-textmain">${e.school}</h4>
+                                    <h4 class="text-xl font-black text-textmain">${e.school}</h4>
                                     <p class="text-textmuted">${e.major} · ${e.degree}</p>
                                 </div>
-                                <div class="mt-2 sm:mt-0 text-right">
+                                <div class="mt-2 sm:mt-0 sm:text-right">
                                     <div class="text-sm font-mono text-textmuted">${e.time}</div>
-                                    <div class="text-sm font-medium text-brand mt-1">🏅 ${e.honor}</div>
+                                    <div class="text-sm font-bold text-brand mt-1">🏆 ${e.honor}</div>
                                 </div>
                             </div>
-                        `).join('') : '<div class="text-center text-stone-400">正在异步同步中...</div>'}
+                        `).join('') : '<div class="text-textmuted">正在同步教育经历...</div>'}
                     </div>
                 </div>
             `;
 
-            // 画雷达图
             const ctx = document.getElementById('skillsChart');
             if (ctx && db.profile.skills.labels.length) {
                 new Chart(ctx, {
@@ -157,10 +145,10 @@
                         datasets: [{
                             label: '能力维度',
                             data: db.profile.skills.values,
-                            backgroundColor: 'rgba(79, 70, 229, 0.2)',
-                            borderColor: '#4f46e5',
-                            pointBackgroundColor: '#4f46e5',
-                            pointBorderColor: '#fff',
+                            backgroundColor: 'rgba(194, 70, 255, 0.2)',
+                            borderColor: '#c246ff',
+                            pointBackgroundColor: '#ff465a',
+                            pointBorderColor: '#f8f2ff',
                             borderWidth: 2,
                         }]
                     },
@@ -168,8 +156,9 @@
                         maintainAspectRatio: false,
                         scales: {
                             r: {
-                                grid: { color: 'rgba(0,0,0,0.05)' },
-                                pointLabels: { font: { size: 12 }, color: '#78716c' },
+                                grid: { color: 'rgba(194,70,255,0.22)' },
+                                angleLines: { color: 'rgba(255,70,90,0.18)' },
+                                pointLabels: { font: { size: 12 }, color: '#f8f2ff' },
                                 ticks: { display: false, min: 0, max: 100 }
                             }
                         },
@@ -179,30 +168,27 @@
             }
         }
 
-        window.initPage = function() {
-            // 1. 尝试从缓存加载
+        window.initPage = function () {
             const cachedBio = localStorage.getItem('resume_bio_cache');
             if (cachedBio) {
                 try {
                     const data = JSON.parse(cachedBio);
                     db.profile.bio_title = data.title;
                     db.profile.bio_html = data.html;
-                } catch(e) {}
+                } catch (e) {}
             }
 
-            // 2. 初始渲染
             renderResume();
-            
-            // 3. 异步拉取最新数据
+
             api.fetchAbout().then(bioData => {
                 if (bioData) {
                     const html = renderBlocks(bioData.content);
-                    if (db.profile.bio_html !== html || db.profile.bio_title !== bioData.title) {
+                    if (html && (db.profile.bio_html !== html || db.profile.bio_title !== bioData.title)) {
                         db.profile.bio_title = bioData.title;
                         db.profile.bio_html = html;
                         const titleEl = document.getElementById('bio-title');
                         const contentEl = document.getElementById('bio-content');
-                        if (titleEl) titleEl.innerText = `📝 ${bioData.title}`;
+                        if (titleEl) titleEl.innerText = `// ${bioData.title}`;
                         if (contentEl) {
                             contentEl.classList.add('fade-in');
                             contentEl.innerHTML = html;

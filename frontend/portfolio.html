@@ -28,8 +28,8 @@
     <!-- Main Content Area -->
     <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
         
-        <div class="mb-8 p-4 bg-white rounded-2xl shadow-sm text-sm text-textmuted border-l-4 border-brand fade-in">
-            <strong class="text-textmain">这是数据驱动的实战案例库。</strong> 所有的素材和创意最终都要向投放数据负责。
+        <div class="cyber-frame mb-8 p-4 text-sm text-textmuted fade-in">
+            <strong class="cyber-title text-base mr-2">// WORK DATABASE</strong> 这是数据驱动的实战案例库，所有素材和创意最终都要向投放数据负责。
         </div>
 
         <section class="fade-in">
@@ -37,9 +37,9 @@
                 <h1 class="text-3xl font-black text-textmain">实战作品集</h1>
                 
                 <div class="flex space-x-2">
-                    <button onclick="setPortfolioFilter('all')" data-filter="all" class="portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-textmain text-white">全部</button>
-                    <button onclick="setPortfolioFilter('video')" data-filter="video" class="portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-textmuted border border-stone-200 hover:border-textmain hover:text-textmain">视频素材</button>
-                    <button onclick="setPortfolioFilter('image')" data-filter="image" class="portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-textmuted border border-stone-200 hover:border-textmain hover:text-textmain">静态图片</button>
+                    <button onclick="setPortfolioFilter('all')" data-filter="all" class="portfolio-filter-btn filter-active px-4 py-2 rounded-md text-sm font-bold transition-colors border">全部</button>
+                    <button onclick="setPortfolioFilter('video')" data-filter="video" class="portfolio-filter-btn px-4 py-2 rounded-md text-sm font-bold transition-colors border text-textmuted">视频素材</button>
+                    <button onclick="setPortfolioFilter('image')" data-filter="image" class="portfolio-filter-btn px-4 py-2 rounded-md text-sm font-bold transition-colors border text-textmuted">静态图片</button>
                 </div>
             </div>
 
@@ -76,9 +76,9 @@
             currentFilter = filter;
             document.querySelectorAll('.portfolio-filter-btn').forEach(btn => {
                 if (btn.dataset.filter === filter) {
-                    btn.className = "portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-textmain text-white";
+                    btn.className = "portfolio-filter-btn filter-active px-4 py-2 rounded-md text-sm font-bold transition-colors border";
                 } else {
-                    btn.className = "portfolio-filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-textmuted border border-stone-200 hover:border-textmain hover:text-textmain";
+                    btn.className = "portfolio-filter-btn px-4 py-2 rounded-md text-sm font-bold transition-colors border text-textmuted";
                 }
             });
             loadPortfolio();

@@ -28,8 +28,8 @@
     <!-- Main Content Area -->
     <main id="app-content" class="pt-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
 
-        <div class="mb-8 p-4 bg-white rounded-2xl shadow-sm text-sm text-textmuted border-l-4 border-brand fade-in">
-            <strong class="text-textmain">这里沉淀了深入的行业认知。</strong> 纯图文格式的深度文章列表。
+        <div class="cyber-frame mb-8 p-4 text-sm text-textmuted fade-in">
+            <strong class="cyber-title text-base mr-2">// INSIGHT LOG</strong> 这里沉淀了深入的行业认知和项目复盘。
         </div>
 
         <section class="fade-in max-w-4xl mx-auto">
@@ -58,15 +58,15 @@
             }
 
             container.innerHTML = articles.map(a => `
-                <a href="article-detail.html?id=${a.id}" class="rico-card block p-6 md:p-8 hover:border-brand border border-transparent transition-colors cursor-pointer flex flex-col md:flex-row gap-6">
-                    <div class="w-full md:w-1/3 h-40 bg-stone-100 rounded-xl flex items-center justify-center text-3xl shrink-0">
+                <a href="article-detail.html?id=${a.id}" class="rico-card block p-6 md:p-8 transition-colors cursor-pointer flex flex-col md:flex-row gap-6">
+                    <div class="w-full md:w-1/3 h-40 bg-stone-100 rounded-md flex items-center justify-center text-3xl shrink-0">
                         📰
                     </div>
                     <div class="flex-1 flex flex-col justify-center">
                         <div class="text-sm text-textmuted mb-2 font-mono">${a.date}</div>
                         <h2 class="text-2xl font-bold text-textmain mb-3 line-clamp-2">${a.title}</h2>
                         <p class="text-stone-600 line-clamp-2">${a.summary}</p>
-                        <div class="mt-4 text-brand font-medium">开始阅读 →</div>
+                        <div class="mt-4 text-brand font-bold">开始阅读 →</div>
                     </div>
                 </a>
             `).join('');

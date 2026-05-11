@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1500" viewBox="0 0 1440 1500" role="img" aria-label="简历 Shiro inspired visual mockup">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbfaf7"/>
+      <stop offset="1" stop-color="#f8fbff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#64748b" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .text { fill: #202332; font-family: Inter, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif; }
+      .muted { fill: #717786; font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif; }
+      .faint { fill: #9aa3b2; font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif; }
+      .accent { fill: #3b82f6; }
+      .nav { font-size: 17px; font-weight: 650; }
+      .h1 { font-size: 56px; font-weight: 760; }
+      .h2 { font-size: 30px; font-weight: 740; }
+      .h3 { font-size: 22px; font-weight: 740; }
+      .body { font-size: 21px; }
+      .small { font-size: 17px; }
+      .label { font-size: 15px; font-weight: 760; }
+      .card { fill: rgba(255,255,255,.78); stroke: #e6e9ef; filter: url(#shadow); }
+      .line { stroke: #e6e9ef; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="1500" fill="url(#bg)"/>
+  <circle cx="1184" cy="280" r="260" fill="#dbeafe" opacity=".25"/>
+  <circle cx="260" cy="1180" r="300" fill="#f5f3ff" opacity=".35"/>
+
+  <rect x="104" y="34" width="1232" height="74" rx="37" fill="rgba(255,255,255,.72)" stroke="#e8ebf1"/>
+  <circle cx="147" cy="71" r="23" fill="#202332"/>
+  <text x="181" y="79" class="text nav">王晨阳</text>
+  <text x="908" y="78" class="muted nav">首页</text>
+  <text x="983" y="78" class="accent nav">简历</text>
+  <rect x="977" y="91" width="43" height="3" rx="1.5" fill="#3b82f6"/>
+  <text x="1058" y="78" class="muted nav">作品</text>
+  <rect x="1184" y="48" width="111" height="46" rx="23" fill="#202332"/>
+  <text x="1214" y="78" fill="#fff" font-size="16" font-weight="700" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif">联系我</text>
+
+  <g transform="translate(142 178)">
+    <rect class="card" x="0" y="0" width="1156" height="276" rx="34"/>
+    <circle cx="110" cy="112" r="58" fill="#dbeafe" stroke="#d7e4f6"/>
+    <circle cx="110" cy="98" r="19" fill="#202332" opacity=".86"/>
+    <path d="M72 150 C88 124, 132 124, 148 150" fill="#202332" opacity=".86"/>
+    <text x="206" y="84" class="faint label">Resume / Creative Growth</text>
+    <text x="206" y="150" class="text h1">王晨阳</text>
+    <text x="206" y="196" class="muted body">资深广告创意设计师 / AI 工作流负责人</text>
+    <text x="206" y="236" class="muted small">北京 · 459361040@qq.com · 9 年广告设计与买量创意经验</text>
+    <rect x="872" y="78" width="190" height="56" rx="28" fill="#202332"/>
+    <text x="915" y="114" fill="#fff" font-size="18" font-weight="760" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif">下载 PDF</text>
+  </g>
+
+  <g transform="translate(142 526)">
+    <rect class="card" x="0" y="0" width="356" height="322" rx="30"/>
+    <text x="26" y="48" class="text h2">技能矩阵</text>
+    <g transform="translate(26 86)">
+      <text x="0" y="0" class="muted small">创意策划</text><rect x="0" y="18" width="304" height="8" rx="4" fill="#edf2f7"/><rect x="0" y="18" width="282" height="8" rx="4" fill="#3b82f6"/>
+      <text x="0" y="64" class="muted small">AI 生图/视频</text><rect x="0" y="82" width="304" height="8" rx="4" fill="#edf2f7"/><rect x="0" y="82" width="292" height="8" rx="4" fill="#3b82f6"/>
+      <text x="0" y="128" class="muted small">投放数据分析</text><rect x="0" y="146" width="304" height="8" rx="4" fill="#edf2f7"/><rect x="0" y="146" width="262" height="8" rx="4" fill="#3b82f6"/>
+      <text x="0" y="192" class="muted small">合成剪辑</text><rect x="0" y="210" width="304" height="8" rx="4" fill="#edf2f7"/><rect x="0" y="210" width="274" height="8" rx="4" fill="#3b82f6"/>
+    </g>
+  </g>
+
+  <g transform="translate(542 526)">
+    <rect class="card" x="0" y="0" width="756" height="322" rx="30"/>
+    <text x="30" y="48" class="text h2">个人简介</text>
+    <text x="30" y="96" class="muted body">拥有 9 年买量广告创意背景，从动画专业毕业进阶为企业级 AI 发展负责人。</text>
+    <text x="30" y="136" class="muted body">擅长将 IP 沉淀、投放数据与现代买量策略结合，创造百万级消耗素材。</text>
+    <text x="30" y="176" class="muted body">主导 AI 视频工作流搭建、团队培训和创意生产流程优化。</text>
+    <g transform="translate(30 226)">
+      <rect x="0" y="0" width="116" height="42" rx="21" fill="#eff6ff" stroke="#d7e8ff"/><text x="27" y="27" class="accent label">爆款素材</text>
+      <rect x="132" y="0" width="142" height="42" rx="21" fill="#f8fafc" stroke="#e6e9ef"/><text x="158" y="27" class="muted label">AI 工作流</text>
+      <rect x="290" y="0" width="132" height="42" rx="21" fill="#f8fafc" stroke="#e6e9ef"/><text x="316" y="27" class="muted label">数据复盘</text>
+    </g>
+  </g>
+
+  <g transform="translate(142 918)">
+    <rect class="card" x="0" y="0" width="1156" height="396" rx="30"/>
+    <text x="30" y="52" class="text h2">核心项目</text>
+    <line x1="48" y1="96" x2="48" y2="336" class="line"/>
+    <circle cx="48" cy="126" r="7" fill="#3b82f6"/>
+    <text x="78" y="120" class="accent label">2024.10</text>
+    <text x="78" y="154" class="text h3">《雷霆战机》10 周年品牌焕新买量</text>
+    <text x="78" y="188" class="muted small">主导情怀向策略，抖音消耗 510 万+，沉淀多条 10W+ 爆款素材。</text>
+    <circle cx="48" cy="236" r="7" fill="#3b82f6"/>
+    <text x="78" y="230" class="accent label">2025.01</text>
+    <text x="78" y="264" class="text h3">公司级 AI 提效体系搭建</text>
+    <text x="78" y="298" class="muted small">设计视频制作全流程 AI 工作流，输出培训文档并推动团队落地。</text>
+  </g>
+
+  <g transform="translate(142 1360)">
+    <text x="0" y="0" class="faint small">工作经历 · 北京爱乐游 / 买量视频创意 / AI 发展负责人</text>
+    <text x="0" y="38" class="faint small">教育经历 · 成都大学 动画 本科</text>
+  </g>
+</svg>

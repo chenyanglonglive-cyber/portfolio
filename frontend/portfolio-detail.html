@@ -95,40 +95,40 @@
                     <!-- Right: Data Panel & Document -->
                     <div class="flex-1 w-full flex flex-col min-w-[280px]">
                         <!-- Data Panel -->
-                        <h3 class="text-xl font-bold mb-4">投放核心数据面板</h3>
+                        <h3 class="cyber-title text-xl mb-4">// DATA PANEL</h3>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-100 flex flex-col justify-center items-center text-center transition-transform hover:scale-105">
+                            <div class="cyber-frame p-4 flex flex-col justify-center items-center text-center transition-transform hover:scale-105">
                                 <span class="text-stone-400 text-sm font-medium mb-1">累计消耗</span>
                                 <span class="text-2xl font-black text-red-500">¥${formatMoney(work.spend)}</span>
                             </div>
-                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-100 flex flex-col justify-center items-center text-center transition-transform hover:scale-105">
+                            <div class="cyber-frame p-4 flex flex-col justify-center items-center text-center transition-transform hover:scale-105">
                                 <span class="text-stone-400 text-sm font-medium mb-1">7日 ROI</span>
                                 <span class="text-2xl font-black text-brand">${work.roi}</span>
                             </div>
-                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-100 flex flex-col justify-center items-center text-center transition-transform hover:scale-105">
+                            <div class="cyber-frame p-4 flex flex-col justify-center items-center text-center transition-transform hover:scale-105">
                                 <span class="text-stone-400 text-sm font-medium mb-1">点击率 (CTR)</span>
                                 <span class="text-xl font-bold text-textmain">${work.ctr}</span>
                             </div>
-                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-100 flex flex-col justify-center items-center text-center transition-transform hover:scale-105">
+                            <div class="cyber-frame p-4 flex flex-col justify-center items-center text-center transition-transform hover:scale-105">
                                 <span class="text-stone-400 text-sm font-medium mb-1">点击付费率</span>
                                 <span class="text-xl font-bold text-textmain">${work.cvr}</span>
                             </div>
                         </div>
                         <div class="mt-4 flex flex-wrap gap-2">
-                            <span class="px-3 py-1 bg-brand/10 text-brand rounded-full text-sm font-medium">投放时间: ${work.launch_time}</span>
-                            <span class="px-3 py-1 bg-brand/10 text-brand rounded-full text-sm font-medium">平台: ${work.platform}</span>
-                            <span class="px-3 py-1 bg-brand/10 text-brand rounded-full text-sm font-medium">游戏: ${work.game}</span>
+                            <span class="cyber-tag text-sm">投放时间: ${work.launch_time}</span>
+                            <span class="cyber-tag text-sm">平台: ${work.platform}</span>
+                            <span class="cyber-tag text-sm">游戏: ${work.game}</span>
                         </div>
 
                         <!-- Feishu Document Embedding -->
                         <div class="mt-10 mb-8 fade-in" style="animation-delay: 0.1s;">
-                            <h3 class="text-xl font-bold mb-4 flex items-center justify-between">
+                            <h3 class="cyber-title text-xl mb-4 flex items-center justify-between">
                                 <span class="flex items-center gap-2">📝 创意与优化复盘</span>
                                 <a href="https://kcnfrhxvqucv.feishu.cn/wiki/QfjTwbez7irxKmkQWnjchwrYnVb" target="_blank" class="text-sm font-normal text-brand hover:underline flex items-center gap-1">
                                     在新标签页打开 ↗
                                 </a>
                             </h3>
-                            <div class="rico-card bg-stone-50 p-1 h-[700px] border border-stone-200 overflow-hidden relative">
+                            <div class="rico-card p-1 h-[700px] overflow-hidden relative">
                                 <!-- Loading placeholder -->
                                 <div class="absolute inset-0 flex flex-col items-center justify-center text-stone-400 z-0 bg-stone-50">
                                     <div class="animate-spin text-3xl mb-2">⏳</div>
