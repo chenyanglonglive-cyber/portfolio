@@ -468,7 +468,8 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content_link: Schema.Attribute.String;
+    Category: Schema.Attribute.String;
+    Content: Schema.Attribute.Blocks;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -478,10 +479,9 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
       'api::article.article'
     > &
       Schema.Attribute.Private;
-    publish_date: Schema.Attribute.Date;
     publishedAt: Schema.Attribute.DateTime;
-    summary: Schema.Attribute.Text;
-    title: Schema.Attribute.String;
+    Slug: Schema.Attribute.UID<'Title'>;
+    Title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -499,32 +499,28 @@ export interface ApiWorkWork extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    analysis: Schema.Attribute.String;
-    cover: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
+    Cover: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    ctr: Schema.Attribute.String;
-    cvr: Schema.Attribute.String;
-    feishu_url: Schema.Attribute.String;
-    game: Schema.Attribute.String;
-    launch_time: Schema.Attribute.Date;
+    CTR: Schema.Attribute.Decimal;
+    Description: Schema.Attribute.Text;
+    IsFeatured: Schema.Attribute.Boolean;
+    LaunchDate: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::work.work'> &
       Schema.Attribute.Private;
-    platform: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    roi: Schema.Attribute.Decimal;
-    spend: Schema.Attribute.Decimal;
-    title: Schema.Attribute.String;
-    type: Schema.Attribute.Enumeration<['video', 'image']>;
+    Rank: Schema.Attribute.Integer;
+    ROI_7D: Schema.Attribute.Decimal;
+    Spend: Schema.Attribute.BigInteger;
+    Story: Schema.Attribute.Text;
+    Title: Schema.Attribute.String;
+    Type: Schema.Attribute.Enumeration<['video', 'image']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    video_url: Schema.Attribute.String;
+    VideoURL: Schema.Attribute.String;
   };
 }
 

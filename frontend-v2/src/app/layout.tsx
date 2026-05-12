@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TopProgressBar from "@/components/TopProgressBar";
 import Navbar from "@/components/Navbar";
-import SakuraBackground from "@/components/SakuraBackground";
+import { StarBackground } from "@/components/StarBackground";
 import Socials from "@/components/Socials";
 import LoadingScreen from "@/components/LoadingScreen";
 import { Suspense } from "react";
@@ -24,7 +24,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <TopProgressBar />
         </Suspense>
-        <SakuraBackground />
+        <StarBackground />
         <Navbar />
         <main className="relative z-10 pt-32 pb-32 min-h-screen">
           {children}

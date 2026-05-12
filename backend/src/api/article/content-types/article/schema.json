@@ -11,16 +11,17 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
+    "Title": {
       "type": "string"
     },
-    "summary": {
-      "type": "text"
+    "Content": {
+      "type": "blocks"
     },
-    "publish_date": {
-      "type": "date"
+    "Slug": {
+      "type": "uid",
+      "targetField": "Title"
     },
-    "content_link": {
+    "Category": {
       "type": "string"
     }
   }

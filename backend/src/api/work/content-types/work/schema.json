@@ -11,28 +11,28 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
+    "Title": {
       "type": "string"
     },
-    "spend": {
+    "Spend": {
+      "type": "biginteger"
+    },
+    "ROI_7D": {
       "type": "decimal"
     },
-    "roi": {
-      "type": "decimal"
-    },
-    "ctr": {
-      "type": "string"
-    },
-    "type": {
+    "Type": {
       "type": "enumeration",
       "enum": [
         "video",
         "image"
       ]
     },
-    "cover": {
+    "VideoURL": {
+      "type": "string"
+    },
+    "Cover": {
       "type": "media",
-      "multiple": true,
+      "multiple": false,
       "allowedTypes": [
         "images",
         "files",
@@ -40,26 +40,23 @@
         "audios"
       ]
     },
-    "video_url": {
+    "Description": {
+      "type": "text"
+    },
+    "IsFeatured": {
+      "type": "boolean"
+    },
+    "Rank": {
+      "type": "integer"
+    },
+    "CTR": {
+      "type": "decimal"
+    },
+    "LaunchDate": {
       "type": "string"
     },
-    "feishu_url": {
-      "type": "string"
-    },
-    "analysis": {
-      "type": "string"
-    },
-    "cvr": {
-      "type": "string"
-    },
-    "launch_time": {
-      "type": "date"
-    },
-    "platform": {
-      "type": "string"
-    },
-    "game": {
-      "type": "string"
+    "Story": {
+      "type": "text"
     }
   }
 }
