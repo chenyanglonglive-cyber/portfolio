@@ -72,16 +72,16 @@
                     <h1 class="text-3xl md:text-5xl font-black text-textmain leading-tight">${article.title}</h1>
                 </div>
 
-                <div class="rico-card shadow-lg bg-stone-50 p-2 h-[800px] fade-in" style="animation-delay: 0.1s;">
-                    <div class="w-full h-full bg-white rounded-xl flex flex-col items-center justify-center text-stone-400 border border-stone-200">
+                <div class="rico-card p-2 h-[800px] fade-in" style="animation-delay: 0.1s;">
+                    <div class="w-full h-full bg-white rounded-md flex flex-col items-center justify-center text-stone-400 border border-stone-200">
                         <span class="text-4xl mb-3">📄</span>
                         <p class="font-medium text-lg text-stone-600">全屏文档阅读器</p>
-                        <a href="${article.content_link}" target="_blank" class="mt-4 px-6 py-2 bg-stone-800 text-white rounded hover:bg-black transition-colors">前往源地址阅读完整文章</a>
+                        <a href="${article.content_link}" target="_blank" class="mt-4 px-6 py-2 cyber-button rounded-md transition-colors">前往源地址阅读完整文章</a>
                     </div>
                 </div>
                 
                 <div class="mt-8 flex justify-center gap-4 fade-in" style="animation-delay: 0.2s;">
-                    <button class="px-6 py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-full font-medium transition-colors" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑ 返回顶部</button>
+                    <button class="px-6 py-2 cyber-button rounded-md font-bold transition-colors" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑ 返回顶部</button>
                 </div>
             `;
             document.title = `${article.title} - 洞察复盘`;
