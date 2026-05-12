@@ -20,10 +20,34 @@
     *   新增：`Slug` (UID, 基于 Title), `Category` (String)。
 *   **权限**：Public Find/FindOne 权限已开启。
 
-## 3. 待办事项 (Next Steps)
-1.  **lib/strapi.ts**：编写通用 fetcher 封装。
-2.  **Data Integration**：将页面中的 MOCK 数据替换为 `await getWorks()` 等真实请求。
-3.  **Media Assets**：将微信二维码放入 `public/wechat-qr.png`。
+## 3. 历史待办 (Old Next Steps)
+1.  **lib/strapi.ts**：编写通用 fetcher 封装。 (DONE)
+2.  **Data Integration**：将页面中的 MOCK 数据替换为真实请求。 (DONE)
 
 ---
-*记录人：Antigravity AI*
+
+# 🚀 2026-05-13 更新日志 (Latest Progress)
+
+## 1. 核心架构与部署 (COMPLETED)
+*   **部署模式**：**SSG (静态站点导出)**。使用 `next export` 实现了无服务器依赖的高性能静态发布。
+*   **正式域名**：已绑定并解析至 [wcyblog.space](https://wcyblog.space)。
+*   **自动化流**：确立了“本地 Strapi 修改 -> 本地 Build -> 推送 `out` 目录 -> Vercel 自动上线”的流程。
+*   **Clean URLs**：通过 `vercel.json` 实现了无 `.html` 后缀的优雅访问。
+
+## 2. 基础设施集成 (READY)
+*   **媒体存储 (Cloudflare R2)**：
+    - 已配置 Strapi AWS S3 适配器，所有上传资源自动分发至 R2。
+*   **内容管理 (Strapi 5)**：
+    - **Blocks 支持**：前端已集成 `@strapi/blocks-react-renderer`。
+    - **数据修正**：实现了数据缺失时的空值兜底逻辑（`|| 0`）。
+
+## 3. UI/UX 深度精修
+*   **导航栏 (Navbar)**：常规纯白文字，悬停“白底黑字”反转。
+*   **背景视觉**：星空粒子扩大至 4000px，完美覆盖 4K 大屏。
+*   **视频体验**：修复了自动播放限制，确保弹窗内视频顺畅加载。
+
+## 4. 维护与清理
+*   **冗余清理**：已彻底删除旧版 `frontend` 文件夹。
+
+---
+*记录人：Antigravity AI (Your Agentic Coding Assistant)*

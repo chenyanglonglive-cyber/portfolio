@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, BarChart3, PenTool, Play } from 'lucide-react';
 import { Work } from '@/types/work';
 
+import { getStrapiMedia } from '@/lib/strapi';
+
 interface WorkModalProps {
   work: Work | null;
   isOpen: boolean;
@@ -25,6 +27,9 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
   }, [isOpen]);
 
   if (!work) return null;
+
+  const coverUrl = getStrapiMedia(work.Cover?.url);
+  const videoUrl = getStrapiMedia(work.VideoURL);
 
   return (
     <AnimatePresence>
@@ -60,23 +65,25 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                 <div 
                   className="absolute inset-0 opacity-20 blur-3xl scale-110 pointer-events-none"
                   style={{ 
-                    backgroundImage: `url(${work.Cover?.url})`,
+                    backgroundImage: `url(${coverUrl})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center'
                   }}
                 />
                 
                 <div className="relative h-full w-full flex items-center justify-center z-10">
-                   {work.Type === 'video' && work.VideoURL ? (
+                   {work.Type === 'video' && videoUrl ? (
                      <video
-                        src={work.VideoURL}
+                        src={videoUrl}
                         controls
                         autoPlay
+                        muted
                         loop
+                        playsInline
                         className="max-h-full max-w-full object-contain shadow-2xl rounded-xl"
                      />
                    ) : (
-                     <img src={work.Cover.url} className="max-h-full max-w-full object-contain shadow-2xl rounded-xl" alt={work.Title} />
+                     <img src={coverUrl} className="max-h-full max-w-full object-contain shadow-2xl rounded-xl" alt={work.Title} />
                    )}
                 </div>
             </div>
@@ -104,15 +111,15 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                    <div className="grid grid-cols-3 gap-3">
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
                          <p className="text-[9px] text-zinc-500 uppercase mb-1">Spend</p>
-                         <p className="text-sm font-mono font-bold text-white">${work.Spend.toLocaleString()}</p>
+                         <p className="text-sm font-mono font-bold text-white">${(work.Spend || 0).toLocaleString()}</p>
                       </div>
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
                          <p className="text-[9px] text-zinc-500 uppercase mb-1">CTR</p>
-                         <p className="text-sm font-mono font-bold text-emerald-400">{work.CTR}%</p>
+                         <p className="text-sm font-mono font-bold text-emerald-400">{(work.CTR || 0)}%</p>
                       </div>
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
                          <p className="text-[9px] text-zinc-500 uppercase mb-1">ROI</p>
-                         <p className="text-sm font-mono font-bold text-emerald-400">{work.ROI_7D}</p>
+                         <p className="text-sm font-mono font-bold text-emerald-400">{(work.ROI_7D || 0)}</p>
                       </div>
                    </div>
                 </section>

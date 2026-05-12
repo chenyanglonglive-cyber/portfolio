@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Work } from '@/types/work';
 import { Play } from 'lucide-react';
+import { getStrapiMedia } from '@/lib/strapi';
 
 interface WorkCardProps {
   work: Work;
@@ -22,6 +23,9 @@ export default function WorkCard({ work }: WorkCardProps) {
     }
   }, [isHovered, work.Type]);
 
+  const coverUrl = getStrapiMedia(work.Cover?.url);
+  const videoUrl = getStrapiMedia(work.VideoURL);
+
   return (
     <motion.div
       className="relative overflow-hidden rounded-2xl bg-zinc-900/80 border border-white/5 group cursor-pointer"
@@ -36,7 +40,7 @@ export default function WorkCard({ work }: WorkCardProps) {
         <div
           className="absolute inset-0 opacity-40 blur-3xl scale-110 pointer-events-none"
           style={{
-            backgroundImage: `url(${work.Cover?.url || "https://picsum.photos/seed/placeholder/800/450"})`,
+            backgroundImage: `url(${coverUrl || "https://picsum.photos/seed/placeholder/800/450"})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
@@ -45,16 +49,16 @@ export default function WorkCard({ work }: WorkCardProps) {
         {/* 主体内容：9:16 居中盛满高度 */}
         <div className="relative h-full aspect-[9/16] z-10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
           <img
-            src={work.Cover?.url || "https://picsum.photos/seed/placeholder/800/1422"}
+            src={coverUrl || "https://picsum.photos/seed/placeholder/800/1422"}
             alt={work.Title}
-            className={`w-full h-full object-cover transition-opacity duration-500 ${isHovered && work.Type === 'video' && work.VideoURL ? 'opacity-0' : 'opacity-100'
+            className={`w-full h-full object-cover transition-opacity duration-500 ${isHovered && work.Type === 'video' && videoUrl ? 'opacity-0' : 'opacity-100'
               }`}
           />
 
-          {work.Type === 'video' && work.VideoURL && (
+          {work.Type === 'video' && videoUrl && (
             <video
               ref={videoRef}
-              src={work.VideoURL}
+              src={videoUrl}
               muted
               loop
               playsInline
@@ -75,12 +79,12 @@ export default function WorkCard({ work }: WorkCardProps) {
           <div className="flex justify-between items-end bg-black/60 p-3 rounded-xl border border-white/10 backdrop-blur-xl translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
             <div className="flex flex-col">
               <span className="text-zinc-400 text-[10px] uppercase font-bold tracking-widest">Spend</span>
-              <span className="text-white font-mono text-sm">${work.Spend.toLocaleString()}</span>
+              <span className="text-white font-mono text-sm">${(work.Spend || 0).toLocaleString()}</span>
             </div>
             <div className="flex flex-col items-end">
               <span className="text-zinc-400 text-[10px] uppercase font-bold tracking-widest">7D ROI</span>
-              <span className={`font-mono text-sm font-bold ${work.ROI_7D >= 1 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {work.ROI_7D.toFixed(2)}
+              <span className={`font-mono text-sm font-bold ${(work.ROI_7D || 0) >= 1 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {(work.ROI_7D || 0).toFixed(2)}
               </span>
             </div>
           </div>

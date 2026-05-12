@@ -23,12 +23,12 @@ export default function Navbar() {
           <a
             key={i}
             href={item.href}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
+            className="flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 group text-white hover:bg-white hover:text-black"
           >
-            <span className="text-zinc-500 group-hover:text-accent-teal dark:group-hover:text-accent-pink transition-colors">
+            <span className="text-white group-hover:text-black transition-colors">
               {item.icon}
             </span>
-            <span className="text-sm font-medium hidden md:inline">{item.label}</span>
+            <span className="text-sm font-bold hidden md:inline uppercase tracking-tight">{item.label}</span>
           </a>
         ))}
       </motion.div>

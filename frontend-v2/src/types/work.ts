@@ -9,6 +9,7 @@ export interface Work {
   VideoURL?: string;
   Spend: number;
   ROI_7D: number;
+  CTR: number;
   Description?: string;
   IsFeatured: boolean;
   Rank: number; // 用于权重干预排序

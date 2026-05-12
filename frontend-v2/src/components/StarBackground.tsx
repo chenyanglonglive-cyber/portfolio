@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 const generateStars = (count: number) => {
   let stars = "";
   for (let i = 0; i < count; i++) {
-    stars += `${Math.floor(Math.random() * 2000)}px ${Math.floor(Math.random() * 2000)}px #FFF${i < count - 1 ? ", " : ""}`;
+    stars += `${Math.floor(Math.random() * 4000)}px ${Math.floor(Math.random() * 4000)}px #FFF${i < count - 1 ? ", " : ""}`;
   }
   return stars;
 };
