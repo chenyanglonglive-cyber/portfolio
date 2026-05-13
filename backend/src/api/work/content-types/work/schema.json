@@ -27,17 +27,18 @@
         "image"
       ]
     },
-    "VideoURL": {
-      "type": "string"
+    "Video": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "videos"
+      ]
     },
     "Cover": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
+        "images"
       ]
     },
     "Description": {

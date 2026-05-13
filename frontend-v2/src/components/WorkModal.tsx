@@ -29,7 +29,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
   if (!work) return null;
 
   const coverUrl = getStrapiMedia(work.Cover?.url);
-  const videoUrl = getStrapiMedia(work.VideoURL);
+  const videoUrl = getStrapiMedia(work.Video?.url);
 
   return (
     <AnimatePresence>

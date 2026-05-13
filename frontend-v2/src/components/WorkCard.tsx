@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Work } from '@/types/work';
 import { Play } from 'lucide-react';
@@ -13,7 +13,49 @@ interface WorkCardProps {
 
 export default function WorkCard({ work }: WorkCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [generatedCover, setGeneratedCover] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const videoUrl = getStrapiMedia(work.Video?.url);
+  const coverUrl = getStrapiMedia(work.Cover?.url);
+
+  // 如果没有封面图，自动从视频首帧生成
+  const generateCoverFromVideo = useCallback(() => {
+    if (coverUrl || !videoUrl || generatedCover) return;
+
+    const tempVideo = document.createElement('video');
+    tempVideo.crossOrigin = 'anonymous';
+    tempVideo.src = videoUrl;
+    tempVideo.muted = true;
+    tempVideo.preload = 'metadata';
+
+    tempVideo.addEventListener('loadeddata', () => {
+      // 跳到第 0.1 秒，避免纯黑首帧
+      tempVideo.currentTime = 0.1;
+    });
+
+    tempVideo.addEventListener('seeked', () => {
+      const canvas = canvasRef.current || document.createElement('canvas');
+      canvas.width = tempVideo.videoWidth;
+      canvas.height = tempVideo.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setGeneratedCover(dataUrl);
+      }
+      // 清理临时视频元素
+      tempVideo.src = '';
+      tempVideo.load();
+    });
+  }, [coverUrl, videoUrl, generatedCover]);
+
+  useEffect(() => {
+    if (work.Type === 'video' && !coverUrl) {
+      generateCoverFromVideo();
+    }
+  }, [work.Type, coverUrl, generateCoverFromVideo]);
 
   useEffect(() => {
     if (isHovered && work.Type === 'video' && videoRef.current) {
@@ -24,8 +66,8 @@ export default function WorkCard({ work }: WorkCardProps) {
     }
   }, [isHovered, work.Type]);
 
-  const coverUrl = getStrapiMedia(work.Cover?.url);
-  const videoUrl = getStrapiMedia(work.VideoURL);
+  // 最终使用的封面：优先用 Strapi 上传的封面 > 自动生成的首帧 > 占位图
+  const displayCover = coverUrl || generatedCover || null;
 
   return (
     <motion.div
@@ -34,29 +76,40 @@ export default function WorkCard({ work }: WorkCardProps) {
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ y: -5, transition: { duration: 0.3 } }}
     >
+      {/* 隐藏的 canvas 用于生成首帧 */}
+      <canvas ref={canvasRef} className="hidden" />
+
       {/* 16:9 外部容器 */}
       <div className="aspect-video relative overflow-hidden bg-black flex items-center justify-center">
 
         {/* 背景：使用封面图的深度模糊版本，自动获取主色调 */}
-        <div
-          className="absolute inset-0 opacity-40 blur-3xl scale-110 pointer-events-none"
-          style={{
-            backgroundImage: `url(${coverUrl || "https://picsum.photos/seed/placeholder/800/450"})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        />
+        {displayCover && (
+          <div
+            className="absolute inset-0 opacity-40 blur-3xl scale-110 pointer-events-none"
+            style={{
+              backgroundImage: `url(${displayCover})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          />
+        )}
 
         {/* 主体内容：9:16 居中盛满高度 */}
         <div className="relative h-full aspect-[9/16] z-10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-          <Image
-            src={coverUrl || "https://picsum.photos/seed/placeholder/800/1422"}
-            alt={work.Title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className={`object-cover transition-opacity duration-500 ${isHovered && work.Type === 'video' && videoUrl ? 'opacity-0' : 'opacity-100'
-              }`}
-          />
+          {displayCover ? (
+            <Image
+              src={displayCover}
+              alt={work.Title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className={`object-cover transition-opacity duration-500 ${isHovered && work.Type === 'video' && videoUrl ? 'opacity-0' : 'opacity-100'
+                }`}
+              // 自动生成的 base64 图片不走 next/image 优化
+              unoptimized={!coverUrl}
+            />
+          ) : (
+            <div className="w-full h-full bg-zinc-800 animate-pulse" />
+          )}
 
           {work.Type === 'video' && videoUrl && (
             <video

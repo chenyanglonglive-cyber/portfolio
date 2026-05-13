@@ -3,10 +3,12 @@ export interface Work {
   documentId: string;
   Title: string;
   Type: 'video' | 'image';
-  Cover: {
+  Cover?: {
     url: string;
   };
-  VideoURL?: string;
+  Video?: {
+    url: string;
+  };
   Spend: number;
   ROI_7D: number;
   CTR: number;

@@ -499,7 +499,7 @@ export interface ApiWorkWork extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    Cover: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Cover: Schema.Attribute.Media<'images'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -520,7 +520,7 @@ export interface ApiWorkWork extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    VideoURL: Schema.Attribute.String;
+    Video: Schema.Attribute.Media<'videos'>;
   };
 }
 
