@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Architecture Visualization</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #09090b;
+      --fg: #f8fafc;
+      --accent: #34d399;
+      --zinc-800: #27272a;
+      --zinc-400: #a1a1aa;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      overflow: hidden;
+    }
+    [data-composition-id="root"] {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      background: radial-gradient(circle at center, #18181b 0%, #09090b 100%);
+    }
+
+    /* Grid Overlay */
+    .grid {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(var(--zinc-800) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.3;
+    }
+
+    .scene-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 80px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      position: absolute;
+      top: 60px;
+      left: 80px;
+    }
+    .header h1 {
+      font-size: 48px;
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+      font-style: italic;
+    }
+    .header .tag {
+      font-size: 14px;
+      color: var(--accent);
+      font-family: monospace;
+      letter-spacing: 0.2em;
+    }
+
+    /* Nodes */
+    .nodes-container {
+      position: relative;
+      width: 1400px;
+      height: 600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .node {
+      width: 240px;
+      height: 240px;
+      background: rgba(24, 24, 27, 0.8);
+      border: 1px solid var(--zinc-800);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+    .node .icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    .node .label {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .node .sub {
+      font-size: 14px;
+      color: var(--zinc-400);
+      margin-top: 4px;
+    }
+
+    /* SVG Lines */
+    svg.connections {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .conn-path {
+      stroke: var(--accent);
+      stroke-width: 2;
+      fill: none;
+      opacity: 0.2;
+    }
+    .conn-pulse {
+      stroke: var(--accent);
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 60px;
+      right: 80px;
+      text-align: right;
+    }
+    .footer p {
+      font-size: 16px;
+      color: var(--zinc-400);
+    }
+  </style>
+</head>
+<body>
+  <div data-composition-id="root" data-width="1920" data-height="1080">
+    <div class="grid"></div>
+
+    <div class="header">
+      <div class="tag">// INFRASTRUCTURE_MAP</div>
+      <h1 class="title">Wcy'Blog Architecture</h1>
+    </div>
+
+    <div class="scene-content">
+      <div class="nodes-container">
+        <!-- SVG Connections -->
+        <svg class="connections" viewBox="0 0 1400 600">
+          <!-- Main flow -->
+          <path id="flow1" class="conn-path" d="M 240 300 L 460 300" />
+          <path id="flow2" class="conn-path" d="M 700 300 L 920 300" />
+          <path id="flow3" class="conn-path" d="M 1160 300 L 1300 150" />
+          <path id="flow4" class="conn-path" d="M 1160 300 L 1300 450" />
+          
+          <!-- Pulses -->
+          <path id="pulse1" class="conn-pulse" d="M 240 300 L 460 300" />
+          <path id="pulse2" class="conn-pulse" d="M 700 300 L 920 300" />
+        </svg>
+
+        <div class="node" id="node-user">
+          <div class="icon">🌍</div>
+          <div class="label">User</div>
+          <div class="sub">Global Visitors</div>
+        </div>
+
+        <div class="node" id="node-vercel">
+          <div class="icon">▲</div>
+          <div class="label">Vercel</div>
+          <div class="sub">Next.js App</div>
+        </div>
+
+        <div class="node" id="node-strapi">
+          <div class="icon">🚀</div>
+          <div class="label">Strapi</div>
+          <div class="sub">Headless CMS</div>
+        </div>
+
+        <div class="nodes-stack" style="display:flex; flex-direction:column; gap: 40px;">
+          <div class="node" id="node-neon" style="height: 180px; width: 200px;">
+            <div class="icon" style="font-size: 48px;">💎</div>
+            <div class="label">Neon</div>
+            <div class="sub">Postgres DB</div>
+          </div>
+          <div class="node" id="node-r2" style="height: 180px; width: 200px;">
+            <div class="icon" style="font-size: 48px;">📦</div>
+            <div class="label">CF R2</div>
+            <div class="sub">Asset Storage</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Shiro Style Architecture Viz<br>© 2026 Wcy'Blog</p>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 1. Initial State
+      gsap.set(".node", { opacity: 0, scale: 0.8, y: 30 });
+      gsap.set(".header", { opacity: 0, x: -50 });
+      gsap.set(".footer", { opacity: 0, x: 50 });
+      gsap.set(".conn-path", { strokeDasharray: 500, strokeDashoffset: 500 });
+      gsap.set(".conn-pulse", { strokeDasharray: "10, 500", strokeDashoffset: 10, opacity: 0 });
+
+      // 2. Entrance Sequence
+      tl.to(".header", { opacity: 1, x: 0, duration: 0.8, ease: "expo.out" }, 0.5);
+      
+      const nodes = ["#node-user", "#node-vercel", "#node-strapi", "#node-neon", "#node-r2"];
+      nodes.forEach((node, i) => {
+        tl.to(node, { 
+          opacity: 1, 
+          scale: 1, 
+          y: 0, 
+          duration: 0.6, 
+          ease: "back.out(1.7)" 
+        }, 1 + (i * 0.2));
+      });
+
+      // 3. Connection Reveal
+      tl.to(".conn-path", { 
+        strokeDashoffset: 0, 
+        opacity: 0.4, 
+        duration: 1.5, 
+        ease: "power2.inOut",
+        stagger: 0.3
+      }, 2);
+
+      // 4. Data Pulses (Looping)
+      tl.to("#pulse1", {
+        strokeDashoffset: -500,
+        opacity: 1,
+        duration: 2,
+        repeat: 5,
+        ease: "none"
+      }, 3.5);
+      
+      tl.to("#pulse2", {
+        strokeDashoffset: -500,
+        opacity: 1,
+        duration: 2,
+        repeat: 5,
+        ease: "none"
+      }, 4);
+
+      tl.to(".footer", { opacity: 1, x: 0, duration: 0.8 }, 3);
+
+      window.__timelines["root"] = tl;
+    </script>
+  </div>
+</body>
+</html>

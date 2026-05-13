@@ -1,9 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Home, FileText, Briefcase, Clock, Zap, MoreHorizontal, User } from "lucide-react";
+import { Home, FileText, Briefcase, User } from "lucide-react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function Navbar() {
+  const pathname = usePathname();
+
   const navItems = [
     { icon: <Home size={18} />, label: "首页", href: "/" },
     { icon: <User size={18} />, label: "简历", href: "/resume" },
@@ -19,20 +23,26 @@ export default function Navbar() {
         transition={{ duration: 0.5 }}
         className="glass pill-nav flex items-center gap-1 sm:gap-2 overflow-hidden shadow-2xl"
       >
-        {navItems.map((item, i) => (
-          <a
-            key={i}
-            href={item.href}
-            className="flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 group text-white hover:bg-white hover:text-black"
-          >
-            <span className="text-white group-hover:text-black transition-colors">
-              {item.icon}
-            </span>
-            <span className="text-sm font-bold hidden md:inline uppercase tracking-tight">{item.label}</span>
-          </a>
-        ))}
+        {navItems.map((item, i) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={i}
+              href={item.href}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 group hover:bg-white hover:text-black ${
+                isActive ? "text-white" : "text-white/70"
+              }`}
+            >
+              <span className={`transition-colors group-hover:text-black ${
+                isActive ? "text-white" : "text-white/70"
+              }`}>
+                {item.icon}
+              </span>
+              <span className="text-sm font-bold hidden md:inline uppercase tracking-tight">{item.label}</span>
+            </Link>
+          );
+        })}
       </motion.div>
-      
     </nav>
   );
 }

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Work } from '@/types/work';
 import { Play } from 'lucide-react';
 import { getStrapiMedia } from '@/lib/strapi';
+import Image from 'next/image';
 
 interface WorkCardProps {
   work: Work;
@@ -48,10 +49,12 @@ export default function WorkCard({ work }: WorkCardProps) {
 
         {/* 主体内容：9:16 居中盛满高度 */}
         <div className="relative h-full aspect-[9/16] z-10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-          <img
+          <Image
             src={coverUrl || "https://picsum.photos/seed/placeholder/800/1422"}
             alt={work.Title}
-            className={`w-full h-full object-cover transition-opacity duration-500 ${isHovered && work.Type === 'video' && videoUrl ? 'opacity-0' : 'opacity-100'
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className={`object-cover transition-opacity duration-500 ${isHovered && work.Type === 'video' && videoUrl ? 'opacity-0' : 'opacity-100'
               }`}
           />
 
@@ -62,6 +65,7 @@ export default function WorkCard({ work }: WorkCardProps) {
               muted
               loop
               playsInline
+              preload="none"
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'
                 }`}
             />

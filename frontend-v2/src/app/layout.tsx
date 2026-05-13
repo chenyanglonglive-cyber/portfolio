@@ -8,7 +8,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Portfolio | Shiro Style",
+  title: "Wcy'Blog",
   description: "A minimalist portfolio inspired by Shiro",
 };
 

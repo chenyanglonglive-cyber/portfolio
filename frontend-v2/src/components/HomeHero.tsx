@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function HomeHero() {
   return (
@@ -10,9 +11,12 @@ export default function HomeHero() {
         transition={{ duration: 0.5 }}
         className="relative w-32 h-32 mb-12"
       >
-        <img
+        <Image
           src="/photo.png"
           alt="Avatar"
+          width={128}
+          height={128}
+          priority
           className="rounded-full w-full h-full object-cover border-4 border-white/10 shadow-2xl"
         />
         <div className="absolute -bottom-2 -right-2 bg-zinc-900 rounded-full p-2 shadow-lg text-xl">
