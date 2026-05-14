@@ -23,7 +23,14 @@ export async function queryStrapi(path: string) {
  */
 export function getStrapiMedia(url: string | undefined) {
   if (!url) return "";
-  if (url.startsWith("http") || url.startsWith("//")) return url;
+  if (url.startsWith("http") || url.startsWith("//")) {
+    // 如果是 Strapi Cloud 的媒体域名，通过 Vercel Proxy 中转以加速
+    if (url.includes("strapiapp.com")) {
+      const path = url.split("strapiapp.com")[1];
+      return `/strapi-media${path}`;
+    }
+    return url;
+  }
   return `${STRAPI_URL}${url}`;
 }
 

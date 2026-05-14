@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, BarChart3, PenTool, Play } from 'lucide-react';
 import { Work } from '@/types/work';
@@ -14,6 +14,8 @@ interface WorkModalProps {
 }
 
 export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
+  const [generatedCover, setGeneratedCover] = useState<string | null>(null);
+
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -26,10 +28,45 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
     };
   }, [isOpen]);
 
+  // Reset generated cover when work changes
+  useEffect(() => {
+    setGeneratedCover(null);
+  }, [work?.documentId]);
+
   if (!work) return null;
 
   const coverUrl = getStrapiMedia(work.Cover?.url);
   const videoUrl = getStrapiMedia(work.Video?.url);
+
+  // 自动从视频提取首帧作为封面
+  useEffect(() => {
+    if (work.Type !== 'video' || coverUrl || !videoUrl || generatedCover) return;
+
+    const tempVideo = document.createElement('video');
+    tempVideo.crossOrigin = 'anonymous';
+    tempVideo.src = videoUrl;
+    tempVideo.muted = true;
+    tempVideo.preload = 'metadata';
+
+    tempVideo.addEventListener('loadeddata', () => {
+      tempVideo.currentTime = 0.1;
+    });
+
+    tempVideo.addEventListener('seeked', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = tempVideo.videoWidth;
+      canvas.height = tempVideo.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+        setGeneratedCover(canvas.toDataURL('image/jpeg', 0.8));
+      }
+      tempVideo.src = '';
+      tempVideo.load();
+    });
+  }, [work.documentId, coverUrl, videoUrl, generatedCover, work.Type]);
+
+  const displayCover = (work.Type === 'video' ? generatedCover : coverUrl) || coverUrl || generatedCover || null;
 
   return (
     <AnimatePresence>
@@ -62,14 +99,16 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
             {/* Left: Video Player */}
             <div className="md:flex-1 bg-black flex items-center justify-center relative overflow-hidden p-8">
                 {/* Background diffusion */}
-                <div 
-                  className="absolute inset-0 opacity-20 blur-3xl scale-110 pointer-events-none"
-                  style={{ 
-                    backgroundImage: `url(${coverUrl})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  }}
-                />
+                {displayCover && (
+                  <div 
+                    className="absolute inset-0 opacity-20 blur-3xl scale-110 pointer-events-none"
+                    style={{ 
+                      backgroundImage: `url(${displayCover})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}
+                  />
+                )}
                 
                 <div className="relative h-full w-full flex items-center justify-center z-10">
                    {work.Type === 'video' && videoUrl ? (
@@ -83,7 +122,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                         className="max-h-full max-w-full object-contain shadow-2xl rounded-xl"
                      />
                    ) : (
-                     <img src={coverUrl} className="max-h-full max-w-full object-contain shadow-2xl rounded-xl" alt={work.Title} />
+                     displayCover && <img src={displayCover} className="max-h-full max-w-full object-contain shadow-2xl rounded-xl" alt={work.Title} />
                    )}
                 </div>
             </div>

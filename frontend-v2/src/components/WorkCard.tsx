@@ -59,15 +59,23 @@ export default function WorkCard({ work }: WorkCardProps) {
 
   useEffect(() => {
     if (isHovered && work.Type === 'video' && videoRef.current) {
-      videoRef.current.play().catch(err => console.log('Video play interrupted', err));
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          // Ignore AbortError caused by rapid hover
+          if (err.name !== 'AbortError') {
+            console.error('Video play failed:', err);
+          }
+        });
+      }
     } else if (!isHovered && videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
     }
   }, [isHovered, work.Type]);
 
-  // 最终使用的封面：优先用 Strapi 上传的封面 > 自动生成的首帧 > 占位图
-  const displayCover = coverUrl || generatedCover || null;
+  // 最终使用的封面：优先用自动生成的视频首帧 > Strapi 上传的封面 > 占位图
+  const displayCover = (work.Type === 'video' ? generatedCover : coverUrl) || coverUrl || generatedCover || null;
 
   return (
     <motion.div
