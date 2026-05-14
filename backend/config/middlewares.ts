@@ -17,6 +17,7 @@ const config: Core.Config.Middlewares = [
             'market-assets.strapi.io',
             '*.cloudflarestorage.com',
             '*.r2.dev',
+            'www.wcyblog.space',
           ],
           'media-src': [
             "'self'",
@@ -25,6 +26,7 @@ const config: Core.Config.Middlewares = [
             'market-assets.strapi.io',
             '*.cloudflarestorage.com',
             '*.r2.dev',
+            'www.wcyblog.space',
           ],
           upgradeInsecureRequests: null,
         },

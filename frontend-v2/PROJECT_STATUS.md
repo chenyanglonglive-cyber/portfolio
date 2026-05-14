@@ -57,4 +57,26 @@
     - 后端 `.env` 绑定 Vercel CDN 代理地址，将 18 秒缓慢加载的大视频提速至百毫秒级，实现零配置下 Cloudflare 节点与 Vercel 边缘网络的完美结合。
 
 ---
+
+# 🚀 2026-05-14 更新日志 (Cloud Migration)
+
+## 1. 架构全面升级 (Cloud Backend Migration)
+*   **Strapi Cloud 迁移**：Strapi 后端已从本地环境成功迁移至 **Strapi Cloud (Asia/Singapore 节点)**。
+*   **全云端工作流**：
+    - 实现了 CMS 后端的 24/7 在线，摆脱了本地 `start-strapi.bat` 的运行依赖。
+    - 解决了 Vercel 云端打包时无法访问本地数据库的“断流”隐患。
+    - 管理后台响应速度显著提升（Strapi 与 Neon DB 处于同机房，物理延迟降至毫秒级）。
+
+## 2. 数据库与存储修复 (DB & Storage Fix)
+*   **脏数据清理**：通过底层脚本强行删除了 Strapi 数据库中 4 条导致删除报错的“幽灵视频”记录。
+*   **R2 秘钥更新**：在 Cloudflare 侧新建了 `Strapi R2 Token` 专用秘钥，并已同步至云端环境变量。
+*   **配置同步**：完成了 Strapi Cloud 端所有环境变量（Neon, R2, Vercel Proxy）的初始化配置。
+
+## 3. 性能测试 (Latency Test)
+*   **API 性能**：在并发拥堵解除后，云端 API 响应稳定在 2s 以内。
+*   **代理分发**：确认云端 Strapi 输出的 URL 已通过 Vercel CDN 代理，大文件访问依然保持极速。
+ Cloudflare 秘钥 
+ CF_ACCESS_KEY_ID: 3c646b549f6ad0278ac0d61d23f7b82f
+CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab73
+---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*

@@ -13,6 +13,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
           },
           endpoint: env('CF_ENDPOINT'), // https://<account_id>.r2.cloudflarestorage.com
           region: env('CF_REGION', 'auto'),
+          forcePathStyle: true,
           params: {
             Bucket: env('CF_BUCKET'),
           },
