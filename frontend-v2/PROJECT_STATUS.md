@@ -79,4 +79,16 @@
  CF_ACCESS_KEY_ID: 3c646b549f6ad0278ac0d61d23f7b82f
 CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab73
 ---
+## 4. 自动化流与 UX 深度优化 (Automation & UX Polish)
+*   **Vercel 架构转型**：
+    - 彻底废弃了“本地打包推送 `out` 目录”的旧模式。
+    - 切换为 **Next.js Source Build**，实现了全自动云端构建。
+    - 启用了 **ISR (增量静态生成)**，确保 Strapi 内容发布后前台 60s 内自动刷新。
+*   **视频体验“大满贯”修复**：
+    - **首帧自动化**：利用 Canvas 实现了视频首帧自动提取作为封面，解决了手动切图的繁琐。
+    - **动态时长**：实现了视频元数据实时读取，首页卡片时长标签现在能准确显示每条视频的真实秒数。
+    - **代理加速 2.0**：针对 Strapi Cloud 媒体域名配置了 Vercel Edge Proxy (`/strapi-media/`)，彻底解决了国内加载缓慢和 CORS 跨域拦截问题。
+    - **稳定性增强**：静默处理了快速划过产生的 `AbortError`，并增加了生成预览图时的 `try-catch` 降级保护。
+
+---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
