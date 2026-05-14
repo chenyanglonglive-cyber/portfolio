@@ -8,3 +8,5 @@ echo   Admin Portal: http://localhost:1337/admin
 echo ===================================================
 echo.
 npm run develop
+pause
+

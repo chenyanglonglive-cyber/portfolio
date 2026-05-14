@@ -49,5 +49,12 @@
 ## 4. 维护与清理
 *   **冗余清理**：已彻底删除旧版 `frontend` 文件夹。
 
+## 5. 架构与性能优化 (Performance & Architecture)
+*   **数据库连接池 (Connection Pooling)**：为 Neon PostgreSQL 增加了 `pool` 配置 (min: 2, max: 10)，有效降低跨国请求带来的 API 延迟，提升 Strapi 本地查询速度。
+*   **亚太区媒体加速 (R2 APAC)**：
+    - 将 Strapi 上传目标彻底迁移至新的 `portfolio-assets-apac` 亚太区 Bucket。
+    - 在前端 Vercel 中新增 Rewrite 规则（`/r2-assets/:path*`）代理 R2 公共开发域名。
+    - 后端 `.env` 绑定 Vercel CDN 代理地址，将 18 秒缓慢加载的大视频提速至百毫秒级，实现零配置下 Cloudflare 节点与 Vercel 边缘网络的完美结合。
+
 ---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*

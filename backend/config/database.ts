@@ -15,6 +15,10 @@ export default ({ env }: any) => ({
       },
       filename: path.join(__dirname, '..', '..', env('DATABASE_FILENAME', '.tmp/data.db')),
     },
+    pool: {
+      min: env.int('DATABASE_POOL_MIN', 2),
+      max: env.int('DATABASE_POOL_MAX', 10),
+    },
     useNullAsDefault: true,
     acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
   },
