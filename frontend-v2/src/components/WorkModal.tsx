@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, BarChart3, PenTool, Play } from 'lucide-react';
+import { X, Calendar, BarChart3, PenTool } from 'lucide-react';
 import { Work } from '@/types/work';
 
 import { getStrapiMedia } from '@/lib/strapi';
@@ -14,7 +14,7 @@ interface WorkModalProps {
 }
 
 export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
-  const [generatedCover, setGeneratedCover] = useState<string | null>(null);
+  const [generatedCover, setGeneratedCover] = useState<{ workId: string; url: string } | null>(null);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -28,19 +28,15 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
     };
   }, [isOpen]);
 
-  // Reset generated cover when work changes
-  useEffect(() => {
-    setGeneratedCover(null);
-  }, [work?.documentId]);
-
-  if (!work) return null;
-
-  const coverUrl = getStrapiMedia(work.Cover?.url);
-  const videoUrl = getStrapiMedia(work.Video?.url);
+  const coverUrl = getStrapiMedia(work?.Cover?.url);
+  const videoUrl = getStrapiMedia(work?.Video?.url);
+  const activeGeneratedCover = work && generatedCover?.workId === work.documentId ? generatedCover.url : null;
 
   // 自动从视频提取首帧作为封面
   useEffect(() => {
-    if (work.Type !== 'video' || coverUrl || !videoUrl || generatedCover) return;
+    if (!work || work.Type !== 'video' || coverUrl || !videoUrl || activeGeneratedCover) return;
+
+    const workId = work.documentId;
 
     const tempVideo = document.createElement('video');
     tempVideo.crossOrigin = 'anonymous';
@@ -48,25 +44,43 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
     tempVideo.muted = true;
     tempVideo.preload = 'metadata';
 
-    tempVideo.addEventListener('loadeddata', () => {
-      tempVideo.currentTime = 0.1;
-    });
+    const handleMetadata = () => {
+      tempVideo.currentTime = Math.min(tempVideo.duration, 0.1);
+    };
 
-    tempVideo.addEventListener('seeked', () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = tempVideo.videoWidth;
-      canvas.height = tempVideo.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
-        setGeneratedCover(canvas.toDataURL('image/jpeg', 0.8));
+    const handleSeeked = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = tempVideo.videoWidth;
+        canvas.height = tempVideo.videoHeight;
+        const ctx = canvas.getContext('2d');
+        if (ctx && canvas.width > 0) {
+          ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+          setGeneratedCover({ workId, url: canvas.toDataURL('image/jpeg', 0.8) });
+        }
+      } catch (err) {
+        console.warn('Modal thumbnail capture failed:', err);
+      } finally {
+        cleanup();
       }
+    };
+
+    const cleanup = () => {
+      tempVideo.removeEventListener('loadedmetadata', handleMetadata);
+      tempVideo.removeEventListener('seeked', handleSeeked);
       tempVideo.src = '';
       tempVideo.load();
-    });
-  }, [work.documentId, coverUrl, videoUrl, generatedCover, work.Type]);
+    };
 
-  const displayCover = (work.Type === 'video' ? generatedCover : coverUrl) || coverUrl || generatedCover || null;
+    tempVideo.addEventListener('loadedmetadata', handleMetadata);
+    tempVideo.addEventListener('seeked', handleSeeked);
+
+    return cleanup;
+  }, [work, coverUrl, videoUrl, activeGeneratedCover]);
+
+  if (!work) return null;
+
+  const displayCover = (work.Type === 'video' ? activeGeneratedCover : coverUrl) || coverUrl || activeGeneratedCover || null;
 
   return (
     <AnimatePresence>

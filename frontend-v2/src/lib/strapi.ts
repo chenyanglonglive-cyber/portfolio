@@ -59,3 +59,19 @@ export async function getFeaturedWorks() {
   const data = await queryStrapi("works?filters[IsFeatured][$eq]=true&populate=*&sort=Rank:desc");
   return data || [];
 }
+
+/**
+ * 获取所有手记，按发布时间倒序排列
+ */
+export async function getArticles() {
+  const data = await queryStrapi("articles?populate=*&sort=publishedAt:desc");
+  return data || [];
+}
+
+/**
+ * 根据 Slug 获取单篇手记
+ */
+export async function getArticleBySlug(slug: string) {
+  const data = await queryStrapi(`articles?filters[Slug][$eq]=${encodeURIComponent(slug)}&populate=*`);
+  return Array.isArray(data) ? data[0] || null : null;
+}

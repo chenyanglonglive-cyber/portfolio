@@ -7,7 +7,7 @@ export const revalidate = 3600;
 export default async function Home() {
   const featuredWorks: Work[] = await getFeaturedWorks() || [];
   
-  const videos = featuredWorks.filter(w => w.Type === 'video');
+  const videos = featuredWorks.filter(w => w.Type === 'video' && w.Video?.url);
   const images = featuredWorks.filter(w => w.Type === 'image');
 
   return (
