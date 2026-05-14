@@ -14,6 +14,7 @@ interface WorkCardProps {
 export default function WorkCard({ work }: WorkCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [generatedCover, setGeneratedCover] = useState<string | null>(null);
+  const [duration, setDuration] = useState<string>("00:30");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -25,7 +26,7 @@ export default function WorkCard({ work }: WorkCardProps) {
     if (coverUrl || !videoUrl || generatedCover) return;
 
     const tempVideo = document.createElement('video');
-    tempVideo.crossOrigin = 'anonymous';
+    tempVideo.crossOrigin = 'anonymous'; // 重要：允许跨域抓取画面
     tempVideo.src = videoUrl;
     tempVideo.muted = true;
     tempVideo.preload = 'metadata';
@@ -36,18 +37,23 @@ export default function WorkCard({ work }: WorkCardProps) {
     });
 
     tempVideo.addEventListener('seeked', () => {
-      const canvas = canvasRef.current || document.createElement('canvas');
-      canvas.width = tempVideo.videoWidth;
-      canvas.height = tempVideo.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        setGeneratedCover(dataUrl);
+      try {
+        const canvas = canvasRef.current || document.createElement('canvas');
+        canvas.width = tempVideo.videoWidth;
+        canvas.height = tempVideo.videoHeight;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setGeneratedCover(dataUrl);
+        }
+      } catch (err) {
+        console.warn('Failed to generate thumbnail via canvas:', err);
+      } finally {
+        // 清理临时视频元素
+        tempVideo.src = '';
+        tempVideo.load();
       }
-      // 清理临时视频元素
-      tempVideo.src = '';
-      tempVideo.load();
     });
   }, [coverUrl, videoUrl, generatedCover]);
 
@@ -73,6 +79,14 @@ export default function WorkCard({ work }: WorkCardProps) {
       videoRef.current.currentTime = 0;
     }
   }, [isHovered, work.Type]);
+
+  // 处理视频元数据，获取时长
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    const mins = Math.floor(video.duration / 60);
+    const secs = Math.floor(video.duration % 60);
+    setDuration(`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+  };
 
   // 最终使用的封面：优先用自动生成的视频首帧 > Strapi 上传的封面 > 占位图
   const displayCover = (work.Type === 'video' ? generatedCover : coverUrl) || coverUrl || generatedCover || null;
@@ -126,7 +140,9 @@ export default function WorkCard({ work }: WorkCardProps) {
               muted
               loop
               playsInline
-              preload="none"
+              preload="metadata"
+              crossOrigin="anonymous"
+              onLoadedMetadata={handleLoadedMetadata}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'
                 }`}
             />
@@ -136,7 +152,7 @@ export default function WorkCard({ work }: WorkCardProps) {
         {/* 左上角徽章 (参考截图样式) */}
         <div className="absolute top-3 left-3 z-20 px-2 py-1 rounded-md text-[10px] font-bold bg-black/50 backdrop-blur-md text-white border border-white/10 flex items-center gap-1.5 uppercase tracking-wider">
           {work.Type === 'video' ? <Play size={10} fill="currentColor" /> : null}
-          {work.Type === 'video' ? "00:30" : "IMAGE"}
+          {work.Type === 'video' ? duration : "IMAGE"}
         </div>
 
         {/* 悬停时显示的数据遮罩 - 移除了全局 backdrop-blur 以保持视频清晰 */}

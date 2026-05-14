@@ -119,6 +119,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                         muted
                         loop
                         playsInline
+                        crossOrigin="anonymous"
                         className="max-h-full max-w-full object-contain shadow-2xl rounded-xl"
                      />
                    ) : (
