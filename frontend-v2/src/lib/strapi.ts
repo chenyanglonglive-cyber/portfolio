@@ -1,5 +1,6 @@
 import type { Work } from "@/types/work";
 import type { Article } from "@/types/article";
+import { normalizeWork } from "@/types/work";
 
 /**
  * Strapi 媒体 URL 处理：支持本地、远程以及 Vercel Proxy 加速
@@ -36,9 +37,15 @@ export async function queryStrapi<T = unknown>(path: string): Promise<T | null> 
 export function getStrapiMedia(url: string | undefined): string {
   if (!url) return "";
   if (url.startsWith("http") || url.startsWith("//")) {
+    // Strapi Cloud 媒体文件 → Vercel Proxy
     if (url.includes("strapiapp.com")) {
       const path = url.split("strapiapp.com")[1];
       return `/strapi-media${path}`;
+    }
+    // R2 直链 → Vercel Proxy（解决 CORS + 边缘缓存）
+    if (url.includes("r2.dev") || url.includes("cloudflarestorage.com")) {
+      const urlObj = new URL(url);
+      return `/r2-assets${urlObj.pathname}`;
     }
     return url;
   }
@@ -50,7 +57,7 @@ export function getStrapiMedia(url: string | undefined): string {
  */
 export async function getWorks(): Promise<Work[]> {
   const data = await queryStrapi<Work[]>("works?populate=*&sort=Rank:desc");
-  return data || [];
+  return (data || []).map(normalizeWork);
 }
 
 /**
@@ -58,7 +65,7 @@ export async function getWorks(): Promise<Work[]> {
  */
 export async function getFeaturedWorks(): Promise<Work[]> {
   const data = await queryStrapi<Work[]>("works?filters[IsFeatured][$eq]=true&populate=*&sort=Rank:desc");
-  return data || [];
+  return (data || []).map(normalizeWork);
 }
 
 /**

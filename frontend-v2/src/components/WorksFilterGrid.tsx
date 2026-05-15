@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import WorkCard from '@/components/WorkCard';
 import WorkModal from '@/components/WorkModal';
-import { Work } from '@/types/work';
+import { Work, getWorkType } from '@/types/work';
 
 interface WorksFilterGridProps {
   initialWorks: Work[];
@@ -21,8 +21,8 @@ export default function WorksFilterGrid({ initialWorks }: WorksFilterGridProps) 
   };
 
   const filteredAndSortedWorks = useMemo(() => {
-    let result = [...initialWorks].filter(
-      work => filter === 'all' || work.Type === filter
+    const result = [...initialWorks].filter(
+      work => filter === 'all' || getWorkType(work) === filter
     );
 
     if (sortBy === 'spend') {
@@ -67,13 +67,22 @@ export default function WorksFilterGrid({ initialWorks }: WorksFilterGridProps) 
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {filteredAndSortedWorks.map((work) => (
-          <div key={work.documentId} onClick={() => handleWorkClick(work)} className="cursor-pointer">
-            <WorkCard work={work} />
-          </div>
-        ))}
-      </div>
+      {filteredAndSortedWorks.length === 0 ? (
+        <div className="col-span-full flex flex-col items-center justify-center py-32 text-center">
+          <p className="text-6xl font-black text-zinc-800 mb-4">--</p>
+          <p className="text-zinc-500 text-sm tracking-widest uppercase">
+            {filter === 'video' ? 'No videos yet' : filter === 'image' ? 'No images yet' : 'No works yet'}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {filteredAndSortedWorks.map((work) => (
+            <div key={work.documentId} onClick={() => handleWorkClick(work)} className="cursor-pointer">
+              <WorkCard work={work} />
+            </div>
+          ))}
+        </div>
+      )}
 
       <WorkModal 
         work={selectedWork} 

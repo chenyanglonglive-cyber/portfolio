@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, BarChart3, PenTool } from 'lucide-react';
-import { Work } from '@/types/work';
+import { Work, getWorkType, getWorkCoverUrl, getWorkVideoUrl } from '@/types/work';
 
 import { getStrapiMedia } from '@/lib/strapi';
 
@@ -28,12 +28,9 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
     };
   }, [isOpen]);
 
-  const mediaItem = work?.Media?.[0];
-  const isVideo = mediaItem?.__component === 'media.video-item';
-  const coverUrl = getStrapiMedia(
-    isVideo ? mediaItem.cover?.url : (mediaItem?.__component === 'media.image-item' ? mediaItem.image?.url : undefined)
-  );
-  const videoUrl = isVideo ? getStrapiMedia(mediaItem.video?.url) : null;
+  const isVideo = work ? getWorkType(work) === 'video' : false;
+  const coverUrl = work ? getStrapiMedia(getWorkCoverUrl(work)) : undefined;
+  const videoUrl = isVideo && work ? getStrapiMedia(getWorkVideoUrl(work)) : null;
   const activeGeneratedCover = work && generatedCover?.workId === work.documentId ? generatedCover.url : null;
 
   // 自动从视频提取首帧作为封面
@@ -49,7 +46,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
     tempVideo.preload = 'metadata';
 
     const handleMetadata = () => {
-      tempVideo.currentTime = Math.min(tempVideo.duration, 0.1);
+      tempVideo.currentTime = Math.min(tempVideo.duration, 1.0);
     };
 
     const handleSeeked = () => {

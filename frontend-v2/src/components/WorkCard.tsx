@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 import Image from 'next/image';
-import { Work } from '@/types/work';
+import { Work, getWorkType, getWorkCoverUrl, getWorkVideoUrl } from '@/types/work';
 import { getStrapiMedia } from '@/lib/strapi';
 
 interface WorkCardProps {
@@ -18,12 +18,9 @@ export default function WorkCard({ work }: WorkCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const mediaItem = work.Media?.[0];
-  const isVideo = mediaItem?.__component === 'media.video-item';
-  const coverUrl = getStrapiMedia(
-    isVideo ? mediaItem.cover?.url : (mediaItem?.__component === 'media.image-item' ? mediaItem.image?.url : undefined)
-  );
-  const videoUrl = isVideo ? getStrapiMedia(mediaItem.video?.url) : null;
+  const isVideo = getWorkType(work) === 'video';
+  const coverUrl = getStrapiMedia(getWorkCoverUrl(work));
+  const videoUrl = isVideo ? getStrapiMedia(getWorkVideoUrl(work)) : null;
 
   // 1. 自动抓取视频首帧（改进版：寻找有画面的时间点 + CORS 增强）
   useEffect(() => {
