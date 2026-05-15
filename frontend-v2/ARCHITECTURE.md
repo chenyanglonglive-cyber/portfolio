@@ -34,11 +34,7 @@
 | Key | Value (Example) |
 | :--- | :--- |
 | `NEXT_PUBLIC_STRAPI_URL` | `https://dazzling-family-6d1f24102d.strapiapp.com` |
-🔑 令牌信息
-名称：Antigravity-Fast-Access
-权限：Full Access (全权限)
-用途：由我（AI 助手）直接通过代码操控 Strapi 云端数据。
-为了安全和后续使用，我已经把这个令牌保存在了你的本地环境变量文件 .env.local 中（Key 名为 STRAPI_ADMIN_TOKEN）。
+🔑 Strapi Admin Token 已保存在本地 .env.local 中，勿将令牌上传至公开仓库。
 ---
 *Last Updated: 2026-05-14*
 *By: Antigravity AI Assistant*

@@ -1,9 +1,8 @@
 import WorksFilterGrid from '@/components/WorksFilterGrid';
 import { getWorks } from '@/lib/strapi';
-import { Work } from '@/types/work';
 
 export default async function WorksPage() {
-  const initialWorks: Work[] = await getWorks() || [];
+  const initialWorks = await getWorks();
 
   return (
     <div className="container mx-auto max-w-5xl px-8 py-20">

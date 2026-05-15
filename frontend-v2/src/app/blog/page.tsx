@@ -1,9 +1,8 @@
 import BlogList from "@/components/BlogList";
 import { getArticles } from "@/lib/strapi";
-import { Article } from "@/types/article";
 
 export default async function BlogPage() {
-  const articles: Article[] = await getArticles() || [];
+  const articles = await getArticles();
 
   return (
     <main className="container mx-auto max-w-4xl px-8 py-20">

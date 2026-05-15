@@ -4,8 +4,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
   console.log("Generating static params for blog...");
   const articles = await getArticles();
@@ -13,8 +11,8 @@ export async function generateStaticParams() {
     console.log("No articles found for static params");
     return [];
   }
-  
-  const params = articles.map((article: any) => ({
+
+  const params = articles.map((article) => ({
     slug: article.Slug,
   }));
   console.log("Static params:", params);
