@@ -14,38 +14,27 @@
     "Title": {
       "type": "string"
     },
+    "Media": {
+      "type": "dynamiczone",
+      "components": [
+        "media.video-item",
+        "media.image-item"
+      ],
+      "max": 1,
+      "min": 1,
+      "required": true
+    },
+    "Story": {
+      "type": "text"
+    },
+    "IsFeatured": {
+      "type": "boolean"
+    },
     "Spend": {
       "type": "biginteger"
     },
     "ROI_7D": {
       "type": "decimal"
-    },
-    "Type": {
-      "type": "enumeration",
-      "enum": [
-        "video",
-        "image"
-      ]
-    },
-    "Video": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "videos"
-      ]
-    },
-    "Cover": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
-    },
-    "Description": {
-      "type": "text"
-    },
-    "IsFeatured": {
-      "type": "boolean"
     },
     "Rank": {
       "type": "integer"
@@ -54,10 +43,7 @@
       "type": "decimal"
     },
     "LaunchDate": {
-      "type": "string"
-    },
-    "Story": {
-      "type": "text"
+      "type": "date"
     }
   }
 }

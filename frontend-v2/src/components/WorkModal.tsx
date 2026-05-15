@@ -28,13 +28,17 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
     };
   }, [isOpen]);
 
-  const coverUrl = getStrapiMedia(work?.Cover?.url);
-  const videoUrl = getStrapiMedia(work?.Video?.url);
+  const mediaItem = work?.Media?.[0];
+  const isVideo = mediaItem?.__component === 'media.video-item';
+  const coverUrl = getStrapiMedia(
+    isVideo ? mediaItem.cover?.url : (mediaItem?.__component === 'media.image-item' ? mediaItem.image?.url : undefined)
+  );
+  const videoUrl = isVideo ? getStrapiMedia(mediaItem.video?.url) : null;
   const activeGeneratedCover = work && generatedCover?.workId === work.documentId ? generatedCover.url : null;
 
   // 自动从视频提取首帧作为封面
   useEffect(() => {
-    if (!work || work.Type !== 'video' || coverUrl || !videoUrl || activeGeneratedCover) return;
+    if (!work || !isVideo || coverUrl || !videoUrl || activeGeneratedCover) return;
 
     const workId = work.documentId;
 
@@ -80,7 +84,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
 
   if (!work) return null;
 
-  const displayCover = (work.Type === 'video' ? activeGeneratedCover : coverUrl) || coverUrl || activeGeneratedCover || null;
+  const displayCover = (isVideo ? activeGeneratedCover : coverUrl) || coverUrl || activeGeneratedCover || null;
 
   return (
     <AnimatePresence>
@@ -125,7 +129,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                 )}
                 
                 <div className="relative h-full w-full flex items-center justify-center z-10">
-                   {work.Type === 'video' && videoUrl ? (
+                   {isVideo && videoUrl ? (
                      <video
                         src={videoUrl}
                         controls

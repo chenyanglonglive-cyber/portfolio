@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_media_image_items",
+  "info": {
+    "displayName": "ImageItem",
+    "icon": "picture",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "required": true
+    }
+  }
+}

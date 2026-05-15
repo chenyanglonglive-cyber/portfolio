@@ -18,12 +18,16 @@ export default function WorkCard({ work }: WorkCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const coverUrl = getStrapiMedia(work.Cover?.url);
-  const videoUrl = getStrapiMedia(work.Video?.url);
+  const mediaItem = work.Media?.[0];
+  const isVideo = mediaItem?.__component === 'media.video-item';
+  const coverUrl = getStrapiMedia(
+    isVideo ? mediaItem.cover?.url : (mediaItem?.__component === 'media.image-item' ? mediaItem.image?.url : undefined)
+  );
+  const videoUrl = isVideo ? getStrapiMedia(mediaItem.video?.url) : null;
 
   // 1. 自动抓取视频首帧（改进版：寻找有画面的时间点 + CORS 增强）
   useEffect(() => {
-    if (work.Type !== 'video' || coverUrl || !videoUrl || generatedCover) return;
+    if (!isVideo || coverUrl || !videoUrl || generatedCover) return;
 
     const tempVideo = document.createElement('video');
     tempVideo.crossOrigin = 'anonymous';
@@ -65,11 +69,11 @@ export default function WorkCard({ work }: WorkCardProps) {
     tempVideo.addEventListener('seeked', handleSeeked);
 
     return cleanup;
-  }, [work.documentId, coverUrl, videoUrl, generatedCover, work.Type]);
+  }, [work.documentId, coverUrl, videoUrl, generatedCover, isVideo]);
 
   // 2. 处理视频播放/暂停控制
   useEffect(() => {
-    if (isHovered && work.Type === 'video' && videoRef.current) {
+    if (isHovered && isVideo && videoRef.current) {
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(err => {
@@ -80,7 +84,7 @@ export default function WorkCard({ work }: WorkCardProps) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
     }
-  }, [isHovered, work.Type]);
+  }, [isHovered, isVideo]);
 
   // 3. 动态获取视频时长
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -93,7 +97,7 @@ export default function WorkCard({ work }: WorkCardProps) {
   };
 
   // 最终使用的封面：优先用自动生成的视频首帧 > Strapi 上传的封面
-  const displayCover = (work.Type === 'video' ? generatedCover : coverUrl) || coverUrl || generatedCover || null;
+  const displayCover = (isVideo ? generatedCover : coverUrl) || coverUrl || generatedCover || null;
 
   return (
     <motion.div
@@ -117,7 +121,7 @@ export default function WorkCard({ work }: WorkCardProps) {
         )}
 
         {/* 悬停时的视频预览 */}
-        {work.Type === 'video' && videoUrl && (
+        {isVideo && videoUrl && (
           <video
             ref={videoRef}
             src={videoUrl}
@@ -134,8 +138,8 @@ export default function WorkCard({ work }: WorkCardProps) {
 
         {/* 左上角时长徽章 */}
         <div className="absolute top-3 left-3 z-20 px-2 py-1 rounded-md text-[10px] font-bold bg-black/50 backdrop-blur-md text-white border border-white/10 flex items-center gap-1.5 uppercase tracking-wider">
-          {work.Type === 'video' ? <Play size={10} fill="currentColor" /> : null}
-          {work.Type === 'video' ? duration : "IMAGE"}
+          {isVideo ? <Play size={10} fill="currentColor" /> : null}
+          {isVideo ? duration : "IMAGE"}
         </div>
 
         {/* 悬停遮罩层 */}
