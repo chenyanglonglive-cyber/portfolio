@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Video, Image as ImageIcon, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { registerMediaFromUrl, createWorkEntry } from "./actions";
+import { uploadToStrapi, createWorkEntry } from "./actions";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -12,7 +12,7 @@ export default function UploadForm() {
   const [status, setStatus] = useState<"idle" | "extracting" | "uploading" | "success" | "error">("idle");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-
+  
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Creative");
 
@@ -81,57 +81,22 @@ export default function UploadForm() {
     if (!file || !thumbnail) return;
 
     setStatus("uploading");
-    setProgress(0);
-    setError(null);
+    setProgress(10);
 
     try {
-      // 1. 获取 R2 直传链接
-      setProgress(5);
-      const [thumbPresigned, videoPresigned] = await Promise.all([
-        fetch("/api/presigned-upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: thumbnail.name, contentType: thumbnail.type }),
-        }).then((r) => r.json()),
-        fetch("/api/presigned-upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: file.name, contentType: file.type }),
-        }).then((r) => r.json()),
-      ]);
+      // 1. 上传缩略图
+      const thumbFormData = new FormData();
+      thumbFormData.append("files", thumbnail);
+      const thumbData = await uploadToStrapi(thumbFormData);
+      setProgress(40);
 
-      if (thumbPresigned.error || videoPresigned.error) {
-        throw new Error("获取上传链接失败，请重试");
-      }
+      // 2. 上传视频
+      const videoFormData = new FormData();
+      videoFormData.append("files", file);
+      const videoData = await uploadToStrapi(videoFormData);
+      setProgress(80);
 
-      // 2. 直传 R2（缩略图 + 视频并行）
-      setProgress(10);
-      const [thumbUpload, videoUpload] = await Promise.all([
-        fetch(thumbPresigned.uploadUrl, {
-          method: "PUT",
-          body: thumbnail,
-          headers: { "Content-Type": thumbnail.type },
-        }),
-        fetch(videoPresigned.uploadUrl, {
-          method: "PUT",
-          body: file,
-          headers: { "Content-Type": file.type },
-        }),
-      ]);
-
-      if (!thumbUpload.ok || !videoUpload.ok) {
-        throw new Error("文件上传失败，请检查网络后重试");
-      }
-      setProgress(60);
-
-      // 3. 将 R2 文件注册到 Strapi 媒体库（服务器间秒传）
-      const [thumbData, videoData] = await Promise.all([
-        registerMediaFromUrl(thumbPresigned.publicUrl),
-        registerMediaFromUrl(videoPresigned.publicUrl),
-      ]);
-      setProgress(85);
-
-      // 4. 创建作品条目
+      // 3. 创建作品条目
       await createWorkEntry({
         title,
         category,
@@ -231,7 +196,7 @@ export default function UploadForm() {
               </div>
               <div className="flex flex-col justify-end pb-2">
                 <p className="text-zinc-500 text-xs leading-relaxed italic">
-                  * 文件将通过全球加速网络直传至云端存储，速度更快，不再受服务器超时影响。
+                  * 我们已在客户端为您提取了视频第 1.0 秒的画面。这能减少服务器在上传时的 CPU 压力，有效防止超时报错。
                 </p>
               </div>
             </motion.div>
@@ -243,7 +208,7 @@ export default function UploadForm() {
           {status === "uploading" && (
             <div className="space-y-2">
               <div className="flex justify-between text-[10px] font-bold tracking-widest uppercase text-emerald-400">
-                <span>正在发布作品...</span>
+                <span>正在上传作品...</span>
                 <span>{progress}%</span>
               </div>
               <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
