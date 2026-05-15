@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s --connect-timeout 15 \"https://wcyblog.space\")",
+      "Bash(curl -s -L --connect-timeout 15 \"https://wcyblog.space/works\")",
+      "Bash(npm install *)",
+      "WebSearch",
+      "Bash(gh --version)",
+      "Bash(gh auth *)"
+    ]
+  }
+}

@@ -2,7 +2,7 @@ import { getArticles, getArticleBySlug, getStrapiMedia } from "@/lib/strapi";
 import { ChevronLeft, Calendar, User, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BlocksRenderer } from '@strapi/blocks-react-renderer';
+import CustomBlocksRenderer from "@/components/CustomBlocksRenderer";
 import ReadingProgressBar from "@/components/ReadingProgressBar";
 import TableOfContents from "@/components/TableOfContents";
 
@@ -82,17 +82,7 @@ export default async function ArticleDetail({ params }: { params: Promise<{ slug
 
             <div className="prose prose-invert prose-emerald max-w-none prose-lg md:prose-xl prose-headings:italic prose-headings:font-black prose-headings:tracking-tighter prose-p:text-zinc-400 prose-p:leading-relaxed prose-strong:text-white prose-blockquote:border-emerald-400 prose-blockquote:bg-emerald-400/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-code:text-emerald-300 flex-1">
               {Array.isArray(article.Content) ? (
-                <BlocksRenderer 
-                  content={article.Content} 
-                  blocks={{
-                    heading: ({ children, level }: any) => {
-                      const text = children[0]?.props?.text || "";
-                      const id = text ? `heading-${text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')}` : undefined;
-                      const Tag = `h${level}` as any;
-                      return <Tag id={id}>{children}</Tag>;
-                    }
-                  }}
-                />
+                <CustomBlocksRenderer content={article.Content} />
               ) : (
                 <div className="whitespace-pre-wrap text-zinc-400">{article.Content}</div>
               )}

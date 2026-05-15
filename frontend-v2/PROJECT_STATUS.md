@@ -91,4 +91,19 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
     - **稳定性增强**：静默处理了快速划过产生的 `AbortError`，并增加了生成预览图时的 `try-catch` 降级保护。
 
 ---
+## 5. 存储架构 3.0：直传 R2 方案 (Direct-to-R2 Storage Upgrade)
+为了彻底解决 Strapi Cloud 服务器性能低下导致的 **524 Timeout (Cloudflare)** 问题，完成了存储链路的重大重构：
+
+*   **直传模式实现**：
+    - 开发了 **Browser-Direct-to-R2** 流程。文件流不再经过 Vercel 或 Strapi 服务器，而是直接加密上传至 Cloudflare 边缘节点。
+    - 新增了 `/api/presigned-upload` 接口，利用 S3 Presigned URL 确保直传的安全性。
+*   **后端“去计算化”**：
+    - 实现了 `registerMediaFromUrl` 逻辑，Strapi 仅负责记录元数据，不再进行重负荷的文件写入。
+    - **禁用 Breakpoints**：在 `backend/config/plugins.ts` 中禁用了自适应图片裁剪，彻底消除了 Strapi 后台 ffmpeg 处理视频时的 CPU 瓶颈。
+*   **全链路环境同步**：
+    - 完成了 Strapi Cloud 与 Vercel 端环境变量的对齐与注入。
+    - 建立了项目根目录 `.env` 全局密钥清单，增强了 Agent 协作的便捷性。
+
+---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
+*Last Updated: 2026-05-16*
