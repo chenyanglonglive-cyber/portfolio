@@ -86,12 +86,12 @@ export default function ResumeContent({ about }: ResumeContentProps) {
         className="space-y-32"
       >
         {/* Header Section */}
-        <motion.section variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <motion.section variants={itemVariants} className="space-y-8">
           <div className="space-y-6">
             <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 pr-4">
               Resume <span className="text-emerald-400 ml-2">.王晨阳</span>
             </h1>
-            <div className="text-xl text-zinc-100 leading-relaxed max-w-2xl">
+            <div className="text-xl text-zinc-100 leading-relaxed">
               {about?.content ? (
                 <CustomBlocksRenderer content={about.content} />
               ) : (
@@ -99,7 +99,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
               )}
             </div>
           </div>
-          <button className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors shrink-0">
+          <button className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors">
             <Download size={18} /> 下载简历
           </button>
         </motion.section>
