@@ -54,8 +54,8 @@ export function getStrapiMedia(url: string | undefined): string {
 export async function getWorks(): Promise<Work[]> {
   const fields = [
     "populate[video][fields][0]=url",
-    "populate[cover][fields][0]=url",
-    "populate[image][fields][0]=url",
+    "populate[cover]=*",
+    "populate[image]=*",
     "fields[0]=Title",
     "fields[1]=IsFeatured",
     "fields[2]=Rank",
@@ -82,7 +82,7 @@ export async function getFeaturedWorks(): Promise<Work[]> {
   // populate=* 替换为字段过滤，只获取前端需要的字段，减少传输量
   const videoFields = [
     "populate[video][fields][0]=url",
-    "populate[cover][fields][0]=url",
+    "populate[cover]=*",
     "fields[0]=Title",
     "fields[1]=IsFeatured",
     "fields[2]=Rank",
@@ -93,7 +93,7 @@ export async function getFeaturedWorks(): Promise<Work[]> {
     "fields[7]=LaunchDate",
   ].join("&");
   const imageFields = [
-    "populate[image][fields][0]=url",
+    "populate[image]=*",
     "fields[0]=Title",
     "fields[1]=IsFeatured",
     "fields[2]=Rank",

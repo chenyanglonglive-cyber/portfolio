@@ -2,7 +2,6 @@ import WorksFilterGrid from '@/components/WorksFilterGrid';
 import { queryStrapi } from '@/lib/strapi';
 import { Work, normalizeWork } from '@/types/work';
 
-// 只预取视频（默认 Tab），图片在切换时懒加载，减少首屏请求数
 export default async function WorksPage() {
   const videoFields = [
     "populate[video][fields][0]=url",
@@ -17,10 +16,27 @@ export default async function WorksPage() {
     "fields[7]=LaunchDate",
   ].join("&");
 
-  const raw = await queryStrapi<Work[]>(`videos?${videoFields}`);
-  const initialVideos = (raw || [])
-    .map(normalizeWork)
-    .sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
+  const imageFields = [
+    "populate[image][fields][0]=url",
+    "fields[0]=Title",
+    "fields[1]=IsFeatured",
+    "fields[2]=Rank",
+    "fields[3]=Spend",
+    "fields[4]=ROI_7D",
+    "fields[5]=CTR",
+    "fields[6]=Story",
+    "fields[7]=LaunchDate",
+  ].join("&");
+
+  // 同时拉取视频和图片数据，但因为用了字段过滤，总体积非常小（几十KB）
+  // 这样做可以让 Tab 切换和页面跳转实现“零延迟”
+  const [videosRaw, imagesRaw] = await Promise.all([
+    queryStrapi<Work[]>(`videos?${videoFields}`),
+    queryStrapi<Work[]>(`images?${imageFields}`),
+  ]);
+
+  const videos = (videosRaw || []).map(normalizeWork).sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
+  const images = (imagesRaw || []).map(normalizeWork).sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
 
   return (
     <div className="container mx-auto max-w-5xl px-8 py-20">
@@ -35,7 +51,7 @@ export default async function WorksPage() {
         </div>
       </div>
 
-      <WorksFilterGrid initialVideos={initialVideos} />
+      <WorksFilterGrid initialVideos={videos} initialImages={images} />
     </div>
   );
 }
