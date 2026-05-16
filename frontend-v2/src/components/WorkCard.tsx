@@ -9,9 +9,10 @@ import { getStrapiMedia } from '@/lib/strapi';
 
 interface WorkCardProps {
   work: Work;
+  priority?: boolean; // 新增：用于首屏图片优先加载
 }
 
-export default function WorkCard({ work }: WorkCardProps) {
+export default function WorkCard({ work, priority = false }: WorkCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [generatedCover, setGeneratedCover] = useState<string | null>(null);
   const [duration, setDuration] = useState<string>("00:30");
@@ -122,7 +123,7 @@ export default function WorkCard({ work }: WorkCardProps) {
 
   return (
     <motion.div
-      className="relative overflow-hidden rounded-2xl bg-zinc-900/80 border border-white/5 group cursor-pointer"
+      className="relative overflow-hidden rounded-2xl bg-zinc-950 border border-white/5 group cursor-pointer"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       whileHover={{ y: -5, transition: { duration: 0.3 } }}
@@ -134,12 +135,12 @@ export default function WorkCard({ work }: WorkCardProps) {
             src={displayCover}
             alt={work.Title}
             fill
-            loading="lazy"
+            priority={priority}
             className="object-cover opacity-80 group-hover:opacity-40 transition-opacity duration-500"
-            sizes="(max-width: 768px) 100vw, 33vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
-          <div className="w-full h-full bg-zinc-800 animate-pulse" />
+          <div className="w-full h-full bg-zinc-900 animate-pulse" />
         )}
 
         {/* 悬停视频预览：preload=none，src 延迟注入 */}

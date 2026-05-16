@@ -27,9 +27,9 @@ export default function WorkGrid({ videos, images }: WorkGridProps) {
           <Play size={24} className="text-emerald-400" /> FEATURED VIDEOS <span className="text-zinc-400 ml-2 font-light">.视频精选</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {videos.map((work) => (
+          {videos.map((work, index) => (
             <div key={work.documentId} onClick={() => handleWorkClick(work)} className="cursor-pointer">
-              <WorkCard work={work} />
+              <WorkCard work={work} priority={index < 3} />
             </div>
           ))}
         </div>
