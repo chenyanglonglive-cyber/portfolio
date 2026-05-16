@@ -1,8 +1,26 @@
 import WorksFilterGrid from '@/components/WorksFilterGrid';
-import { getWorks } from '@/lib/strapi';
+import { queryStrapi } from '@/lib/strapi';
+import { Work, normalizeWork } from '@/types/work';
 
+// 只预取视频（默认 Tab），图片在切换时懒加载，减少首屏请求数
 export default async function WorksPage() {
-  const initialWorks = await getWorks();
+  const videoFields = [
+    "populate[video][fields][0]=url",
+    "populate[cover][fields][0]=url",
+    "fields[0]=Title",
+    "fields[1]=IsFeatured",
+    "fields[2]=Rank",
+    "fields[3]=Spend",
+    "fields[4]=ROI_7D",
+    "fields[5]=CTR",
+    "fields[6]=Story",
+    "fields[7]=LaunchDate",
+  ].join("&");
+
+  const raw = await queryStrapi<Work[]>(`videos?${videoFields}`);
+  const initialVideos = (raw || [])
+    .map(normalizeWork)
+    .sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
 
   return (
     <div className="container mx-auto max-w-5xl px-8 py-20">
@@ -17,7 +35,7 @@ export default async function WorksPage() {
         </div>
       </div>
 
-      <WorksFilterGrid initialWorks={initialWorks} />
+      <WorksFilterGrid initialVideos={initialVideos} />
     </div>
   );
 }

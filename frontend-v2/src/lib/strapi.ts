@@ -52,9 +52,23 @@ export function getStrapiMedia(url: string | undefined): string {
  * 获取所有作品，按权重 (Rank) 降序排列
  */
 export async function getWorks(): Promise<Work[]> {
+  const fields = [
+    "populate[video][fields][0]=url",
+    "populate[cover][fields][0]=url",
+    "populate[image][fields][0]=url",
+    "fields[0]=Title",
+    "fields[1]=IsFeatured",
+    "fields[2]=Rank",
+    "fields[3]=Spend",
+    "fields[4]=ROI_7D",
+    "fields[5]=CTR",
+    "fields[6]=Story",
+    "fields[7]=LaunchDate",
+  ].join("&");
+
   const [videos, images] = await Promise.all([
-    queryStrapi<Work[]>("videos?populate=*"),
-    queryStrapi<Work[]>("images?populate=*"),
+    queryStrapi<Work[]>(`videos?${fields}`),
+    queryStrapi<Work[]>(`images?${fields}`),
   ]);
 
   const allWorks = [...(videos || []), ...(images || [])];
@@ -65,9 +79,34 @@ export async function getWorks(): Promise<Work[]> {
  * 获取精选作品 (IsFeatured 为 true)
  */
 export async function getFeaturedWorks(): Promise<Work[]> {
+  // populate=* 替换为字段过滤，只获取前端需要的字段，减少传输量
+  const videoFields = [
+    "populate[video][fields][0]=url",
+    "populate[cover][fields][0]=url",
+    "fields[0]=Title",
+    "fields[1]=IsFeatured",
+    "fields[2]=Rank",
+    "fields[3]=Spend",
+    "fields[4]=ROI_7D",
+    "fields[5]=CTR",
+    "fields[6]=Story",
+    "fields[7]=LaunchDate",
+  ].join("&");
+  const imageFields = [
+    "populate[image][fields][0]=url",
+    "fields[0]=Title",
+    "fields[1]=IsFeatured",
+    "fields[2]=Rank",
+    "fields[3]=Spend",
+    "fields[4]=ROI_7D",
+    "fields[5]=CTR",
+    "fields[6]=Story",
+    "fields[7]=LaunchDate",
+  ].join("&");
+
   const [videos, images] = await Promise.all([
-    queryStrapi<Work[]>("videos?filters[IsFeatured][$eq]=true&populate=*"),
-    queryStrapi<Work[]>("images?filters[IsFeatured][$eq]=true&populate=*"),
+    queryStrapi<Work[]>(`videos?filters[IsFeatured][$eq]=true&${videoFields}`),
+    queryStrapi<Work[]>(`images?filters[IsFeatured][$eq]=true&${imageFields}`),
   ]);
 
   const allFeatured = [...(videos || []), ...(images || [])];
