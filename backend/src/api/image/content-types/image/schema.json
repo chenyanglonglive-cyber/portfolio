@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "images",
+  "info": {
+    "singularName": "image",
+    "pluralName": "images",
+    "displayName": "Image",
+    "description": "Image works"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "Story": {
+      "type": "text"
+    },
+    "IsFeatured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Spend": {
+      "type": "biginteger"
+    },
+    "ROI_7D": {
+      "type": "decimal"
+    },
+    "Rank": {
+      "type": "integer",
+      "default": 0
+    },
+    "CTR": {
+      "type": "decimal"
+    },
+    "LaunchDate": {
+      "type": "date"
+    }
+  }
+}

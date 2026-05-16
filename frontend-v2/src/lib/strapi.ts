@@ -42,11 +42,6 @@ export function getStrapiMedia(url: string | undefined): string {
       const path = url.split("strapiapp.com")[1];
       return `/strapi-media${path}`;
     }
-    // R2 直链 → Vercel Proxy（解决 CORS + 边缘缓存）
-    if (url.includes("r2.dev") || url.includes("cloudflarestorage.com")) {
-      const urlObj = new URL(url);
-      return `/r2-assets${urlObj.pathname}`;
-    }
     return url;
   }
   return `${STRAPI_URL}${url}`;
@@ -56,16 +51,26 @@ export function getStrapiMedia(url: string | undefined): string {
  * 获取所有作品，按权重 (Rank) 降序排列
  */
 export async function getWorks(): Promise<Work[]> {
-  const data = await queryStrapi<Work[]>("works?populate=*&sort=Rank:desc");
-  return (data || []).map(normalizeWork);
+  const [videos, images] = await Promise.all([
+    queryStrapi<Work[]>("videos?populate=*"),
+    queryStrapi<Work[]>("images?populate=*"),
+  ]);
+
+  const allWorks = [...(videos || []), ...(images || [])];
+  return allWorks.map(normalizeWork).sort((a, b) => b.Rank - a.Rank);
 }
 
 /**
  * 获取精选作品 (IsFeatured 为 true)
  */
 export async function getFeaturedWorks(): Promise<Work[]> {
-  const data = await queryStrapi<Work[]>("works?filters[IsFeatured][$eq]=true&populate=*&sort=Rank:desc");
-  return (data || []).map(normalizeWork);
+  const [videos, images] = await Promise.all([
+    queryStrapi<Work[]>("videos?filters[IsFeatured][$eq]=true&populate=*"),
+    queryStrapi<Work[]>("images?filters[IsFeatured][$eq]=true&populate=*"),
+  ]);
+
+  const allFeatured = [...(videos || []), ...(images || [])];
+  return allFeatured.map(normalizeWork).sort((a, b) => b.Rank - a.Rank);
 }
 
 /**

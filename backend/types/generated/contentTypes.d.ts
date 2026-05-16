@@ -488,6 +488,75 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiImageImage extends Struct.CollectionTypeSchema {
+  collectionName: 'images';
+  info: {
+    description: 'Image works';
+    displayName: 'Image';
+    pluralName: 'images';
+    singularName: 'image';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    CTR: Schema.Attribute.Decimal;
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    IsFeatured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    LaunchDate: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::image.image'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Rank: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    ROI_7D: Schema.Attribute.Decimal;
+    Spend: Schema.Attribute.BigInteger;
+    Story: Schema.Attribute.Text;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
+  collectionName: 'videos';
+  info: {
+    description: 'Video works';
+    displayName: 'Video';
+    pluralName: 'videos';
+    singularName: 'video';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    cover: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    CTR: Schema.Attribute.Decimal;
+    IsFeatured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    LaunchDate: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::video.video'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Rank: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    ROI_7D: Schema.Attribute.Decimal;
+    Spend: Schema.Attribute.BigInteger;
+    Story: Schema.Attribute.Text;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    video: Schema.Attribute.Media<'videos'> & Schema.Attribute.Required;
+  };
+}
+
 export interface ApiWorkWork extends Struct.CollectionTypeSchema {
   collectionName: 'works';
   info: {
@@ -499,28 +568,35 @@ export interface ApiWorkWork extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    Cover: Schema.Attribute.Media<'images'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     CTR: Schema.Attribute.Decimal;
-    Description: Schema.Attribute.Text;
     IsFeatured: Schema.Attribute.Boolean;
-    LaunchDate: Schema.Attribute.String;
+    LaunchDate: Schema.Attribute.Date;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::work.work'> &
       Schema.Attribute.Private;
+    Media: Schema.Attribute.DynamicZone<
+      ['media.video-item', 'media.image-item']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 1;
+          min: 1;
+        },
+        number
+      >;
     publishedAt: Schema.Attribute.DateTime;
     Rank: Schema.Attribute.Integer;
     ROI_7D: Schema.Attribute.Decimal;
     Spend: Schema.Attribute.BigInteger;
     Story: Schema.Attribute.Text;
     Title: Schema.Attribute.String;
-    Type: Schema.Attribute.Enumeration<['video', 'image']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Video: Schema.Attribute.Media<'videos'>;
   };
 }
 
@@ -1037,6 +1113,8 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
       'api::article.article': ApiArticleArticle;
+      'api::image.image': ApiImageImage;
+      'api::video.video': ApiVideoVideo;
       'api::work.work': ApiWorkWork;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
