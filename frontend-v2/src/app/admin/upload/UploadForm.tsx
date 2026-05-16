@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Video, Image as ImageIcon, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { uploadToStrapi, createWorkEntry } from "./actions";
+import { uploadToStrapi, createVideoEntry } from "./actions";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -14,7 +14,6 @@ export default function UploadForm() {
   const [error, setError] = useState<string | null>(null);
   
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("Creative");
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -96,13 +95,11 @@ export default function UploadForm() {
       const videoData = await uploadToStrapi(videoFormData);
       setProgress(80);
 
-      // 3. 创建作品条目
-      await createWorkEntry({
+      // 3. 创建 Video 条目，cover 字段自动填入抽帧缩略图
+      await createVideoEntry({
         title,
-        category,
         videoId: videoData.id,
-        thumbnailId: thumbData.id,
-        rank: 0,
+        coverId: thumbData.id,
       });
 
       setProgress(100);
@@ -116,32 +113,17 @@ export default function UploadForm() {
   return (
     <div className="max-w-4xl mx-auto p-8 bg-zinc-900/50 rounded-3xl border border-white/5 backdrop-blur-xl">
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Title & Category */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">作品名称</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-400 transition-colors"
-              placeholder="输入作品标题"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">分类</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-400 transition-colors"
-            >
-              <option value="Creative">Creative</option>
-              <option value="UGC">UGC</option>
-              <option value="AI">AI</option>
-              <option value="Data">Data</option>
-            </select>
-          </div>
+        {/* Title */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">作品名称</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-400 transition-colors"
+            placeholder="输入作品标题"
+            required
+          />
         </div>
 
         {/* Upload Zone */}

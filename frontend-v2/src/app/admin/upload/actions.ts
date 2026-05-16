@@ -25,33 +25,29 @@ export async function uploadToStrapi(formData: FormData) {
   }
 
   const data = await response.json();
-  return data[0]; // 返回上传后的媒体对象
+  return data[0];
 }
 
 /**
- * 创建 Work 作品条目
+ * 创建 Video 条目（上传 cover 后自动填入 cover 字段）
  */
-export async function createWorkEntry(data: {
+export async function createVideoEntry(data: {
   title: string;
-  category: string;
   videoId: number;
-  thumbnailId: number;
-  rank?: number;
+  coverId: number;
 }) {
   if (!STRAPI_TOKEN) throw new Error("Missing Strapi Admin Token");
 
   const payload = {
     data: {
       Title: data.title,
-      Category: data.category,
-      Video: data.videoId,
-      Thumbnail: data.thumbnailId,
-      Rank: data.rank || 0,
-      publishedAt: new Date().toISOString(), // 立即发布
+      video: { id: data.videoId },
+      cover: { id: data.coverId },
+      publishedAt: new Date().toISOString(),
     },
   };
 
-  const response = await fetch(`${STRAPI_URL}/api/works`, {
+  const response = await fetch(`${STRAPI_URL}/api/videos`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -62,7 +58,43 @@ export async function createWorkEntry(data: {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error?.message || "Entry creation failed");
+    throw new Error(error.error?.message || "Video entry creation failed");
+  }
+
+  revalidatePath("/works");
+  revalidatePath("/");
+  return await response.json();
+}
+
+/**
+ * 创建 Image 条目
+ */
+export async function createImageEntry(data: {
+  title: string;
+  imageId: number;
+}) {
+  if (!STRAPI_TOKEN) throw new Error("Missing Strapi Admin Token");
+
+  const payload = {
+    data: {
+      Title: data.title,
+      image: { id: data.imageId },
+      publishedAt: new Date().toISOString(),
+    },
+  };
+
+  const response = await fetch(`${STRAPI_URL}/api/images`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${STRAPI_TOKEN}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || "Image entry creation failed");
   }
 
   revalidatePath("/works");

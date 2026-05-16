@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 import Image from 'next/image';
@@ -70,13 +70,6 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
     tempVideo.addEventListener('loadedmetadata', handleMetadata);
     tempVideo.addEventListener('seeked', handleSeeked);
   }, [videoUrl, coverUrl]);
-
-  // 补位逻辑：如果后端没封面，就在挂载时主动抓帧
-  useEffect(() => {
-    if (isVideo && !rawCoverUrl && !generatedCover && !hasCaptured.current) {
-      captureFirstFrame();
-    }
-  }, [isVideo, rawCoverUrl, generatedCover, captureFirstFrame]);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
