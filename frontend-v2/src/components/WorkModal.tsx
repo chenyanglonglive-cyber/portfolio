@@ -153,7 +153,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                       <Calendar size={14} />
                       {work.LaunchDate || "2024.10"}
                    </div>
-                   <h2 className="text-2xl font-black text-white leading-tight uppercase italic">
+                   <h2 className="text-2xl font-black text-white leading-tight uppercase">
                       {work.Title}
                    </h2>
                 </section>
@@ -186,7 +186,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                    </h3>
                    <div className="prose prose-invert prose-emerald max-w-none">
                       <p className="text-zinc-400 leading-relaxed text-sm whitespace-pre-wrap">
-                        {work.Story || "该项目的核心创意源于对目标玩家群体心理的深度洞察。我们采用高对比度的视觉风格，配合动感的配乐，在前 3 秒就锁定了用户的注意力。通过 A/B 测试，我们不断迭代素材，最终实现了点击率与转化率的双重突破。"}
+                        {work.Story || ""}
                       </p>
                       <div className="grid grid-cols-2 gap-4 mt-6">
                          <div className="aspect-square bg-zinc-800 rounded-xl animate-pulse" />

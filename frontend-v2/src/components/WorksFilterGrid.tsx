@@ -10,7 +10,7 @@ interface WorksFilterGridProps {
 }
 
 export default function WorksFilterGrid({ initialWorks }: WorksFilterGridProps) {
-  const [filter, setFilter] = useState<'all' | 'video' | 'image'>('all');
+  const [filter, setFilter] = useState<'video' | 'image'>('video');
   const [sortBy, setSortBy] = useState<'default' | 'spend'>('default');
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,7 +22,7 @@ export default function WorksFilterGrid({ initialWorks }: WorksFilterGridProps) 
 
   const filteredAndSortedWorks = useMemo(() => {
     const result = [...initialWorks].filter(
-      work => filter === 'all' || getWorkType(work) === filter
+      work => getWorkType(work) === filter
     );
 
     if (sortBy === 'spend') {
@@ -37,33 +37,35 @@ export default function WorksFilterGrid({ initialWorks }: WorksFilterGridProps) 
   return (
     <>
       <div className="flex flex-wrap items-center gap-4 mb-12">
-        <div className="flex gap-3">
-          {(['all', 'video', 'image'] as const).map((t) => (
+        {/* 分类切换按钮 */}
+        <div className="flex gap-1 p-1 bg-white/5 rounded-full border border-white/5">
+          {(['video', 'image'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setFilter(t)}
-              className={`px-8 py-2 rounded-full text-[10px] font-bold tracking-widest transition-all duration-300 border ${
+              className={`px-8 py-2.5 rounded-full text-xs font-black tracking-widest transition-all duration-300 uppercase ${
                 filter === t
-                  ? 'bg-white border-white text-black'
-                  : 'bg-transparent border-white/10 text-zinc-500 hover:text-white hover:border-white/30'
+                  ? 'bg-white text-black shadow-lg'
+                  : 'text-zinc-500 hover:text-white'
               }`}
             >
-              {t.toUpperCase()}
+              {t === 'video' ? '视频' : '图片'}
             </button>
           ))}
         </div>
 
-        <div className="hidden md:block h-4 w-px bg-white/10 mx-2" />
+        <div className="hidden md:block h-5 w-px bg-white/10 mx-1" />
 
+        {/* 排序按钮 */}
         <button
           onClick={() => setSortBy(sortBy === 'spend' ? 'default' : 'spend')}
-          className={`px-6 py-2 rounded-full text-[10px] font-bold tracking-widest border transition-all uppercase ${
-            sortBy === 'spend' 
-              ? 'bg-emerald-400 border-emerald-400 text-black shadow-[0_0_15px_rgba(52,211,153,0.3)]' 
-              : 'border-white/10 text-zinc-500 hover:text-white hover:border-white/30'
+          className={`px-5 py-2 rounded-lg text-[10px] font-medium tracking-wider transition-all border ${
+            sortBy === 'spend'
+              ? 'bg-emerald-400/10 border-emerald-400/30 text-emerald-400'
+              : 'border-zinc-800 text-zinc-600 hover:text-zinc-400 hover:border-zinc-700'
           }`}
         >
-          {sortBy === 'spend' ? '按消耗排序中' : '按消耗排序'}
+          {sortBy === 'spend' ? '消耗排序 ↓' : '默认排序'}
         </button>
       </div>
 

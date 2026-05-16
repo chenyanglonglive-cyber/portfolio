@@ -24,7 +24,7 @@ export default function HomeHero() {
         </div>
       </motion.div>
 
-      <h1 className="text-5xl md:text-7xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 tracking-tighter uppercase italic pr-4">
+      <h1 className="text-5xl md:text-7xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 tracking-tighter uppercase pr-4">
         用视觉捕捉游戏之魂
       </h1>
       <p className="text-xl text-zinc-400 max-w-3xl mx-auto leading-relaxed">

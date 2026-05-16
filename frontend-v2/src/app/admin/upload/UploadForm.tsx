@@ -190,7 +190,7 @@ export default function UploadForm() {
                   <ImageIcon size={14} />
                   <span className="text-[10px] font-bold tracking-widest uppercase">自动提取的缩略图</span>
                 </div>
-                <div className="aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black">
+                <div className="aspect-[9/16] rounded-2xl overflow-hidden border border-white/10 bg-black">
                   <img src={thumbnailPreview} alt="Preview" className="w-full h-full object-cover" />
                 </div>
               </div>

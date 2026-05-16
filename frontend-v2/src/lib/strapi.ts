@@ -1,5 +1,6 @@
 import type { Work } from "@/types/work";
 import type { Article } from "@/types/article";
+import type { About } from "@/types/about";
 import { normalizeWork } from "@/types/work";
 
 /**
@@ -79,6 +80,14 @@ export async function getFeaturedWorks(): Promise<Work[]> {
 export async function getArticles(): Promise<Article[]> {
   const data = await queryStrapi<Article[]>("articles?populate=*&sort=publishedAt:desc");
   return data || [];
+}
+
+/**
+ * 获取 About 个人简介（取第一条发布的记录）
+ */
+export async function getAbout(): Promise<About | null> {
+  const data = await queryStrapi<About[]>("abouts?populate=*&sort=publishedAt:desc");
+  return Array.isArray(data) ? data[0] || null : null;
 }
 
 /**

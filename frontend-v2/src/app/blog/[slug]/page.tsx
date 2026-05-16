@@ -80,7 +80,7 @@ export default async function ArticleDetail({ params }: { params: Promise<{ slug
             {/* Table of Contents */}
             <TableOfContents content={article.Content} />
 
-            <div className="prose prose-invert prose-emerald max-w-none prose-lg md:prose-xl prose-headings:italic prose-headings:font-black prose-headings:tracking-tighter prose-p:text-zinc-400 prose-p:leading-relaxed prose-strong:text-white prose-blockquote:border-emerald-400 prose-blockquote:bg-emerald-400/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-code:text-emerald-300 flex-1">
+            <div className="prose prose-invert prose-emerald max-w-none prose-lg md:prose-xl prose-headings:font-black prose-headings:tracking-tighter prose-p:text-zinc-400 prose-p:leading-relaxed prose-strong:text-white prose-blockquote:border-emerald-400 prose-blockquote:bg-emerald-400/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-code:text-emerald-300 flex-1">
               {Array.isArray(article.Content) ? (
                 <CustomBlocksRenderer content={article.Content} />
               ) : (

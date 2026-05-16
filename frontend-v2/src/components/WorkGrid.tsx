@@ -23,8 +23,8 @@ export default function WorkGrid({ videos, images }: WorkGridProps) {
     <>
       {/* Featured Videos */}
       <section className="mb-32">
-        <h2 className="text-2xl font-bold mb-12 flex items-center gap-3 italic bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
-          <Play size={24} className="text-emerald-400 not-italic" /> FEATURED VIDEOS <span className="text-zinc-400 not-italic ml-2 font-light">.视频精选</span>
+        <h2 className="text-2xl font-bold mb-12 flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
+          <Play size={24} className="text-emerald-400" /> FEATURED VIDEOS <span className="text-zinc-400 ml-2 font-light">.视频精选</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {videos.map((work) => (
@@ -37,8 +37,8 @@ export default function WorkGrid({ videos, images }: WorkGridProps) {
 
       {/* Featured Images */}
       <section className="mb-32">
-        <h2 className="text-2xl font-bold mb-12 flex items-center gap-3 italic bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 pb-1">
-          <ImageIcon size={24} className="text-emerald-400 not-italic shrink-0" /> FEATURED VISUALS <span className="text-zinc-400 not-italic ml-2 font-light">.视觉精选</span>
+        <h2 className="text-2xl font-bold mb-12 flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 pb-1">
+          <ImageIcon size={24} className="text-emerald-400 shrink-0" /> FEATURED VISUALS <span className="text-zinc-400 ml-2 font-light">.视觉精选</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {images.map((work) => (

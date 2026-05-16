@@ -139,7 +139,7 @@ export default function BlogList({ articles }: BlogListProps) {
       
       {filteredArticles.length === 0 && (
         <div className="py-20 text-center">
-          <p className="text-zinc-600 italic">No articles found in this category.</p>
+          <p className="text-zinc-600">No articles found in this category.</p>
         </div>
       )}
     </div>

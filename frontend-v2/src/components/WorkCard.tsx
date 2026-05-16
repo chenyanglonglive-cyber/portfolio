@@ -103,7 +103,7 @@ export default function WorkCard({ work }: WorkCardProps) {
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ y: -5, transition: { duration: 0.3 } }}
     >
-      <div className="aspect-[16/9] relative bg-black">
+      <div className={`${isVideo ? 'aspect-[9/16]' : 'aspect-[16/9]'} relative bg-black`}>
         {/* 底层展示图 */}
         {displayCover ? (
           <Image
@@ -142,7 +142,7 @@ export default function WorkCard({ work }: WorkCardProps) {
         {/* 悬停遮罩层 */}
         <div className={`absolute inset-0 z-10 flex flex-col justify-end p-6 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-10'
           }`}>
-          <h3 className="text-lg font-black text-white italic uppercase tracking-tighter leading-none mb-1 group-hover:translate-x-1 transition-transform duration-500">
+          <h3 className="text-lg font-black text-white uppercase tracking-tighter leading-none mb-1 group-hover:translate-x-1 transition-transform duration-500">
             {work.Title}
           </h3>
           <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100">
