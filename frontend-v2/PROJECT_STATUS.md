@@ -99,5 +99,40 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
 *   **后续建议**：若未来存储空间告急并执意要使用免费的 Cloudflare R2，唯一的途径是将后端从 Strapi Cloud 整体迁移至第三方托管（如 Zeabur 或 Railway）。
 
 ---
+
+# 🚀 2026-05-17 更新日志 (UI Polish & Video Pipeline Fix)
+
+## 1. 全站样式统一 (Typography & Layout)
+*   **去除斜体**：所有页面 h1/h2/h3 大标题移除 `italic`，改为正体显示，配合移除冗余的 `not-italic` 补偿类。
+*   **Resume 布局调整**：下载按钮从 About 侧边移至下方独立行，About 区域去掉 `max-w-2xl` 限制，撑满版心宽度。
+*   **容器比例分离**：WorkCard 根据媒体类型自动切换 — 视频 `aspect-[9/16]`，图片 `aspect-[16/9]`。
+*   **筛选栏视觉区分**：分类按钮（segmented control 白底/半透明）与排序按钮（emerald 色系圆角方形）样式明显区分。
+
+## 2. 作品筛选重构 (Works Filter)
+*   **去掉 ALL 标签**：视频和图片不再混合展示，默认显示「视频」分类。
+*   **排序作用域**：按消耗排序仅作用于当前所选分类，后续新增筛选（如标签）同理。
+
+## 3. Resume 动态化 (Dynamic About)
+*   **新建 `About` 类型** (`types/about.ts`) 和 API 函数 (`getAbout()`)。
+*   **Resume 页面拆分**：`page.tsx` 改为 Server Component 拉取 About 数据，渲染逻辑抽至 `ResumeContent` Client Component。
+*   **兜底策略**：Strapi 无 About 数据时回退到原有硬编码文案。
+
+## 4. 视频加载管线修复 (Video Pipeline — Critical Fix)
+*   **上传流修复 (`actions.ts`)**：
+    - 废弃旧的 `createWorkEntry`（往 `/api/works` 发请求）。
+    - 新增 `createVideoEntry` → 正确 POST 到 `/api/videos`。
+    - **cover 自动填入**：上传视频时，客户端抽帧缩略图直接写入 `cover` 字段，用户可见此动作完成。
+*   **WorkCard 修复**：
+    - 移除 mount 时的 `useEffect` 客户端抽帧逻辑（曾在页面加载时下载全部视频）。
+    - 视频仅在 hover 时注入 `videoSrc`，配合 `preload="none"` 实现真正懒加载。
+    - 封面优先使用 Strapi 后端 `cover` 字段，hover 抓帧仅作兜底。
+*   **TypeScript 编译修复**：修复 `useEffect` 未导入和 `captureFirstFrame` 声明顺序错误，解除 Vercel 构建阻塞。
+
+## 5. Vercel 部署恢复 (Deployment Recovery)
+*   **问题诊断**：Vercel 最近 2 次部署处于 Error 状态，根因为 TypeScript 编译失败。
+*   **修复后部署成功**：`wcyblog.space` 作品页正常展示 3 个视频卡片。
+*   **已知遗留**：现有 3 个视频 `cover` 仍未 `null`（修复前上传），重新上传后自动填充。
+
+---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
-*Last Updated: 2026-05-16*
+*Last Updated: 2026-05-17*
