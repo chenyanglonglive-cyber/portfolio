@@ -131,7 +131,32 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
 ## 5. Vercel 部署恢复 (Deployment Recovery)
 *   **问题诊断**：Vercel 最近 2 次部署处于 Error 状态，根因为 TypeScript 编译失败。
 *   **修复后部署成功**：`wcyblog.space` 作品页正常展示 3 个视频卡片。
-*   **已知遗留**：现有 3 个视频 `cover` 仍未 `null`（修复前上传），重新上传后自动填充。
+*   **已知遗留**：~~现有 3 个视频 `cover` 仍为 `null`（修复前上传），重新上传后自动填充。~~ ✅ 已通过 ffmpeg + API 手动回填。
+
+## 6. Strapi Admin 自动抽帧注入 (Auto Cover Injection)
+*   **新增 `backend/src/admin/extensions/auto-cover.ts`**：
+    - 注入脚本到 Strapi Admin 编辑表单
+    - 轮询监测 video 字段变化 → 客户端 Canvas 抽帧 → 上传到媒体库 → 自动写入 cover
+    - 显示实时状态：「⏳ 正在抽帧…」→「✅ 封面已自动填充」
+    - 通过 `backend/src/admin/app.tsx` 的 bootstrap 钩子加载
+*   **待完成**：需在 Strapi Cloud Dashboard 手动触发一次 **Redeploy**，Admin 面板才会加载该脚本。
+
+---
+# 🚀 2026-05-17 晚间更新 (Critical Bug Fixes)
+
+## 1. Strapi 5 API 字段查询兼容 (Root Cause of Empty Homepage)
+*   **问题**：首页精选作品始终为空，RSC 数据 `"videos":[],"images":[]`。
+*   **根因**：`populate[cover]=*` 在 Strapi 5 中对 media 字段返回 400 Bad Request（`Invalid key related at cover.related`）。构建时 `getFeaturedWorks()` 静默失败返回空数组。
+*   **修复**：`src/lib/strapi.ts` — 将 `populate[cover]=*` 改为 `populate[cover][fields][0]=url`，`populate[image]=*` 同理。影响 `getWorks()` 和 `getFeaturedWorks()`。
+
+## 2. 历史视频 Cover 回填
+*   **问题**：3 个旧视频的 cover 仍为 null，首页卡片无封面。
+*   **修复**：通过 ffmpeg 逐一下载视频 → 提取第 1 秒帧 → 上传到 Strapi 媒体库 → PUT /api/videos 回填 cover 关系。
+*   **结果**：三体联动、割草风格克隆 AI、logo 演绎动画 均已显示封面。
+
+## 3. Vercel 项目清理
+*   **删除**：`blog-fixed` 冗余项目（与 `portfolio` 指向同一仓库，造成部署混淆）。
+*   **确认**：`wcyblog.space` 仅绑定在 `portfolio` 项目上，删除无影响。
 
 ---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
