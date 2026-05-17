@@ -4,6 +4,24 @@ import { Work, normalizeWork } from '@/types/work';
 
 export const revalidate = 3600;
 
+async function fetchWorks(endpoint: string, fields: string): Promise<{ data: Work[]; error?: string }> {
+  try {
+    const data = await queryStrapi<Work[]>(`${endpoint}?${fields}`);
+    return { data: data || [] };
+  } catch (err) {
+    const isTimeout =
+      err instanceof Error && (
+        err.name === 'TimeoutError' ||
+        err.name === 'AbortError' ||
+        /timeout|abort/i.test(err.message)
+      );
+    return {
+      data: [],
+      error: isTimeout ? '请求超时，请稍后重试' : (err instanceof Error ? `请求失败：${err.message}` : '网络请求失败'),
+    };
+  }
+}
+
 export default async function WorksPage() {
   const videoFields = [
     "populate[video][fields][0]=url",
@@ -32,15 +50,20 @@ export default async function WorksPage() {
     "pagination[pageSize]=50",
   ].join("&");
 
-  const [videosRaw, imagesRaw] = await Promise.allSettled([
-    queryStrapi<Work[]>(`videos?${videoFields}`),
-    queryStrapi<Work[]>(`images?${imageFields}`),
+  const [videosResult, imagesResult] = await Promise.all([
+    fetchWorks('videos', videoFields),
+    fetchWorks('images', imageFields),
   ]);
 
-  const videos = (videosRaw.status === 'fulfilled' ? videosRaw.value || [] : [])
+  const videos = videosResult.data
     .map(normalizeWork).sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
-  const images = (imagesRaw.status === 'fulfilled' ? imagesRaw.value || [] : [])
+  const images = imagesResult.data
     .map(normalizeWork).sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
+
+  const globalError =
+    videosResult.data.length === 0 && imagesResult.data.length === 0
+      ? videosResult.error || imagesResult.error || undefined
+      : undefined;
 
   return (
     <div className="container mx-auto max-w-5xl px-8 py-20">
@@ -55,7 +78,11 @@ export default async function WorksPage() {
         </div>
       </div>
 
-      <WorksFilterGrid initialVideos={videos} initialImages={images} />
+      <WorksFilterGrid
+        initialVideos={videos}
+        initialImages={images}
+        error={globalError}
+      />
     </div>
   );
 }

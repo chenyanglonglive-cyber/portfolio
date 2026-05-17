@@ -8,9 +8,10 @@ import { Work } from '@/types/work';
 interface WorksFilterGridProps {
   initialVideos: Work[];
   initialImages: Work[];
+  error?: string;
 }
 
-export default function WorksFilterGrid({ initialVideos, initialImages }: WorksFilterGridProps) {
+export default function WorksFilterGrid({ initialVideos, initialImages, error }: WorksFilterGridProps) {
   const [filter, setFilter] = useState<'video' | 'image'>('video');
   const [sortBy, setSortBy] = useState<'default' | 'spend'>('default');
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
@@ -72,9 +73,13 @@ export default function WorksFilterGrid({ initialVideos, initialImages }: WorksF
       {filteredAndSortedWorks.length === 0 ? (
         <div className="col-span-full flex flex-col items-center justify-center py-32 text-center">
           <p className="text-6xl font-black text-zinc-800 mb-4">--</p>
-          <p className="text-zinc-500 text-sm tracking-widest uppercase">
-            {filter === 'video' ? 'No videos yet' : 'No images yet'}
-          </p>
+          {error ? (
+            <p className="text-red-400/80 text-sm tracking-widest">{error}</p>
+          ) : (
+            <p className="text-zinc-500 text-sm tracking-widest uppercase">
+              {filter === 'video' ? 'No videos yet' : 'No images yet'}
+            </p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">

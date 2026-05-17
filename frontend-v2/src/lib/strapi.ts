@@ -15,25 +15,19 @@ const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337"
 export async function queryStrapi<T = unknown>(
   path: string,
   revalidate: number = 3600
-): Promise<T | null> {
+): Promise<T> {
   const url = `${STRAPI_URL}/api/${path}`;
-  try {
-    const res = await fetch(url, {
-      next: { revalidate },
-      signal: AbortSignal.timeout(30000)
-    });
+  const res = await fetch(url, {
+    next: { revalidate },
+    signal: AbortSignal.timeout(30000),
+  });
 
-    if (!res.ok) {
-      console.error(`Strapi Fetch Error: ${res.status} ${res.statusText}`);
-      return null;
-    }
-
-    const json = await res.json();
-    return json.data as T;
-  } catch (err) {
-    console.error(`Network Error calling Strapi (${url}):`, err);
-    return null;
+  if (!res.ok) {
+    throw new Error(`Strapi 响应异常 (${res.status})`);
   }
+
+  const json = await res.json();
+  return json.data as T;
 }
 
 /**
@@ -83,20 +77,22 @@ export async function getWorks(): Promise<Work[]> {
     "pagination[pageSize]=50",
   ].join("&");
 
-  const [videos, images] = await Promise.all([
-    queryStrapi<Work[]>(`videos?${videoFields}`),
-    queryStrapi<Work[]>(`images?${imageFields}`),
-  ]);
-
-  const allWorks = [...(videos || []), ...(images || [])];
-  return allWorks.map(normalizeWork).sort((a, b) => b.Rank - a.Rank);
+  try {
+    const [videos, images] = await Promise.all([
+      queryStrapi<Work[]>(`videos?${videoFields}`),
+      queryStrapi<Work[]>(`images?${imageFields}`),
+    ]);
+    const allWorks = [...(videos || []), ...(images || [])];
+    return allWorks.map(normalizeWork).sort((a, b) => b.Rank - a.Rank);
+  } catch {
+    return [];
+  }
 }
 
 /**
  * 获取精选作品 (IsFeatured 为 true)
  */
 export async function getFeaturedWorks(): Promise<Work[]> {
-  // populate=* 替换为字段过滤，只获取前端需要的字段，减少传输量
   const videoFields = [
     "populate[video][fields][0]=url",
     "populate[cover][fields][0]=url",
@@ -123,35 +119,50 @@ export async function getFeaturedWorks(): Promise<Work[]> {
     "pagination[pageSize]=50",
   ].join("&");
 
-  const [videos, images] = await Promise.all([
-    queryStrapi<Work[]>(`videos?filters[IsFeatured][$eq]=true&${videoFields}`),
-    queryStrapi<Work[]>(`images?filters[IsFeatured][$eq]=true&${imageFields}`),
-  ]);
-
-  const allFeatured = [...(videos || []), ...(images || [])];
-  return allFeatured.map(normalizeWork).sort((a, b) => b.Rank - a.Rank);
+  try {
+    const [videos, images] = await Promise.all([
+      queryStrapi<Work[]>(`videos?filters[IsFeatured][$eq]=true&${videoFields}`),
+      queryStrapi<Work[]>(`images?filters[IsFeatured][$eq]=true&${imageFields}`),
+    ]);
+    const allFeatured = [...(videos || []), ...(images || [])];
+    return allFeatured.map(normalizeWork).sort((a, b) => b.Rank - a.Rank);
+  } catch {
+    return [];
+  }
 }
 
 /**
  * 获取所有手记，按发布时间倒序排列
  */
 export async function getArticles(): Promise<Article[]> {
-  const data = await queryStrapi<Article[]>("articles?populate=*&sort=publishedAt:desc");
-  return data || [];
+  try {
+    const data = await queryStrapi<Article[]>("articles?populate=*&sort=publishedAt:desc");
+    return data || [];
+  } catch {
+    return [];
+  }
 }
 
 /**
  * 获取 About 个人简介（取第一条发布的记录）
  */
 export async function getAbout(): Promise<About | null> {
-  const data = await queryStrapi<About[]>("abouts?populate=*&sort=publishedAt:desc");
-  return Array.isArray(data) ? data[0] || null : null;
+  try {
+    const data = await queryStrapi<About[]>("abouts?populate=*&sort=publishedAt:desc");
+    return Array.isArray(data) ? data[0] || null : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
  * 根据 Slug 获取单篇手记
  */
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  const data = await queryStrapi<Article[]>(`articles?filters[Slug][$eq]=${encodeURIComponent(slug)}&populate=*`);
-  return Array.isArray(data) ? data[0] || null : null;
+  try {
+    const data = await queryStrapi<Article[]>(`articles?filters[Slug][$eq]=${encodeURIComponent(slug)}&populate=*`);
+    return Array.isArray(data) ? data[0] || null : null;
+  } catch {
+    return null;
+  }
 }
