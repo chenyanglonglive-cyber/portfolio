@@ -56,9 +56,21 @@ export function getStrapiMedia(url: string | undefined): string {
  * 获取所有作品，按权重 (Rank) 降序排列
  */
 export async function getWorks(): Promise<Work[]> {
-  const fields = [
+  const videoFields = [
     "populate[video][fields][0]=url",
     "populate[cover][fields][0]=url",
+    "fields[0]=Title",
+    "fields[1]=IsFeatured",
+    "fields[2]=Rank",
+    "fields[3]=Spend",
+    "fields[4]=ROI_7D",
+    "fields[5]=CTR",
+    "fields[6]=Story",
+    "fields[7]=LaunchDate",
+    "pagination[pageSize]=50",
+  ].join("&");
+
+  const imageFields = [
     "populate[image][fields][0]=url",
     "fields[0]=Title",
     "fields[1]=IsFeatured",
@@ -72,8 +84,8 @@ export async function getWorks(): Promise<Work[]> {
   ].join("&");
 
   const [videos, images] = await Promise.all([
-    queryStrapi<Work[]>(`videos?${fields}`),
-    queryStrapi<Work[]>(`images?${fields}`),
+    queryStrapi<Work[]>(`videos?${videoFields}`),
+    queryStrapi<Work[]>(`images?${imageFields}`),
   ]);
 
   const allWorks = [...(videos || []), ...(images || [])];
