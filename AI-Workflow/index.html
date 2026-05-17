@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 游戏广告创意工作流 — 6大核心案例交互大屏</title>
+  
+  <!-- 引入 Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- 引入 GSAP 核心动画库 -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+
+  <style>
+    /* ── 设计系统与基础变量 ───────────────────────────────── */
+    :root {
+      --bg: #09090b;
+      --panel-bg: rgba(18, 18, 28, 0.7);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --panel-hover-border: rgba(255, 255, 255, 0.16);
+      
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --text-dim: #71717a;
+      
+      --accent-gemini: #4285F4;
+      --accent-dreamina: #FF2E93;
+      --accent-openai: #10a37f;
+      --accent-claude: #d97706;
+      --accent-hyper: #34d399;
+      --accent-capcut: #00F2FE;
+      --accent-notebooklm: #34A853;
+      --accent-ugcpgc: #00f2fe;
+      --accent-general: #00f2fe;
+      
+      --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", sans-serif;
+    }
+
+    /* ── 基础复位 ────────────────────────────────────────── */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-stack);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* ── 背景网格与霓虹微光 ───────────────────────────────── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-image: 
+        radial-gradient(circle at 30% 20%, rgba(66, 133, 244, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255, 46, 147, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, #18181b 0%, #09090b 100%);
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      opacity: 0.8;
+    }
+
+    /* ── 页面外容器 ──────────────────────────────────────── */
+    .dashboard-container {
+      max-width: 1720px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      min-height: 900px;
+    }
+
+    /* ── 头部控制栏 ──────────────────────────────────────── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 20px;
+    }
+
+    .logo-area {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-area h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-area .tagline {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+      font-weight: 400;
+    }
+
+    /* 分类菜单 */
+    .category-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--panel-border);
+      padding: 4px;
+      border-radius: 99px;
+      gap: 4px;
+      backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 8px 18px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid transparent;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* 三大品类激活状态的独特霓虹微光视觉表现 */
+    .tab-btn[data-category="creative"].active {
+      background: linear-gradient(135deg, rgba(66, 133, 244, 0.12) 0%, rgba(255, 46, 147, 0.12) 100%);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(66, 133, 244, 0.25), 0 0 5px rgba(255, 46, 147, 0.15);
+    }
+
+    .tab-btn[data-category="efficiency"].active {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.12) 0%, rgba(16, 163, 127, 0.12) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(52, 211, 153, 0.25), 0 0 5px rgba(16, 163, 127, 0.15);
+    }
+
+    .tab-btn[data-category="knowledge"].active {
+      background: linear-gradient(135deg, rgba(230, 126, 34, 0.12) 0%, rgba(217, 119, 6, 0.12) 100%);
+      border: 1px solid rgba(230, 126, 34, 0.3);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(230, 126, 34, 0.25), 0 0 5px rgba(217, 119, 6, 0.15);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* 按钮样式 */
+    .btn {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text-primary);
+      padding: 10px 18px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn:hover {
+      border-color: var(--panel-hover-border);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-1px);
+    }
+
+    .btn.active {
+      background: linear-gradient(135deg, var(--accent-gemini) 0%, var(--accent-dreamina) 100%);
+      border-color: transparent;
+      box-shadow: 0 4px 20px rgba(66, 133, 244, 0.3);
+    }
+
+    /* 播放控制与倒计时 */
+    .play-status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--panel-border);
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--text-dim);
+      transition: background-color 0.3s ease;
+    }
+
+    .status-dot.active {
+      background-color: #34d399;
+      box-shadow: 0 0 8px #34d399;
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    /* ── 主工作区网格 ────────────────────────────────────── */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      gap: 24px;
+      flex: 1;
+      min-height: 0; /* 允许网格高度自适应收缩 */
+    }
+
+    /* ── 左侧：案例导航 ────────────────────────────────────── */
+    .nav-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    /* 隐藏滚动条 */
+    .nav-column::-webkit-scrollbar {
+      width: 4px;
+    }
+    .nav-column::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.05);
+      border-radius: 99px;
+    }
+
+    .case-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .case-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: transparent;
+      transition: background 0.3s ease;
+    }
+
+    .case-card:hover {
+      transform: translateX(4px);
+      border-color: var(--panel-hover-border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .case-card.active {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: var(--active-border-color, var(--accent-gemini));
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .case-card.active::before {
+      background: var(--active-border-color, var(--accent-gemini));
+    }
+
+    .case-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .case-index {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+    }
+
+    .case-icon-wrap {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.7;
+    }
+
+    .case-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .case-tagline {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* ── 中央：流程图画布 ─────────────────────────────────── */
+    .canvas-column {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+    }
+
+    .canvas-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 5;
+    }
+
+    .canvas-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .canvas-title .subtitle {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-secondary);
+    }
+
+    /* 流程连接线 SVG 画布 */
+    svg.connections-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .connection-path-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.04);
+      stroke-width: 2;
+    }
+
+    .connection-path-pulse {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 8, 40;
+      stroke-dashoffset: 0;
+      animation: pulse-dash 3s linear infinite;
+    }
+
+    @keyframes pulse-dash {
+      to {
+        stroke-dashoffset: -96;
+      }
+    }
+
+    /* 流程节点容器 */
+    .flowchart-container {
+      flex: 1;
+      position: relative;
+      padding: 30px 20px 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 20px;
+      min-height: 600px;
+      z-index: 2;
+    }
+
+    /* 流程节点卡片 */
+    .node-card {
+      width: 340px;
+      background: rgba(10, 10, 15, 0.85);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+      text-align: left;
+      position: relative;
+      z-index: 3;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .node-card:hover {
+      border-color: var(--node-hover-color, var(--text-dim));
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .node-icon {
+      font-size: 22px;
+      margin-bottom: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--panel-border);
+    }
+
+    .node-text-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-grow: 1;
+    }
+
+    .node-label {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .node-sub {
+      font-size: 10.5px;
+      color: var(--text-dim);
+      line-height: 1.3;
+    }
+
+    .brand-tag {
+      position: absolute;
+      top: -10px;
+      right: 12px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #000;
+    }
+
+    /* ── 右侧：深度分析解析 ────────────────────────────────── */
+    .details-column {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+      backdrop-filter: blur(16px);
+    }
+
+    .details-column::-webkit-scrollbar {
+      width: 4px;
+    }
+    .details-column::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.05);
+      border-radius: 99px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .desc-box {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .pain-point-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .pain-point-item::before {
+      content: "✕";
+      color: #ff4d4f;
+      font-weight: 700;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .efficiency-card {
+      background: rgba(52, 211, 153, 0.04);
+      border: 1px dashed rgba(52, 211, 153, 0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .efficiency-icon {
+      font-size: 24px;
+      color: var(--accent-hyper);
+    }
+
+    .efficiency-text h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-hyper);
+      margin-bottom: 2px;
+    }
+
+    .efficiency-text p {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .tools-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tool-badge {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--panel-border);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── SVG 官方图标定义样式 ───────────────────────────────── */
+    .icon-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── 全屏装饰与扫尾 ────────────────────────────────────── */
+    footer {
+      margin-top: auto;
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--panel-border);
+    }
+
+    .footer-credits {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .footer-action {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 倒计时进度条 */
+    .progress-circle-wrap {
+      position: relative;
+      width: 24px;
+      height: 24px;
+    }
+
+    .progress-circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 3;
+    }
+
+    .progress-circle-bar {
+      fill: none;
+      stroke: var(--accent-general);
+      stroke-width: 3;
+      stroke-dasharray: 63; /* 2 * PI * r (r=10) */
+      stroke-dashoffset: 63;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 0.1s linear;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 网格粒子与柔光背景 -->
+  <div class="bg-canvas"></div>
+  <div class="bg-grid"></div>
+
+  <!-- 主大屏容器 -->
+  <div class="dashboard-container">
+    
+    <!-- 头部栏 -->
+    <header>
+      <div class="logo-area">
+        <h1>
+          <!-- 闪耀的科技折线 -->
+          <svg style="width: 28px; height: 28px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 17L10 11L13 14L20 7M20 7H15M20 7V12" stroke="url(#logo-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="4" y1="7" x2="20" y2="17">
+                <stop offset="0%" stop-color="#4285F4"/>
+                <stop offset="100%" stop-color="#FF2E93"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          AI 工业化工作流大屏
+        </h1>
+        <div class="tagline">从生成到提效的一站式 AI 生产力大屏</div>
+      </div>
+
+      <!-- 中间导航菜单：三轨品类切换 -->
+      <div class="category-tabs">
+        <button class="tab-btn active" data-category="creative">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px; display:inline-block; vertical-align:middle;">
+            <path d="M12 2L2 22H22L12 2Z" stroke-linejoin="round"/>
+          </svg>
+          AI 创意生成
+        </button>
+        <button class="tab-btn" data-category="efficiency">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px; display:inline-block; vertical-align:middle;">
+            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          AI 自动化提效
+        </button>
+        <button class="tab-btn" data-category="knowledge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px; display:inline-block; vertical-align:middle;">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V3.5A2.5 2.5 0 0 1 6.5 1H20M12 5H18M12 9H18M12 13H18" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          AI 知识库构建
+        </button>
+      </div>
+      
+      <div class="header-controls">
+        <div class="play-status-pill">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">交互探索模式</span>
+        </div>
+        
+        <div class="progress-circle-wrap" id="timer-circle-wrap" style="display: none;">
+          <svg width="24" height="24" viewBox="0 0 24 24">
+            <circle class="progress-circle-bg" cx="12" cy="12" r="10"/>
+            <circle class="progress-circle-bar" id="timer-bar" cx="12" cy="12" r="10"/>
+          </svg>
+        </div>
+
+        <button class="btn" id="play-pause-btn">
+          <span id="btn-icon">▶</span>
+          <span id="btn-text">自动放映模式</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 网格中心 -->
+    <div class="dashboard-grid">
+      
+      <!-- 左侧：6大案例卡片列表 -->
+      <div class="nav-column" id="nav-column">
+        <!-- JS 动态注入 -->
+      </div>
+
+      <!-- 中央：图形化流程图渲染 -->
+      <div class="canvas-column">
+        <div class="canvas-header">
+          <div class="canvas-title" id="canvas-title">
+            <!-- 标题 -->
+          </div>
+        </div>
+
+        <!-- 连线画布 + 节点框 -->
+        <div class="flowchart-container" id="flowchart-container">
+          <svg class="connections-layer" id="connections-svg">
+            <!-- 动态生成二次贝塞尔飞线 -->
+          </svg>
+          <!-- JS 动态注入卡片 -->
+        </div>
+      </div>
+
+      <!-- 右侧：详细痛点与提效分析 -->
+      <div class="details-column" id="details-column">
+        <!-- JS 动态注入 -->
+      </div>
+
+    </div>
+
+    <!-- 底部栏 -->
+    <footer>
+      <div class="footer-credits">AI 游戏内容生成管线展示面板 © 2026. Standalone Interactive System.</div>
+      <div class="footer-action">
+        <span>💡 提示：您可以点击左侧案例卡片自由切片探索细节</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- 内联 SVG 图标仓库（供 JS 复用以避免静态 HTTP 载入） -->
+  <div style="display: none;">
+    <!-- Gemini Icon -->
+    <div id="svg-gemini">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C12 2 12.5 7.5 14 9C15.5 10.5 21 11 21 11C21 11 15.5 11.5 14 13C12.5 14.5 12 20 12 20C12 20 11.5 14.5 10 13C8.5 11.5 3 11 3 11C3 11 8.5 10.5 10 9C11.5 7.5 12 2 12 2Z" fill="url(#gem_grad)"/>
+        <defs>
+          <linearGradient id="gem_grad" x1="3" y1="2" x2="21" y2="20">
+            <stop offset="0%" stop-color="#9B59B6"/>
+            <stop offset="50%" stop-color="#4285F4"/>
+            <stop offset="100%" stop-color="#00F2FE"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    
+    <!-- Dreamina Icon (Jimeng AI) -->
+    <div id="svg-dreamina">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10.5" stroke="url(#jimeng-ring-grad)" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/>
+        <path d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1614 4.30323 16.1348 5.625 17.625C6.875 16 8.5 14.75 10.5 14.25C9.5 13.5 9 12.5 9 11.5C9 9 11 7 13.5 7C14.75 7 15.875 7.5 16.625 8.375C18.125 7 19.375 5.25 19.375 3.5C17.625 3.5 14.75 3.5 12 3.5Z" fill="url(#jimeng-petal-1)" opacity="0.9"/>
+        <path d="M20.5 12C20.5 7.30558 16.6944 3.5 12 3.5C9.83863 3.5 7.86516 4.30323 6.375 5.625C8 6.875 9.25 8.5 9.75 10.5C10.5 9.5 11.5 9 12.5 9C15 9 17 11 17 13.5C17 14.75 16.5 15.875 15.625 16.625C17 18.125 18.75 19.375 20.5 19.375C20.5 17.625 20.5 14.75 20.5 12Z" fill="url(#jimeng-petal-2)" opacity="0.95"/>
+        <circle cx="12" cy="12" r="3.2" fill="#FFFFFF"/>
+        <circle cx="12" cy="12" r="1.5" fill="#09090b"/>
+        <defs>
+          <linearGradient id="jimeng-ring-grad" x1="2" y1="2" x2="22" y2="22">
+            <stop offset="0%" stop-color="#FF2E93"/>
+            <stop offset="35%" stop-color="#9B59B6"/>
+            <stop offset="70%" stop-color="#4285F4"/>
+            <stop offset="100%" stop-color="#34d399"/>
+          </linearGradient>
+          <linearGradient id="jimeng-petal-1" x1="3" y1="3" x2="16" y2="16">
+            <stop offset="0%" stop-color="#FF2E93"/>
+            <stop offset="100%" stop-color="#FBBC04"/>
+          </linearGradient>
+          <linearGradient id="jimeng-petal-2" x1="10" y1="10" x2="21" y2="21">
+            <stop offset="0%" stop-color="#4285F4"/>
+            <stop offset="100%" stop-color="#FF2E93"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- GPT Icon (ChatGPT Official Hexagonal Star) -->
+    <div id="svg-gpt">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.06 10.59a3.86 3.86 0 0 0-.25-2.22 3.91 3.91 0 0 0-1.41-1.57A3.91 3.91 0 0 0 13.9 6.2a3.89 3.89 0 0 0-3.32 1.83l-.7-.41a2.82 2.82 0 0 0-2.82 0 2.82 2.82 0 0 0-1.41 2.45v.82l-.7-.4A3.92 3.92 0 0 0 3.5 12a3.91 3.91 0 0 0 1.41 3 3.9 3.9 0 0 0 3.5.61l.7-.4v.82a2.82 2.82 0 0 0 2.82 2.45c1.1 0 2.08-.63 2.53-1.63l.7.4a3.89 3.89 0 0 0 3.32.6 3.91 3.91 0 0 0 2.22-3 3.91 3.91 0 0 0-.94-3.26ZM11.16 18a1.82 1.82 0 0 1-1.18-.43L12 16.4l2.02 1.17c-.36.27-.8.43-1.26.43a1.8 1.8 0 0 1-1.6-1ZM5.5 11c0-.46.16-.9.43-1.26L7.95 10.9v2.2L5.93 14.27A1.8 1.8 0 0 1 5.5 13a1.8 1.8 0 0 1 0-2ZM11.16 6a1.8 1.8 0 0 1 1.6 1L12.76 10H8.74L8 8.7a1.8 1.8 0 0 1 3.16-2.7ZM12 14.86 9.98 13.7v-2.34L12 12.52l2.02-1.17v2.34L12 14.86Zm4.5-1.59-2.02-1.17v-2.2l2.02-1.17c.27.36.43.8.43 1.26a1.8 1.8 0 0 1-.43 1.28ZM12.76 14H8.74L8 15.3a1.8 1.8 0 0 1-1.58.7a1.8 1.8 0 0 1-.79-2.3L7.65 13.1l2.02 1.17L12.76 14Z" fill="#10A37F"/>
+      </svg>
+    </div>
+
+    <!-- Claude Icon -->
+    <div id="svg-claude">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="#d97706" stroke-width="1.5"/>
+        <path d="M12 6V18M6 12H18M7.8 7.8L16.2 16.2M7.8 16.2L16.2 7.8" stroke="#d97706" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- HyperIcon -->
+    <div id="svg-hyper">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="4" width="20" height="16" rx="3" stroke="#34d399" stroke-width="2"/>
+        <line x1="2" y1="9" x2="22" y2="9" stroke="#34d399" stroke-width="1.5"/>
+        <circle cx="5" cy="6.5" r="1" fill="#FF4444"/>
+        <circle cx="8" cy="6.5" r="1" fill="#FBBC04"/>
+        <circle cx="11" cy="6.5" r="1" fill="#34A853"/>
+        <path d="M10 11.5L15 14L10 16.5V11.5Z" fill="#34d399"/>
+      </svg>
+    </div>
+
+    <!-- CapCut / Jianying Icon -->
+    <div id="svg-capcut">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#capcut-bg-grad)"/>
+        <path d="M7 11C7 8.79086 8.79086 7 11 7H13V9H11C9.89543 9 9 9.89543 9 11V13H7V11Z" fill="#FFFFFF"/>
+        <path d="M17 13C17 15.2091 15.2091 17 13 17H11V15H13C14.1046 15 15 14.1046 15 13V11H17V13Z" fill="#FFFFFF"/>
+        <rect x="10.5" y="10.5" width="3" height="3" rx="0.5" fill="#FFFFFF" transform="rotate(45 12 12)"/>
+        <defs>
+          <linearGradient id="capcut-bg-grad" x1="2" y1="2" x2="22" y2="22">
+            <stop offset="0%" stop-color="#00F2FE"/>
+            <stop offset="100%" stop-color="#FF2E93"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- NotebookLM Icon -->
+    <div id="svg-notebooklm">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="3" width="14" height="18" rx="3" fill="url(#notebooklm-bg)" stroke="#34A853" stroke-width="1.5"/>
+        <line x1="3" y1="6" x2="6" y2="6" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <line x1="3" y1="10" x2="6" y2="10" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <line x1="3" y1="14" x2="6" y2="14" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <line x1="3" y1="18" x2="6" y2="18" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <path d="M9 7V17L12 12L15 17V7" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="notebooklm-bg" x1="5" y1="3" x2="19" y2="21">
+            <stop offset="0%" stop-color="#1A73E8"/>
+            <stop offset="50%" stop-color="#34A853"/>
+            <stop offset="100%" stop-color="#FBBC05"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- UGC/PGC Icon -->
+    <div id="svg-ugcpgc">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="5" width="13" height="14" rx="3" stroke="#00f2fe" stroke-width="2"/>
+        <path d="M16 9L21 6.5V17.5L16 15V9Z" fill="#00f2fe"/>
+        <circle cx="8.5" cy="10" r="2" fill="#FFFFFF"/>
+        <path d="M5 15C5 13.5 6.5 13 8.5 13C10.5 13 12 13.5 12 15" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── 核心交互 JavaScript ──────────────────────────────── -->
+  <script>
+    // 核心 AI 工作流结构化数据配置
+    const casesData = [
+      {
+        id: 1,
+        category: "creative",
+        title: "衍生玩法创意视频管线",
+        subtitle: "爆款参考视频 Reskin 与智能元素克隆替换",
+        accent: "var(--accent-gemini)",
+        desc: "提取市场高转化、爆款创意视频，通过定制的 <b>Gemini 克隆智能体</b> 精确识别视频中非核心玩法元素（如其他游戏的IP角色、背景、特定道具），自动匹配已有的游戏资产或通过 AI 进行风格化重绘，最后借助<b>即梦画布 (Dreamina Canvas)</b> 完成精细化空间堆积并生成完美移植的衍生玩法创意视频。",
+        painPoints: [
+          "人工分析竞品爆款视频，全手动逐帧提取道具和背景耗费大量时间",
+          "设计新元素后，因画布尺寸 and 运动轨迹失准导致难以与原玩法完美契合",
+          "游戏衍生玩法创意迭代缓慢，难以快速进行市场多版本测试"
+        ],
+        efficiency: "人工作业：制作耗时 4~6 小时 ⚡ AI 管线：提效至 15 分钟/条",
+        tools: ["Google Gemini (克隆智能体)", "即梦画布 (Dreamina Canvas)", "AI 风格化绘图"],
+        nodes: [
+          { id: "c1-n1", icon: "📹", label: "爆款参考视频", sub: "输入外部验证过的创意" },
+          { id: "c1-n2", icon: "🤖", label: "Gemini 克隆智能体", sub: "自动分析并推荐替换元素", brand: "gemini" },
+          { id: "c1-n3", icon: "🎨", label: "素材重组 / AI生图", sub: "根据提示词定制游戏道具" },
+          { id: "c1-n4", icon: "🖼️", label: "即梦画布规置", sub: "像素级排布并归整画布", brand: "dreamina" },
+          { id: "c1-n5", icon: "🎬", label: "衍生创意视频", sub: "一键生成并微调画面", brand: "dreamina" }
+        ],
+        connections: [
+          { from: "c1-n1", to: "c1-n2" },
+          { from: "c1-n2", to: "c1-n3" },
+          { from: "c1-n3", to: "c1-n4" },
+          { from: "c1-n4", to: "c1-n5" }
+        ]
+      },
+      {
+        id: 2,
+        category: "creative",
+        title: "角色剧情动画分镜管线",
+        subtitle: "基于剧情参考视频的电影级分镜大纲与原图生成",
+        accent: "var(--accent-dreamina)",
+        desc: "使用专业设定的 <b>Gemini 分镜智能体</b> 深度提取高水准参考视频中的镜头轨迹、运镜景别、人物面部表情、对白台词以及画面特效。在输出脚本前，智能体还会<b>人性化交互提问</b>，锁定需上场的本尊演员与核心道具，最终无缝契合游戏设定输出极高准度分镜稿，并配合 <b>GPT ImageGen 2</b> 瞬间生成高清分镜图，无缝输入<b>即梦 2.0</b> 生成高质感剧情片。",
+        painPoints: [
+          "手写电影级分镜脚本需要资深剧导，沟通改稿周期动辄 3~5 天",
+          "手绘分镜草图成本高，且极难在前期还原游戏专有的材质及角色风格",
+          "传统视频生成前，演员调度、运镜描述混乱，导致最终生成视频严重崩坏"
+        ],
+        efficiency: "编导排期：剧本策划 3~5 天 ⚡ AI 管线：30 分钟生成高保真分镜视频",
+        tools: ["Gemini (分镜脚本智能体)", "GPT ImageGen 2", "即梦 2.0 (高清剧情合成)"],
+        nodes: [
+          { id: "c2-n1", icon: "📹", label: "参考剧情视频", sub: "输入理想的镜头运动模板" },
+          { id: "c2-n2", icon: "🤖", label: "Gemini 分镜智能体", sub: "提取分镜大纲(景别/表情)", brand: "gemini" },
+          { id: "c2-n3", icon: "👥", label: "演员道具前置确认", sub: "智能提问交互确认游戏元素" },
+          { id: "c2-n4", icon: "📋", label: "完整分镜脚本", sub: "输出包含镜头描述的结构化大纲", brand: "gpt" },
+          { id: "c2-n5", icon: "🖼️", label: "高清分镜图生成", sub: "配合 ImageGen 瞬间生成原型图" },
+          { id: "c2-n6", icon: "🎬", label: "即梦 2.0 剧情动画", sub: "高一致性角色视频交付", brand: "dreamina" }
+        ],
+        connections: [
+          { from: "c2-n1", to: "c2-n2" },
+          { from: "c2-n2", to: "c2-n3" },
+          { from: "c2-n3", to: "c2-n4" },
+          { from: "c2-n4", to: "c2-n5" },
+          { from: "c2-n5", to: "c2-n6" }
+        ]
+      },
+      {
+        id: 3,
+        category: "creative",
+        title: "知识库驱动福利宣传管线",
+        subtitle: "业务知识库驱动的爆款福利脚本文案与海报生图",
+        accent: "var(--accent-openai)",
+        desc: "通过整合运营活动细节、玩法攻略、基础装备性能、主线剧情背景等核心数据，构建<b>游戏专属知识库</b>。AI 将深度参考知识库内容，直接生成完全符合游戏真实数值的福利活动宣传脚本文案，彻底规避胡言乱语；配合 <b>GPT ImageGen 2</b> 瞬时绘制并精修宣传海报，快速下发推广视频。",
+        painPoints: [
+          "运营活动频繁且数据精细，人工撰写脚本极易出现数值或玩法规则差错",
+          "专业美术对活动类小海报排期慢，导致宣发物料无法配合紧急运营活动",
+          "常规文生图 AI 不懂特定游戏设定，生成的装备/背景完全货不对板"
+        ],
+        efficiency: "传统制作：文案+海报耗时 2 天 ⚡ AI 管线：仅需 10 分钟自动渲染全套",
+        tools: ["游戏私有知识库", "GPT ImageGen 2", "运营文案生成器"],
+        nodes: [
+          { id: "c3-n1", icon: "📚", label: "游戏专属知识库", sub: "活动/装备介绍/攻略/主线剧情", brand: "notebooklm" },
+          { id: "c3-n2", icon: "✍️", label: "AI 自动生成脚本", sub: "深度结合知识库进行数值校验", brand: "gpt" },
+          { id: "c3-n3", icon: "🖼️", label: "GPT ImageGen 2", sub: "生成高质量福利宣传图片", brand: "gpt" },
+          { id: "c3-n4", icon: "📱", label: "福利宣传片与海报", sub: "批量化运营推广物料秒级交付" }
+        ],
+        connections: [
+          { from: "c3-n1", to: "c3-n2" },
+          { from: "c3-n2", to: "c3-n3" },
+          { from: "c3-n3", to: "c3-n4" }
+        ]
+      },
+      {
+        id: 4,
+        category: "creative",
+        title: "长攻略/直播转信息流广告管线",
+        subtitle: "基于音画转录的长视频亮点瞬间提取与短视频转化",
+        accent: "var(--accent-claude)",
+        desc: "直接读取玩家所做的高深攻略视频或长达数小时的直播录屏。首先自动抽离音频音轨，通过 ASR 转录为文本。AI 深入分析长文本后，定位极具爆点和转化的段落，在 <b>20 秒内</b> 自动改写为迎合信息流广告风格的“黄金三秒”吸睛文案，自动合成高拟真 <b>TTS 配音</b>，最终搭配精选游戏录屏实现裂变式视频起量。",
+        painPoints: [
+          "直播录屏体量庞大，依靠人工逐帧寻找精彩亮点耗费巨大的剪辑精力",
+          "信息流广告对前3秒吸睛度要求极苛刻，人工写词容易陷入平铺直叙",
+          "声优配音录制反馈周期长达数天，每次微调重录阻碍广告高频起量"
+        ],
+        efficiency: "传统视频切片：耗时 3~4 小时 ⚡ AI 管线：8 分钟流水线自动生成",
+        tools: ["ASR 音频转录", "信息流黄金3秒文案", "高拟真 TTS 语音合成"],
+        nodes: [
+          { id: "c4-n1", icon: "🎮", label: "长视频 / 直播录屏", sub: "数小时大体量原始音画", brand: "ugcpgc" },
+          { id: "c4-n2", icon: "🎙️", label: "音频提取与转录", sub: "精细转录为文本，智能标记章节" },
+          { id: "c4-n3", icon: "✍️", label: "AI 黄金三秒文案", sub: "限制 20s 长度，超高转化词汇", brand: "gpt" },
+          { id: "c4-n4", icon: "🎤", label: "高拟真 TTS 配音", sub: "秒级合成专业声线配音" },
+          { id: "c4-n5", icon: "📱", label: "录屏匹配与切片", sub: "爆款广告视频直接导出", brand: "capcut" }
+        ],
+        connections: [
+          { from: "c4-n1", to: "c4-n2" },
+          { from: "c4-n2", to: "c4-n3" },
+          { from: "c4-n3", to: "c4-n4" },
+          { from: "c4-n4", to: "c4-n5" }
+        ]
+      },
+      {
+        id: 5,
+        category: "creative",
+        title: "战机进阶与合成演示动画管线",
+        subtitle: "使用 Claude Code Skills 在浏览器实时渲染与超清录屏",
+        accent: "var(--accent-hyper)",
+        desc: "当涉及战机星级进阶图谱或武器道具合成路线等复杂树状动效时，无需依靠传统设计软件。只需将结构化的进阶关系数据直接灌入 <b>Claude Code</b>，利用内置的演示动画 Skills，一键在浏览器中以最精巧的 WebGL/Canvas 技术绘制并渲染高帧率进阶动效。Skills 自带<b>高清无损直接录屏</b>功能，完美转化为吸睛的炫耀型信息流演示视频。",
+        painPoints: [
+          "利用 After Effects 制作复杂合成连线及数据缩放，工作极为枯燥低效",
+          "游戏数值或连线网络稍作微调，设计源文件往往需要推倒大面积重做",
+          "传统引擎渲染高清视频对本地计算设备负荷高，效率受阻严重"
+        ],
+        efficiency: "动效制作：人工作业 4~8 小时 ⚡ AI 管线：1 分钟在浏览器写出并直录导出",
+        tools: ["Claude Code", "Web 动效渲染 Skills", "HyperFrames 无损直录"],
+        nodes: [
+          { id: "c5-n1", icon: "📊", label: "进阶合成数据图谱", sub: "设定树状关系与卡牌资源" },
+          { id: "c5-n2", icon: "💻", label: "Claude Code Skills", sub: "自动编写 Canvas / CSS3 动效", brand: "claude" },
+          { id: "c5-n3", icon: "🌐", label: "浏览器实时高帧渲染", sub: "WebGL 流畅物理连线与爆点火花" },
+          { id: "c5-n4", icon: "📹", label: "HyperFrames 录屏", sub: "无损录屏直接封装为 MP4 素材", brand: "hyper" },
+          { id: "c5-n5", icon: "🎬", label: "合成演示广告", sub: "直接获取最高清信息流视频" }
+        ],
+        connections: [
+          { from: "c5-n1", to: "c5-n2" },
+          { from: "c5-n2", to: "c5-n3" },
+          { from: "c5-n3", to: "c5-n4" },
+          { from: "c5-n4", to: "c5-n5" }
+        ]
+      },
+      {
+        id: 6,
+        category: "creative",
+        title: "大批量图标排版与布局管线",
+        subtitle: "依托知识库关系的像素级布局描述与生图精准生成",
+        accent: "#E67E22",
+        desc: "在处理 10 个、20 个甚至更多装备图标排列及升级对照图时，彻底解放重复的人工拖拽操作。将图标关系表连接至<b>布局约束知识库</b>，AI 将基于严谨的几何与遮罩逻辑详细输出每个图标的位置、间距、连线及透视关系的坐标说明；通过文字指令直接指挥生图引擎进行一键像素级出图，实现零人工干扰的高精排版。",
+        painPoints: [
+          "数十个小图标和复杂的箭头网络，人工在 PS 里拖拽对齐极易出现像素级偏差",
+          "每张图片都要人工打字添加大量的说明数值，眼花出错率极高且难排查",
+          "活动或版本稍有更迭，版面不得不完全手工重排，枯燥繁重"
+        ],
+        efficiency: "传统排版：繁杂人工 2~3 小时 ⚡ AI 管线：极速智能布局，一键秒级出图",
+        tools: ["布局约束知识库", "像素级位置关系描述 (AI)", "生图引擎控制命令"],
+        nodes: [
+          { id: "c6-n1", icon: "🗂️", label: "数十个装备图标", sub: "输入多级复杂属性数据" },
+          { id: "c6-n2", icon: "📚", label: "布局约束知识库", sub: "确定网格/长宽比/像素边距", brand: "notebooklm" },
+          { id: "c6-n3", icon: "🤖", label: "位置与遮罩详细描述", sub: "AI 瞬间计算出所有几何坐标", brand: "gpt" },
+          { id: "c6-n4", icon: "🎨", label: "精准生图控制", sub: "将几何描述直接指挥引擎绘图" },
+          { id: "c6-n5", icon: "🖼️", label: "高精图标合成图", sub: "免人手打字对齐的高清完稿" }
+        ],
+        connections: [
+          { from: "c6-n1", to: "c6-n2" },
+          { from: "c6-n2", to: "c6-n3" },
+          { from: "c6-n3", to: "c6-n4" },
+          { from: "c6-n4", to: "c6-n5" }
+        ]
+      },
+      {
+        id: 7,
+        category: "efficiency",
+        title: "素材智能自动化管理",
+        subtitle: "自研 AI 批量重命名工具与自动化标签归档",
+        accent: "var(--accent-hyper)",
+        desc: "自研 <b>AI 批量重命名工具</b>，可自动识别文件夹内图片、视频、多图组等各类产出，按照预设标签规则完成智能重命名 + 自动分类归档，彻底解放重复手动整理工作。",
+        painPoints: [
+          "大批量素材每日产出，人工逐一重命名耗费大量时间且容易命名错误",
+          "人工归类整理凌乱文件夹，极易造成资产丢失或查找困难",
+          "广告投放素材分类标准不一，难以形成标准化的数字资产库"
+        ],
+        efficiency: "人工作业：重复整理 1~2 小时 ⚡ AI 自动化：秒级分类重命名归档",
+        tools: ["自研 AI 批量重命名工具", "标签决策引擎", "自动化归档服务"],
+        nodes: [
+          { id: "c7-n1", icon: "🎮", label: "原始杂乱素材", sub: "多品类、多规格的原始图像与视频" },
+          { id: "c7-n2", icon: "🤖", label: "自研 AI 命名工具", sub: "智能识别文件夹内产出类型", brand: "hyper" },
+          { id: "c7-n3", icon: "🏷️", label: "规则标签化重命名", sub: "自动识别画风、内容并按规则命名", brand: "gpt" },
+          { id: "c7-n4", icon: "📁", label: "自动归档分类", sub: "按照资产库预设结构自动入库" }
+        ],
+        connections: [
+          { from: "c7-n1", to: "c7-n2" },
+          { from: "c7-n2", to: "c7-n3" },
+          { from: "c7-n3", to: "c7-n4" }
+        ]
+      },
+      {
+        id: 8,
+        category: "efficiency",
+        title: "日报 & 办公流程自动化",
+        subtitle: "素材流水账与聊天记录 AI 自动提炼提报",
+        accent: "var(--accent-gpt)",
+        desc: "打通素材产出记录、工作群聊天数据，<b>AI 自动提炼</b>每日工作内容、生成标准化日报；对接邮箱服务，实现日报一键自动定时发送，实现办公流程全闭环自动化。",
+        painPoints: [
+          "每日繁琐收集素材统计，制作日报占据正常产出黄金时间",
+          "项目群沟通繁杂，人工总结工作难免有疏漏或重点不突出",
+          "每天定时发送邮件，人工操作容易延误或忘记"
+        ],
+        efficiency: "传统撰写：手工统计 30 分钟 ⚡ AI 自动化：零人工干预自动定时下发",
+        tools: ["群组日志提取器", "AI 提炼智能体", "自动定时发信服务"],
+        nodes: [
+          { id: "c8-n1", icon: "💬", label: "聊天日志与产出记录", sub: "获取今日工作群互动与产出流水" },
+          { id: "c8-n2", icon: "🤖", label: "AI 提炼智能体", sub: "智能过滤无用噪音，汇总关键输出", brand: "gpt" },
+          { id: "c8-n3", icon: "📋", label: "标准化日报生成", sub: "自动生成 Markdown 标准格式", brand: "claude" },
+          { id: "c8-n4", icon: "✉️", label: "一键自动定时发送", sub: "对接 SMTP 邮箱自动下发" }
+        ],
+        connections: [
+          { from: "c8-n1", to: "c8-n2" },
+          { from: "c8-n2", to: "c8-n3" },
+          { from: "c8-n3", to: "c8-n4" }
+        ]
+      },
+      {
+        id: 9,
+        category: "efficiency",
+        title: "美术资源自动化巡检同步",
+        subtitle: "美术素材公共盘自动扫描、报表生成与多端推送",
+        accent: "var(--accent-claude)",
+        desc: "搭建<b>自动化资源报表脚本</b>，定时扫描公共盘美术素材更新，自动分类梳理资源路径、生成更新报告，并精准推送至指定负责人 / 工作群。",
+        painPoints: [
+          "公共盘美术资源庞大杂乱，人工挨个检查更新完全不切实际",
+          "美术更新后没有通知，其他协同部门（如研发、策划）无法及时跟进",
+          "传统通知方式零散且容易被群聊刷屏遗漏，无法精准追溯"
+        ],
+        efficiency: "手工盘点：定时巡查 2 小时 ⚡ AI 自动化：后台扫描定时推送，秒级送达",
+        tools: ["公共盘自动巡检脚本", "路径梳理引擎", "Webhook 自动推送机器人"],
+        nodes: [
+          { id: "c9-n1", icon: "💾", label: "公共盘美术素材更新", sub: "多格式、大体量原始设计盘" },
+          { id: "c9-n2", icon: "🔍", label: "自动化巡检脚本", sub: "后台自动扫描，识别文件差分更新", brand: "hyper" },
+          { id: "c9-n3", icon: "📊", label: "智能生成更新报告", sub: "自动分类、梳理资源规范路径", brand: "claude" },
+          { id: "c9-n4", icon: "📢", label: "精准Webhook推送", sub: "实时同步到工作群与对应责任人", brand: "gpt" }
+        ],
+        connections: [
+          { from: "c9-n1", to: "c9-n2" },
+          { from: "c9-n2", to: "c9-n3" },
+          { from: "c9-n3", to: "c9-n4" }
+        ]
+      },
+      {
+        id: 10,
+        category: "knowledge",
+        title: "美术资产元数据知识库",
+        subtitle: "自动分析特征提取与自然语言跨格式秒级检索",
+        accent: "var(--accent-notebooklm)",
+        desc: "通过 AI 自动解析大规模美术盘（3D模型、贴图、动作），自动提取内容标签、分辨率、画风与材质属性，在 <b>NotebookLM</b> 向量库中沉淀为语义数据库。其他协同团队可以直接用自然语言高精检索，拒绝低效“盲找”。",
+        painPoints: [
+          "海量美术素材堆积，人工挨个文件夹检索查找如同大海捞针",
+          "缺乏规范的属性标签和元数据记录，导致重复制作相同资产",
+          "协同部门缺乏美术专业软件，难以快速预览或检索特定格式文件"
+        ],
+        efficiency: "传统检索：人工在盘中筛选查找 1~2 小时 ⚡ AI 知识库：自然语言 2 秒内秒级定位",
+        tools: ["美术元数据扫描仪", "语义特征嵌入向量库", "NLP 检索问答接口"],
+        nodes: [
+          { id: "c10-n1", icon: "💾", label: "海量美术设计盘", sub: "大体量、多格式原始美术文件" },
+          { id: "c10-n2", icon: "🔍", label: "智能扫描特征提取", sub: "自动提取格式、风格、分辨率标签", brand: "hyper" },
+          { id: "c10-n3", icon: "📚", label: "语义向量知识库", sub: "构建高度结构化的元数据库", brand: "notebooklm" },
+          { id: "c10-n4", icon: "💬", label: "自然语言检索终端", sub: "支持多端协同问答与模糊检索", brand: "gpt" }
+        ],
+        connections: [
+          { from: "c10-n1", to: "c10-n2" },
+          { from: "c10-n2", to: "c10-n3" },
+          { from: "c10-n3", to: "c10-n4" }
+        ]
+      },
+      {
+        id: 11,
+        category: "knowledge",
+        title: "买量反馈与投放策略知识库",
+        subtitle: "投放ROI/点击率数据与分镜标签关联生成提效大纲",
+        accent: "#10A37F",
+        desc: "将历史上千条视频广告的投放效果数据（ROI、点击率、留存）与对应视频的分镜标签、文案钩子自动关联，沉淀入向量库。新版本发布前，AI 基于此知识库自动生成最符合当前渠道算法的高回报（ROI）买量剧本大纲。",
+        painPoints: [
+          "买量视频效果反馈零散，难以系统性分析爆款视频的成功规律",
+          "广告策划撰写新剧本时缺乏数据支撑，全凭个人直觉和感性盲推",
+          "不同渠道算法更迭迅速，人工难以快速提炼出当下最吸睛的文案钩子"
+        ],
+        efficiency: "剧本策划：依靠直觉盲推 ⚡ AI 知识库：基于历史百万行投放数据输出精准提效策略",
+        tools: ["效果归因抓取脚本", "黄金分镜因子关联提取", "买量文案策略生成器"],
+        nodes: [
+          { id: "c11-n1", icon: "📊", label: "渠道投放流水数据", sub: "多维度消耗、曝光及点击留存日志" },
+          { id: "c11-n2", icon: "🤖", label: "高价值转换因子提取", sub: "自动识别高ROI分镜片段与文案词", brand: "claude" },
+          { id: "c11-n3", icon: "📚", label: "爆款广告创意知识库", sub: "向量化沉淀历史成功创意模型", brand: "notebooklm" },
+          { id: "c11-n4", icon: "📝", label: "提效策略与文案生成", sub: "一键生成智能高转换买量大纲", brand: "gpt" }
+        ],
+        connections: [
+          { from: "c11-n1", to: "c11-n2" },
+          { from: "c11-n2", to: "c11-n3" },
+          { from: "c11-n3", to: "c11-n4" }
+        ]
+      },
+      {
+        id: 12,
+        category: "knowledge",
+        title: "版本策划与规则配置知识库",
+        subtitle: "多表交叉关系扫描及语法规则数值边界校验",
+        accent: "var(--accent-claude)",
+        desc: "将大体量游戏数值 Excel 表格、GDD（系统设计文档）、版本更新记录等全部喂给知识库。不仅用于策划、开发、QA 随时交叉检索规则冲突（如“装备 X 的特效与角色 Y 的被动是否冲突”），还能由 AI 自动扫描校验数值边界，防止配置事故。",
+        painPoints: [
+          "游戏版本数值配置极其庞杂，人工跨表校验繁重枯燥且极易出错",
+          "版本策划规则口头或文档分散，开发与QA很难实时掌握最新的冲突机制",
+          "一处配置错误可能导致严重线上事故，缺乏前置的安全规则扫描引擎"
+        ],
+        efficiency: "数值核对：人工跨表比对 2~3 天 ⚡ AI 自动化：后台秒级查错与跨部门实时智能检索",
+        tools: ["数值配置提取脚本", "冲突语法智能扫描器", "策划规则问答机器人"],
+        nodes: [
+          { id: "c12-n1", icon: "📄", label: "数值表格与策划案", sub: "多源、庞杂的设计文档及Excel配置" },
+          { id: "c12-n2", icon: "🔍", label: "规则冲突与边界校验", sub: "智能扫描语法逻辑及异常配置边界", brand: "hyper" },
+          { id: "c12-n3", icon: "📚", label: "策划逻辑规则知识库", sub: "实时维护最新冲突约束向量库", brand: "notebooklm" },
+          { id: "c12-n4", icon: "👥", label: "协同问答与自动差分", sub: "QA及研发多端实时问答校验", brand: "claude" }
+        ],
+        connections: [
+          { from: "c12-n1", to: "c12-n2" },
+          { from: "c12-n2", to: "c12-n3" },
+          { from: "c12-n3", to: "c12-n4" }
+        ]
+      }
+    ];
+
+    // 状态全局变量
+    let currentCategory = 'creative';
+    let currentCaseIndex = 0;
+    let isAutoPlaying = false;
+    let playInterval = null;
+    const SLIDE_DURATION = 8000; // 每张幻灯片切换的时长 (8秒)
+    let animationStartTime = 0;
+    let animationTimerFrame = null;
+
+    // 核心 DOM 查询
+    const navColumn = document.getElementById('nav-column');
+    const canvasTitle = document.getElementById('canvas-title');
+    const flowchartContainer = document.getElementById('flowchart-container');
+    const svgLayer = document.getElementById('connections-svg');
+    const detailsColumn = document.getElementById('details-column');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const btnIcon = document.getElementById('btn-icon');
+    const btnText = document.getElementById('btn-text');
+    const statusDot = document.getElementById('status-dot');
+    const statusText = document.getElementById('status-text');
+    const timerCircleWrap = document.getElementById('timer-circle-wrap');
+    const timerBar = document.getElementById('timer-bar');
+
+    // 过滤得到当前分类下的案例
+    const getFilteredCases = () => {
+      return casesData.filter(c => c.category === currentCategory);
+    };
+
+    // ── 初始化生成左侧卡片导航 ─────────────────────────────
+    const initNavigation = () => {
+      navColumn.innerHTML = '';
+      const filtered = getFilteredCases();
+      filtered.forEach((c, idx) => {
+        const card = document.createElement('div');
+        card.className = `case-card ${idx === 0 ? 'active' : ''}`;
+        card.style.setProperty('--active-border-color', c.accent);
+        card.setAttribute('data-index', idx);
+        
+        // 渲染简短的卡片内容
+        card.innerHTML = `
+          <div class="case-meta">
+            <span class="case-index">CASE ${c.id < 10 ? '0' + c.id : c.id}</span>
+            <div class="case-icon-wrap" style="color: ${c.accent};">
+              ${c.nodes[1] && c.nodes[1].brand ? getBrandIconMarkup(c.nodes[1].brand) : '🤖'}
+            </div>
+          </div>
+          <div class="case-title">${c.title}</div>
+          <div class="case-tagline">${c.subtitle}</div>
+        `;
+        
+        // 点击切换
+        card.addEventListener('click', () => {
+          if (isAutoPlaying) {
+            pauseAutoPlay();
+          }
+          switchCase(idx);
+        });
+        
+        navColumn.appendChild(card);
+      });
+    };
+
+    // 品牌小图标获取
+    const getBrandIconMarkup = (brand) => {
+      const el = document.getElementById(`svg-${brand}`);
+      return el ? el.innerHTML : '🤖';
+    };
+
+    // ── 核心切换逻辑 ──────────────────────────────────────
+    const switchCase = (index) => {
+      currentCaseIndex = index;
+      const filtered = getFilteredCases();
+      const c = filtered[index];
+      if (!c) return;
+      
+      // 更新导航项状态
+      const cards = document.querySelectorAll('.case-card');
+      cards.forEach((card, idx) => {
+        if (idx === index) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+
+      // 1. 渲染头部标题
+      canvasTitle.innerHTML = `
+        <span style="color: ${c.accent}; text-shadow: 0 0 10px ${c.accent}40;">${c.id < 10 ? '0' + c.id : c.id}</span>
+        ${c.title}
+        <span class="subtitle">${c.subtitle}</span>
+      `;
+      
+      // 2. 渲染流程节点 (HTML Cards)
+      const existingCards = flowchartContainer.querySelectorAll('.node-card');
+      existingCards.forEach(card => card.remove());
+      svgLayer.innerHTML = ''; // 清空连线
+
+      c.nodes.forEach((node, nodeIdx) => {
+        const nodeDiv = document.createElement('div');
+        nodeDiv.className = 'node-card';
+        nodeDiv.id = node.id;
+        nodeDiv.style.setProperty('--node-hover-color', c.accent);
+        
+        let iconMarkup = node.icon;
+        if (node.brand) {
+          iconMarkup = getBrandIconMarkup(node.brand);
+        }
+        
+        let brandTagMarkup = '';
+        if (node.brand) {
+          let brandName = '';
+          if (node.brand === 'gemini') brandName = 'Gemini';
+          else if (node.brand === 'dreamina') brandName = '即梦 AI';
+          else if (node.brand === 'gpt') brandName = 'GPT-4o';
+          else if (node.brand === 'claude') brandName = 'Claude';
+          else if (node.brand === 'hyper') brandName = 'Hyper Farm';
+          else if (node.brand === 'capcut') brandName = '剪映 CapCut';
+          else if (node.brand === 'notebooklm') brandName = 'NotebookLM';
+          else if (node.brand === 'ugcpgc') brandName = 'UGC/PGC';
+          brandTagMarkup = `<span class="brand-tag" style="background-color: var(--accent-${node.brand});">${brandName}</span>`;
+        }
+
+        nodeDiv.innerHTML = `
+          ${brandTagMarkup}
+          <div class="node-icon">${iconMarkup}</div>
+          <div class="node-text-wrap">
+            <div class="node-label">${node.label}</div>
+            <div class="node-sub">${node.sub}</div>
+          </div>
+        `;
+        
+        flowchartContainer.appendChild(nodeDiv);
+      });
+
+      // 3. 渲染右侧详细分析
+      detailsColumn.innerHTML = `
+        <div>
+          <div class="section-title">💡 管线大纲</div>
+          <div class="desc-box">${c.desc}</div>
+        </div>
+        
+        <div>
+          <div class="section-title">✕ 核心痛点</div>
+          <div>
+            ${c.painPoints.map(p => `<div class="pain-point-item">${p}</div>`).join('')}
+          </div>
+        </div>
+        
+        <div>
+          <div class="section-title">⚡ 提效转化数据</div>
+          <div class="efficiency-card">
+            <span class="efficiency-icon">🚀</span>
+            <div class="efficiency-text">
+              <h4>${c.efficiency}</h4>
+              <p>利用智能体决策和图像视频模型进行几何级别的无缝合成与秒级渲染</p>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="section-title">🛠️ 核心工具链</div>
+          <div class="tools-wrap">
+            ${c.tools.map(t => `<span class="tool-badge">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="display:inline-block; margin-right:4px;">
+                <circle cx="5" cy="5" r="4" stroke="${c.accent}" stroke-width="1.5"/>
+              </svg>
+              ${t}
+            </span>`).join('')}
+          </div>
+        </div>
+      `;
+
+      // 4. 重绘连接连线
+      setTimeout(() => {
+        drawConnections(c);
+        
+        // 5. GSAP 核心入场动画效果
+        gsap.killTweensOf('.node-card');
+        gsap.killTweensOf('.connection-path-pulse');
+        gsap.killTweensOf('.details-column > *');
+        
+        // 节点依次以 Spring 动画滑入
+        gsap.fromTo('.node-card', 
+          { scale: 0.6, y: 40, opacity: 0 },
+          { 
+            scale: 1, 
+            y: 0, 
+            opacity: 1, 
+            duration: 0.7, 
+            stagger: 0.08, 
+            ease: "back.out(1.4)",
+            onUpdate: () => {
+              // 在动画执行期间实时重绘连接线，确保连线随着卡片滑入动态伸展
+              drawConnections(c);
+            },
+            onComplete: () => {
+              // 动画完成后最后精确重绘一次
+              drawConnections(c);
+              // 触发霓虹连线发光效果
+              gsap.fromTo('.connection-path-pulse', 
+                { opacity: 0 }, 
+                { opacity: 1, duration: 0.5 }
+              );
+            }
+          }
+        );
+
+        // 右侧详情淡入
+        gsap.fromTo('.details-column > *',
+          { x: 30, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
+        );
+      }, 50);
+    };
+
+    // ── SVG 连线计算与绘制 ──────────────────────────────────
+    const drawConnections = (c) => {
+      svgLayer.innerHTML = '';
+      const containerRect = flowchartContainer.getBoundingClientRect();
+
+      c.connections.forEach(conn => {
+        const fromEl = document.getElementById(conn.from);
+        const toEl = document.getElementById(conn.to);
+        
+        if (!fromEl || !toEl) return;
+
+        const fromRect = fromEl.getBoundingClientRect();
+        const toRect = toEl.getBoundingClientRect();
+
+        // 计算相对坐标 (从上方卡片的底端中心，连线到下方卡片的顶端中心)
+        const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+        const y1 = fromRect.bottom - containerRect.top;
+        const x2 = toRect.left + toRect.width / 2 - containerRect.left;
+        const y2 = toRect.top - containerRect.top;
+
+        // 绘制垂直贝塞尔曲线，使线条流动感极佳且完美对齐
+        const dy = y2 - y1;
+        const pathD = `M ${x1} ${y1} C ${x1} ${y1 + dy * 0.4}, ${x2} ${y2 - dy * 0.4}, ${x2} ${y2}`;
+
+        // 1. 背景淡淡的荧光路径
+        const bgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        bgPath.setAttribute('d', pathD);
+        bgPath.setAttribute('class', 'connection-path-bg');
+        svgLayer.appendChild(bgPath);
+
+        // 2. 高亮霓虹数据流光路径
+        const pulsePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pulsePath.setAttribute('d', pathD);
+        pulsePath.setAttribute('class', 'connection-path-pulse');
+        pulsePath.style.stroke = c.accent;
+        pulsePath.style.shadowBlur = '8px';
+        pulsePath.style.filter = `drop-shadow(0px 0px 4px ${c.accent})`;
+        svgLayer.appendChild(pulsePath);
+      });
+    };
+
+    // ── 自动演示 Presentation 引擎 ──────────────────────────
+    const startAutoPlay = () => {
+      isAutoPlaying = true;
+      playPauseBtn.classList.add('active');
+      btnIcon.innerHTML = '⏸';
+      btnText.innerHTML = '暂停放映模式';
+      
+      statusDot.classList.add('active');
+      statusText.innerHTML = '自动放映演示中';
+      timerCircleWrap.style.display = 'block';
+
+      animationStartTime = Date.now();
+      updateTimerCircle();
+
+      playInterval = setInterval(() => {
+        const filtered = getFilteredCases();
+        let nextIndex = (currentCaseIndex + 1) % filtered.length;
+        switchCase(nextIndex);
+        animationStartTime = Date.now();
+      }, SLIDE_DURATION);
+    };
+
+    const pauseAutoPlay = () => {
+      isAutoPlaying = false;
+      playPauseBtn.classList.remove('active');
+      btnIcon.innerHTML = '▶';
+      btnText.innerHTML = '自动放映模式';
+      
+      statusDot.classList.remove('active');
+      statusText.innerHTML = '交互探索模式';
+      timerCircleWrap.style.display = 'none';
+
+      if (playInterval) clearInterval(playInterval);
+      if (animationTimerFrame) cancelAnimationFrame(animationTimerFrame);
+    };
+
+    const updateTimerCircle = () => {
+      if (!isAutoPlaying) return;
+
+      const elapsed = Date.now() - animationStartTime;
+      const progress = Math.min(elapsed / SLIDE_DURATION, 1);
+      
+      // 倒计时环形计算: stroke-dashoffset = 63 * (1 - progress)
+      const offset = 63 * (1 - progress);
+      timerBar.style.strokeDashoffset = offset;
+
+      animationTimerFrame = requestAnimationFrame(updateTimerCircle);
+    };
+
+    // 监听窗口尺寸变化，保证 SVG 连线随排版精准自适应
+    window.addEventListener('resize', () => {
+      const filtered = getFilteredCases();
+      if (filtered[currentCaseIndex]) {
+        drawConnections(filtered[currentCaseIndex]);
+      }
+    });
+
+    // ── 菜单分类切换事件绑定 ────────────────────────────────────
+    const tabButtons = document.querySelectorAll('.category-tabs .tab-btn');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const targetBtn = e.currentTarget;
+        const category = targetBtn.getAttribute('data-category');
+        if (currentCategory === category) return;
+        
+        tabButtons.forEach(b => b.classList.remove('active'));
+        targetBtn.classList.add('active');
+        
+        currentCategory = category;
+        
+        if (isAutoPlaying) {
+          pauseAutoPlay();
+        }
+        
+        initNavigation();
+        switchCase(0);
+      });
+    });
+
+    // ── 播放按钮交互绑定 ────────────────────────────────────
+    playPauseBtn.addEventListener('click', () => {
+      if (isAutoPlaying) {
+        pauseAutoPlay();
+      } else {
+        startAutoPlay();
+      }
+    });
+
+    // ── 初始化 ───────────────────────────────────────────
+    initNavigation();
+    switchCase(0);
+  </script>
+
+</body>
+</html>
