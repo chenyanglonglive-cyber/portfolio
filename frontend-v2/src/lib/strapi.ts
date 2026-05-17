@@ -10,13 +10,17 @@ const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337"
 
 /**
  * 通用 Strapi 获取函数，增加了错误捕获逻辑
+ * @param revalidate ISR 缓存时间（秒），默认 3600（1 小时）。作品列表变化不频繁，长缓存减少 Strapi Cloud 跨区域延迟
  */
-export async function queryStrapi<T = unknown>(path: string): Promise<T | null> {
+export async function queryStrapi<T = unknown>(
+  path: string,
+  revalidate: number = 3600
+): Promise<T | null> {
   const url = `${STRAPI_URL}/api/${path}`;
   try {
     const res = await fetch(url, {
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(15000)
+      next: { revalidate },
+      signal: AbortSignal.timeout(30000)
     });
 
     if (!res.ok) {
@@ -64,6 +68,7 @@ export async function getWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "pagination[pageSize]=50",
   ].join("&");
 
   const [videos, images] = await Promise.all([
@@ -91,6 +96,7 @@ export async function getFeaturedWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "pagination[pageSize]=50",
   ].join("&");
   const imageFields = [
     "populate[image][fields][0]=url",
@@ -102,6 +108,7 @@ export async function getFeaturedWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "pagination[pageSize]=50",
   ].join("&");
 
   const [videos, images] = await Promise.all([

@@ -2,6 +2,8 @@ import WorksFilterGrid from '@/components/WorksFilterGrid';
 import { queryStrapi } from '@/lib/strapi';
 import { Work, normalizeWork } from '@/types/work';
 
+export const revalidate = 3600;
+
 export default async function WorksPage() {
   const videoFields = [
     "populate[video][fields][0]=url",
@@ -14,6 +16,7 @@ export default async function WorksPage() {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "pagination[pageSize]=50",
   ].join("&");
 
   const imageFields = [
@@ -26,17 +29,18 @@ export default async function WorksPage() {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "pagination[pageSize]=50",
   ].join("&");
 
-  // 同时拉取视频和图片数据，但因为用了字段过滤，总体积非常小（几十KB）
-  // 这样做可以让 Tab 切换和页面跳转实现“零延迟”
-  const [videosRaw, imagesRaw] = await Promise.all([
+  const [videosRaw, imagesRaw] = await Promise.allSettled([
     queryStrapi<Work[]>(`videos?${videoFields}`),
     queryStrapi<Work[]>(`images?${imageFields}`),
   ]);
 
-  const videos = (videosRaw || []).map(normalizeWork).sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
-  const images = (imagesRaw || []).map(normalizeWork).sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
+  const videos = (videosRaw.status === 'fulfilled' ? videosRaw.value || [] : [])
+    .map(normalizeWork).sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
+  const images = (imagesRaw.status === 'fulfilled' ? imagesRaw.value || [] : [])
+    .map(normalizeWork).sort((a, b) => (b.Rank || 0) - (a.Rank || 0));
 
   return (
     <div className="container mx-auto max-w-5xl px-8 py-20">

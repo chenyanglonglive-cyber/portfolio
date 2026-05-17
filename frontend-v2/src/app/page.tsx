@@ -3,6 +3,8 @@ import WorkGrid from "@/components/WorkGrid";
 import { getFeaturedWorks } from "@/lib/strapi";
 import { getWorkType, getWorkVideoUrl } from "@/types/work";
 
+export const revalidate = 3600;
+
 export default async function Home() {
   const featuredWorks = await getFeaturedWorks();
 

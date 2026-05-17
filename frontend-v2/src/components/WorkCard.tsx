@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 import Image from 'next/image';
@@ -14,62 +14,14 @@ interface WorkCardProps {
 
 export default function WorkCard({ work, priority = false }: WorkCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [generatedCover, setGeneratedCover] = useState<string | null>(null);
   const [duration, setDuration] = useState<string>("00:30");
-  // 懒加载：初始为空，首次 hover 时才设置，触发浏览器请求
   const [videoSrc, setVideoSrc] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement>(null);
-  // 防止重复抓帧
-  const hasCaptured = useRef(false);
 
   const isVideo = getWorkType(work) === 'video';
   const rawCoverUrl = getWorkCoverUrl(work);
   const coverUrl = getStrapiMedia(rawCoverUrl);
   const videoUrl = isVideo ? getStrapiMedia(getWorkVideoUrl(work)) : null;
-
-  // 首帧抓取：如果后端没封面，则在挂载时或首次 hover 时主动抓帧
-  const captureFirstFrame = useCallback(() => {
-    // 只有在确定没有后端封面且未抓取过时才执行
-    if (!videoUrl || hasCaptured.current || rawCoverUrl) return;
-    hasCaptured.current = true;
-
-    const tempVideo = document.createElement('video');
-    tempVideo.crossOrigin = 'anonymous';
-    tempVideo.src = videoUrl;
-    tempVideo.muted = true;
-    tempVideo.preload = 'metadata';
-
-    const cleanup = () => {
-      tempVideo.removeEventListener('loadedmetadata', handleMetadata);
-      tempVideo.removeEventListener('seeked', handleSeeked);
-      tempVideo.src = '';
-      tempVideo.load();
-    };
-
-    const handleMetadata = () => {
-      tempVideo.currentTime = Math.min(tempVideo.duration, 1.0);
-    };
-
-    const handleSeeked = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = tempVideo.videoWidth;
-        canvas.height = tempVideo.videoHeight;
-        const ctx = canvas.getContext('2d');
-        if (ctx && canvas.width > 0) {
-          ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
-          setGeneratedCover(canvas.toDataURL('image/jpeg', 0.8));
-        }
-      } catch (err) {
-        console.warn('Thumbnail capture failed:', err);
-      } finally {
-        cleanup();
-      }
-    };
-
-    tempVideo.addEventListener('loadedmetadata', handleMetadata);
-    tempVideo.addEventListener('seeked', handleSeeked);
-  }, [videoUrl, coverUrl]);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -78,8 +30,6 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
     // 首次 hover 时才设置 src，触发视频资源请求
     if (!videoSrc) {
       setVideoSrc(videoUrl);
-      // 没有封面时同步抓取首帧
-      if (!coverUrl) captureFirstFrame();
     }
 
     // 播放（src 刚设置时 play() 会在 canplay 后自动触发）
@@ -106,13 +56,10 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
       const mins = Math.floor(video.duration / 60);
       const secs = Math.floor(video.duration % 60);
       setDuration(`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
-      // 同时尝试在此时抓帧（无封面且未抓取）
-      if (!coverUrl && !hasCaptured.current) captureFirstFrame();
     }
   };
 
-  // 优先使用 Strapi 上传的封面（秒显示），canvas 抓帧仅在无封面时作兜底
-  const displayCover = coverUrl || generatedCover || null;
+  const displayCover = coverUrl || null;
 
   return (
     <motion.div
