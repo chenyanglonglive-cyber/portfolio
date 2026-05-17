@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Briefcase, Wrench, Award, Download, Rocket, Video, Zap, Cpu, Users, GraduationCap, FolderKanban } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Briefcase, Wrench, Award, Download, Rocket, Video, Zap, Cpu, Users, GraduationCap, FolderKanban, X } from "lucide-react";
 import type { About } from "@/types/about";
 import CustomBlocksRenderer from "@/components/CustomBlocksRenderer";
 
@@ -67,6 +68,11 @@ interface ResumeContentProps {
 }
 
 export default function ResumeContent({ about }: ResumeContentProps) {
+  const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [identity, setIdentity] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -99,7 +105,10 @@ export default function ResumeContent({ about }: ResumeContentProps) {
               )}
             </div>
           </div>
-          <button className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors"
+          >
             <Download size={18} /> 下载简历
           </button>
         </motion.section>
@@ -194,6 +203,106 @@ export default function ResumeContent({ about }: ResumeContentProps) {
           </div>
         </motion.section>
       </motion.div>
+
+      {/* Download Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            {/* Backdrop */}
+            <button
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => {
+                setShowModal(false);
+                setSubmitted(false);
+              }}
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative glass border border-white/10 rounded-3xl p-8 md:p-10 w-full max-w-md space-y-6"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setSubmitted(false);
+                }}
+                className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              {submitted ? (
+                <div className="text-center py-8 space-y-4">
+                  <div className="w-16 h-16 bg-emerald-400/20 rounded-full flex items-center justify-center mx-auto">
+                    <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-white">发送成功</h3>
+                  <p className="text-zinc-400 text-sm">简历将会发送到你的邮箱，请留意查收。</p>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">获取简历</h3>
+                    <p className="text-zinc-400 text-sm mt-1">请填写以下信息，简历将会发送到你的邮箱。</p>
+                  </div>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!email.trim() || !identity.trim()) return;
+                      setSubmitted(true);
+                    }}
+                    className="space-y-5"
+                  >
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-zinc-300">邮箱地址</label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="请输入你的邮箱"
+                        required
+                        className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-emerald-400/50 transition-colors"
+                      />
+                      <p className="text-xs text-zinc-500">简历将会发送到你的邮箱</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-zinc-300">你的身份</label>
+                      <input
+                        type="text"
+                        value={identity}
+                        onChange={(e) => setIdentity(e.target.value)}
+                        placeholder="请说明您的身份"
+                        required
+                        className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-emerald-400/50 transition-colors"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors text-sm"
+                    >
+                      发送简历
+                    </button>
+                  </form>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
