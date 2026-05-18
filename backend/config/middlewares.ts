@@ -15,7 +15,7 @@ const config: Core.Config.Middlewares = [
             'data:',
             'blob:',
             'market-assets.strapi.io',
-            '*.strapiapp.com',
+            'strapi.wcyblog.space',
             'www.wcyblog.space',
           ],
           'media-src': [
@@ -23,7 +23,7 @@ const config: Core.Config.Middlewares = [
             'data:',
             'blob:',
             'market-assets.strapi.io',
-            '*.strapiapp.com',
+            'strapi.wcyblog.space',
             'www.wcyblog.space',
           ],
           upgradeInsecureRequests: null,

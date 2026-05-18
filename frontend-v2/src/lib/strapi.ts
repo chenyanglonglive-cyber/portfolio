@@ -36,9 +36,10 @@ export async function queryStrapi<T = unknown>(
 export function getStrapiMedia(url: string | undefined): string {
   if (!url) return "";
   if (url.startsWith("http") || url.startsWith("//")) {
-    // Strapi Cloud 媒体文件 → Vercel Proxy
-    if (url.includes("strapiapp.com")) {
-      const path = url.split("strapiapp.com")[1];
+    // Strapi 自有服务器 media 文件 → Vercel Proxy 加速
+    if (url.includes("strapiapp.com") || url.includes("strapi.wcyblog.space")) {
+      const domain = url.includes("strapiapp.com") ? "strapiapp.com" : "strapi.wcyblog.space";
+      const path = url.split(domain)[1];
       return `/strapi-media${path}`;
     }
     return url;

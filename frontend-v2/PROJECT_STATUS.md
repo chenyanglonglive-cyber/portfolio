@@ -159,5 +159,88 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
 *   **确认**：`wcyblog.space` 仅绑定在 `portfolio` 项目上，删除无影响。
 
 ---
+# 🚀 2026-05-18/19 晚间更新 (阿里云 ECS 迁移)
+
+## 架构重大变更：Strapi + 数据库 搬离云端 → 阿里云自建
+
+### 迁移原因
+- Strapi Cloud 供应商锁定（存储不可控）
+- Neon 数据库新加坡节点，国内访问延迟高
+- 降低长期运营成本
+
+### 新架构
+```
+前端: Vercel (wcyblog.space)         — 不变
+后端: 阿里云 ECS (47.95.242.40)      — 原 Strapi Cloud
+数据库: ECS 本地 PostgreSQL 16       — 原 Neon (新加坡)
+媒体: ECS 本地磁盘 public/uploads/   — 原 Strapi Cloud 存储
+域名: strapi.wcyblog.space → ECS IP  — 待配置
+```
+
+## ✅ 已完成
+
+### 1. ECS 环境搭建
+- Node.js 22.22.2 + npm (淘宝镜像 `registry.npmmirror.com`)
+- PostgreSQL 16.13 — 数据库 `strapi`，用户 `strapi`
+- Nginx 1.24.0（待配置反向代理）
+- PM2 7.0.1（已配置开机自启）
+- ffmpeg 6.1.1（视频抽帧）
+
+### 2. 数据库迁移 (Neon → ECS)
+- PG 17 客户端安装后用 pg_dump 从 Neon 导出 460KB dump
+- 导入本地 PostgreSQL，6 videos / 6 images / 3 articles / 2 abouts / 17 files / 2 admin users — 数据完整
+- `files` 表 URL 已批量更新：`strapiapp.com` CDN URL → `/uploads/hash.ext` 本地路径
+
+### 3. 媒体文件迁移 (Strapi Cloud → ECS)
+- 17 个文件（11 视频 + 6 图片，共 ~75MB）全部从 Strapi Cloud CDN 下载到 `/var/www/strapi/public/uploads/`
+- 按 `hash.ext` 命名，与数据库 URL 匹配
+
+### 4. 后端代码改造
+- 移除 `@strapi/plugin-cloud` 依赖
+- `config/database.ts` — 去掉 `connectionString`，改用独立字段
+- `config/middlewares.ts` — CSP 中 `*.strapiapp.com` → `strapi.wcyblog.space`
+- `.env` / `.env.example` — 数据库连接拆分为独立字段
+- `frontend-v2/next.config.ts` — rewrites + remotePatterns 改为新域名
+- `frontend-v2/src/lib/strapi.ts` — getStrapiMedia 兼容新旧域名
+- `frontend-v2/src/app/admin/upload/actions.ts` — fallback URL 更新
+
+### 5. Strapi 部署到 ECS
+- 代码上传 `/var/www/strapi/`，生产 `.env` 配置完成
+- ⚠️ ECS 内存不足无法本地构建（OOM），改为本地构建 `dist` 后 scp 上传
+- PM2 启动成功，`localhost:1337/api/videos` 返回 200
+- Strapi 管理后台已就绪：`https://strapi.wcyblog.space/admin`（待 DNS）
+
+## ❌ 未完成 / 待办
+
+### 1. Nginx 反向代理 + SSL
+- Nginx 已安装但未创建站点配置
+- 需要创建 `/etc/nginx/sites-available/strapi` 反代 `127.0.0.1:1337`
+- 需要 certbot 签发 Let's Encrypt 证书
+- **阻塞项**：DNS 必须先生效（Let's Encrypt 验证域名）
+
+### 2. DNS 配置
+- 在 Cloudflare 控制台添加 A 记录：`strapi` → `47.95.242.40`
+- **需手动操作**：登录 Cloudflare → wcyblog.space → DNS → Add Record
+
+### 3. Vercel 环境变量
+- `NEXT_PUBLIC_STRAPI_URL` 改为 `https://strapi.wcyblog.space`
+- **需手动操作**：Vercel Dashboard → portfolio → Settings → Environment Variables
+
+### 4. 前端重新部署
+- 推送代码后 Vercel 自动部署
+- `next.config.ts` rewrites 已更新，部署即生效
+
+### 5. 端到端验证
+- [ ] `https://strapi.wcyblog.space/admin` — 管理后台可访问
+- [ ] `https://wcyblog.space` — 首页精选作品正常
+- [ ] `/works` — 作品列表 + 视频播放
+- [ ] `/blog` — 手记列表
+- [ ] `/resume` — 简历页
+
+### 6. 已知风险
+- ECS 内存不足（`npm run build` OOM），后续 Strapi 更新需本地构建 + scp dist
+- 阿里云安全组需确认 80/443 端口已开放
+
+---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
-*Last Updated: 2026-05-17*
+*Last Updated: 2026-05-19*

@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.strapiapp.com',
+        hostname: 'strapi.wcyblog.space',
       },
       {
         protocol: 'http',
@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/strapi-media/:path*',
-        destination: 'https://dazzling-family-6d1f24102d.media.strapiapp.com/:path*',
+        destination: 'https://strapi.wcyblog.space/uploads/:path*',
       },
     ];
   },

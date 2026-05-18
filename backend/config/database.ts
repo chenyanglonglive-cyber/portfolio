@@ -4,7 +4,6 @@ export default ({ env }: any) => ({
   connection: {
     client: env('DATABASE_CLIENT', 'sqlite'),
     connection: {
-      connectionString: env('DATABASE_URL'),
       host: env('DATABASE_HOST', 'localhost'),
       port: env.int('DATABASE_PORT', 5432),
       database: env('DATABASE_NAME', 'strapi'),

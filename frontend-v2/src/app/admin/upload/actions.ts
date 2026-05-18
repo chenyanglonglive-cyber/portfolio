@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dazzling-family-6d1f24102d.strapiapp.com";
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://strapi.wcyblog.space";
 const STRAPI_TOKEN = process.env.STRAPI_ADMIN_TOKEN;
 
 /**
