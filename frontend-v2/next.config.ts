@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/strapi-media/:path*',
-        destination: 'http://47.95.242.40/uploads/:path*',
+        destination: 'http://47.95.242.40/:path*',
       },
     ];
   },
