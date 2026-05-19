@@ -45,7 +45,7 @@ export async function compressAndUploadVideo(formData: FormData): Promise<{
 }> {
   if (!STRAPI_TOKEN) throw new Error("Missing Strapi Admin Token");
 
-  const response = await fetch(`${STRAPI_URL}/api/videos/compress`, {
+  const response = await fetch(`${STRAPI_URL}/compress`, {
     method: "POST",
     headers: authHeaders(),
     body: formData,
