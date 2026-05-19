@@ -28,6 +28,30 @@ function sh(cmd) {
   return execSync(cmd, { timeout: 300_000, encoding: 'utf-8', stdio: 'pipe' });
 }
 
+function verifyStrapiJWT(token) {
+  return new Promise((resolve, reject) => {
+    const req = http.get(STRAPI + '/admin/users/me', {
+      headers: { Authorization: 'Bearer ' + token },
+      timeout: 5000,
+    }, (res) => {
+      let body = '';
+      res.on('data', (c) => body += c);
+      res.on('end', () => {
+        try {
+          const data = JSON.parse(body);
+          if (res.statusCode === 200 && data.data && data.data.id) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        } catch { resolve(false); }
+      });
+    });
+    req.on('error', () => resolve(false));
+    req.on('timeout', () => { req.destroy(); resolve(false); });
+  });
+}
+
 function parseMultipart(buffer, boundary) {
   // Parse multipart form-data, return array of { headers, body: Buffer }
   const str = buffer.toString('binary');
@@ -43,7 +67,7 @@ function parseMultipart(buffer, boundary) {
     // trim trailing \r\n before next boundary
     const cleanBody = body.replace(/\r\n$/, '');
     // Parse Content-Disposition to get filename
-    const cdMatch = headerText.match(/Content-Disposition:[^\n]+name="([^"]+)"(?:;[^\n]+filename="([^"]+)")?/i);
+    const cdMatch = headerText.match(/Content-Disposition:[^\n]+;\s*name="([^"]+)"(?:[^\n]*;\s*filename="([^"]+)")?/i);
     if (cdMatch) {
       parts.push({
         name: cdMatch[1],
@@ -62,13 +86,19 @@ const server = http.createServer((req, res) => {
   }
 
   const auth = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
-  if (!TOKEN || auth !== TOKEN) {
+  if (!TOKEN || !auth) {
     return json(res, 401, { error: 'Unauthorized' });
   }
 
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
-  req.on('end', () => {
+  req.on('end', async () => {
+    // Accept API token or Strapi admin JWT (verified via Strapi)
+    const tokenValid = auth === TOKEN ||
+      (await verifyStrapiJWT(auth).catch(() => false));
+    if (!tokenValid) {
+      return json(res, 401, { error: 'Unauthorized' });
+    }
     const buffer = Buffer.concat(chunks);
     const contentType = req.headers['content-type'] || '';
     const boundaryMatch = contentType.match(/boundary=(.+?)(;|$)/);
@@ -131,15 +161,19 @@ const server = http.createServer((req, res) => {
 
       console.log('[compress] Upload OK:', result.id);
 
-      json(res, 200, {
-        ok: true,
-        data: { id: result.id, url: result.url, name: result.name, size: outSize },
-        stats: {
-          originalSize: filePart.body.length,
-          compressedSize: outSize,
-          reduction: Math.round((1 - outSize / filePart.body.length) * 100),
-        },
-      });
+      // Return Strapi-compatible format (array of file objects)
+      const outFile = {
+        id: result.id,
+        url: result.url,
+        name: result.name,
+        size: outSize,
+        hash: result.hash || '',
+        mime: result.mime || 'video/mp4',
+        ext: result.ext || '.mp4',
+        width: result.width || null,
+        height: result.height || null,
+      };
+      json(res, 200, [outFile]);
     } catch (err) {
       console.error('[compress] Error:', err.message);
       json(res, 500, { ok: false, error: err.message });
