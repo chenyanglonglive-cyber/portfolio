@@ -119,18 +119,14 @@ const server = http.createServer((req, res) => {
       return json(res, 400, { error: 'No file in "files" field' });
     }
 
-    const tmpDir = os.tmpdir();
-    const safeName = filePart.filename.replace(/[/\\:*?"<>|]/g, '_');
-    const inputPath = path.join(tmpDir, 'up_' + Date.now() + '_' + safeName);
-    const outputPath = path.join(tmpDir, 'comp_' + Date.now() + '_' + path.parse(safeName).name + '.mp4');
-    const uploadName = path.parse(safeName).name + '.mp4';
-
-    let inputPathForCleanup = '';
-    let outputPathForCleanup = '';
+    const safeName = filePart.filename.replace(/[/\\:*?"<>|]/g, "_");
+    const workDir = fs.mkdtempSync(path.join(os.tmpdir(), "compress-"));
+    const inputPath = path.join(workDir, "input" + path.extname(safeName));
+    const outputName = path.parse(safeName).name + ".mp4";
+    const outputPath = path.join(workDir, outputName);
 
     try {
       fs.writeFileSync(inputPath, filePart.body);
-      inputPathForCleanup = inputPath;
       const inMB = (filePart.body.length / 1024 / 1024).toFixed(1);
       console.log('[compress] Received:', inMB, 'MB');
 
@@ -142,7 +138,6 @@ const server = http.createServer((req, res) => {
       if (!fs.existsSync(outputPath)) {
         throw new Error('FFmpeg output not found');
       }
-      outputPathForCleanup = outputPath;
 
       const outSize = fs.statSync(outputPath).size;
       const outMB = (outSize / 1024 / 1024).toFixed(1);
@@ -152,7 +147,7 @@ const server = http.createServer((req, res) => {
       const curlOut = sh(
         'curl -s -X POST ' + STRAPI + '/api/upload ' +
         '-H "Authorization: Bearer ' + TOKEN + '" ' +
-        '-F "files=@' + outputPath + ';filename=' + uploadName + '"'
+        '-F "files=@' + outputPath + '"'
       );
       const upData = JSON.parse(curlOut);
       const result = upData[0];
@@ -179,8 +174,7 @@ const server = http.createServer((req, res) => {
       console.error('[compress] Error:', err.message);
       json(res, 500, { ok: false, error: err.message });
     } finally {
-      try { if (inputPathForCleanup) fs.unlinkSync(inputPathForCleanup); } catch {}
-      try { if (outputPathForCleanup) fs.unlinkSync(outputPathForCleanup); } catch {}
+      try { fs.rmSync(workDir, { recursive: true, force: true }); } catch {}
     }
   });
 });
