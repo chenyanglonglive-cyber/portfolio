@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, BarChart3, PenTool } from 'lucide-react';
 import { Work, getWorkType, getWorkCoverUrl, getWorkVideoUrl } from '@/types/work';
 
-import { getStrapiMedia } from '@/lib/strapi';
+import { getStrapiMedia, getStrapiProxyUrl } from '@/lib/strapi';
 
 interface WorkModalProps {
   work: Work | null;
@@ -30,7 +30,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
 
   const isVideo = work ? getWorkType(work) === 'video' : false;
   const coverUrl = work ? getStrapiMedia(getWorkCoverUrl(work)) : undefined;
-  const videoUrl = isVideo && work ? getStrapiMedia(getWorkVideoUrl(work)) : null;
+  const videoUrl = isVideo && work ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;
   const activeGeneratedCover = work && generatedCover?.workId === work.documentId ? generatedCover.url : null;
 
   // 自动从视频提取首帧作为封面

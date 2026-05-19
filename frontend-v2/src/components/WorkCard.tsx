@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 import Image from 'next/image';
 import { Work, getWorkType, getWorkCoverUrl, getWorkVideoUrl } from '@/types/work';
-import { getStrapiMedia } from '@/lib/strapi';
+import { getStrapiMedia, getStrapiProxyUrl } from '@/lib/strapi';
 
 interface WorkCardProps {
   work: Work;
@@ -21,7 +21,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
   const isVideo = getWorkType(work) === 'video';
   const rawCoverUrl = getWorkCoverUrl(work);
   const coverUrl = getStrapiMedia(rawCoverUrl);
-  const videoUrl = isVideo ? getStrapiMedia(getWorkVideoUrl(work)) : null;
+  const videoUrl = isVideo ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;
 
   const handleMouseEnter = () => {
     setIsHovered(true);

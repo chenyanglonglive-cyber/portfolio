@@ -14,13 +14,17 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: 'localhost',
       },
+      {
+        protocol: 'http',
+        hostname: '47.95.242.40',
+      },
     ],
   },
   async rewrites() {
     return [
       {
         source: '/strapi-media/:path*',
-        destination: 'https://strapi.wcyblog.space/uploads/:path*',
+        destination: 'http://47.95.242.40/uploads/:path*',
       },
     ];
   },
