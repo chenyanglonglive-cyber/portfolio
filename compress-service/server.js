@@ -120,9 +120,10 @@ const server = http.createServer((req, res) => {
     }
 
     const tmpDir = os.tmpdir();
-    const safeName = filePart.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const safeName = filePart.filename.replace(/[/\\:*?"<>|]/g, '_');
     const inputPath = path.join(tmpDir, 'up_' + Date.now() + '_' + safeName);
     const outputPath = path.join(tmpDir, 'comp_' + Date.now() + '_' + path.parse(safeName).name + '.mp4');
+    const uploadName = path.parse(safeName).name + '.mp4';
 
     let inputPathForCleanup = '';
     let outputPathForCleanup = '';
@@ -151,7 +152,7 @@ const server = http.createServer((req, res) => {
       const curlOut = sh(
         'curl -s -X POST ' + STRAPI + '/api/upload ' +
         '-H "Authorization: Bearer ' + TOKEN + '" ' +
-        '-F "files=@' + outputPath + '"'
+        '-F "files=@' + outputPath + ';filename=' + uploadName + '"'
       );
       const upData = JSON.parse(curlOut);
       const result = upData[0];
