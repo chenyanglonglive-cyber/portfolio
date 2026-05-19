@@ -105,40 +105,37 @@ export async function healthCheck(): Promise<{
   }
 }
 
-/** Convert a Strapi media URL to a Vercel proxy path that avoids
- *  mixed-content blocking (HTTPS page can't load HTTP resources). */
+const STRAPI_MEDIA_HOST = 'https://strapi.wcyblog.space';
+
+/** Convert a Strapi media URL to the public CDN URL
+ *  (Cloudflare-proxied strapi.wcyblog.space) */
 export function getStrapiProxyUrl(url: string | undefined): string {
-  if (!url) return "";
-  if (url.startsWith("http") || url.startsWith("//")) {
+  if (!url) return '';
+  if (url.startsWith('http') || url.startsWith('//')) {
     const urlObj = new URL(url);
-    // Already handled in getStrapiMedia above for known domains,
-    // but also catch bare IP URLs
-    return `/strapi-media${urlObj.pathname}`;
+    return `${STRAPI_MEDIA_HOST}${urlObj.pathname}`;
   }
-  return `/strapi-media${url}`;
+  return `${STRAPI_MEDIA_HOST}${url}`;
 }
 
 export function getStrapiMedia(url: string | undefined): string {
-  if (!url) return "";
-  if (url.startsWith("http") || url.startsWith("//")) {
-    // Strapi 自有服务器 media 文件 → Vercel Proxy 加速
+  if (!url) return '';
+  if (url.startsWith('http') || url.startsWith('//')) {
     if (
-      url.includes("strapiapp.com") ||
-      url.includes("strapi.wcyblog.space") ||
-      url.includes("47.95.242.40")
+      url.includes('strapiapp.com') ||
+      url.includes('strapi.wcyblog.space') ||
+      url.includes('47.95.242.40')
     ) {
-      // Route all Strapi-hosted media through Vercel proxy to avoid
-      // mixed-content blocking (HTTPS page → HTTP backend)
       const urlObj = new URL(url);
-      return `/strapi-media${urlObj.pathname}`;
+      return `${STRAPI_MEDIA_HOST}${urlObj.pathname}`;
     }
-    if (url.includes("r2.dev") || url.includes("cloudflarestorage.com")) {
+    if (url.includes('r2.dev') || url.includes('cloudflarestorage.com')) {
       const urlObj = new URL(url);
       return `/r2-assets${urlObj.pathname}`;
     }
     return url;
   }
-  return `${STRAPI_URL}${url}`;
+  return `${STRAPI_MEDIA_HOST}${url}`;
 }
 
 export async function getWorks(): Promise<Work[]> {
