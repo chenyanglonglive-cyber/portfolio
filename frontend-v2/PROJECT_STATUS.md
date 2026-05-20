@@ -242,5 +242,26 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
 - 阿里云安全组需确认 80/443 端口已开放
 
 ---
+
+# 🚀 2026-05-20 更新日志 (Local Dev & AI Workflow Modalization)
+
+## 1. 本地开发流程优化 (Local Development Setup)
+- **新增本地启动脚本**：在根目录下创建了 [start-dev.bat](file:///D:/blog/portfolio/start-dev.bat)，双击即可一键运行前端 Next.js 本地开发服务器，具备热更新（Hot Reload）功能。
+- **环境配置优化**：更新了 [frontend-v2/.env.local](file:///D:/blog/portfolio/frontend-v2/.env.local) 和 [frontend-v2/.env](file:///D:/blog/portfolio/frontend-v2/.env)，将 `NEXT_PUBLIC_STRAPI_URL` 指向已配置好的阿里云 ECS 后端生产环境（`https://strapi.wcyblog.space`），实现本地直接拉取云端数据进行高保真调试，无需推到线上。
+
+## 2. 首页版位与内容优化 (Homepage Optimization)
+- **核心板块前置**：将 **“AI 工作流大屏”**（`AIWorkflowGrid` 组件）移动到了首页的**第一版位**（位于精选作品 `WorkGrid` 之上），作为用户的最核心竞争优势优先展示。
+- **卡片卡槽精简**：移除了卡片底部的 `Key Pipelines` 核心管线灰色字列表，使卡片布局更精简美观。
+- **文案微调**：
+  - **AI 创意生成**：更新为“使用生成类AI 实现玩法类素材，角色剧情类素材快速复刻，攻略活动类，口播解说类批量生产，使用SKILLS 生产演示动画。”
+  - **AI 自动化提效**：更新为“基于视频设计师岗位的真实痛点，我用 AI Agent 打造了一套从素材管理、办公流程到资源巡检的全链路自动化工具，把重复低效的工作彻底交给 AI 处理，实现团队效率 of 系统性提升。”
+
+## 3. 工作流大屏模态化重构 (Interactive Workflow Modal)
+- **大屏交互弹窗化**：废弃了原有的新开网页跳转模式。现在在首页点击“探索工作流”按钮会以全屏半透明磨砂（`backdrop-blur-md bg-black/60`）的 **iframe 弹窗形式**优雅淡入展示。
+- **只保留核心流程**：隐藏了左侧案例列表（`nav-column`）与右侧详情版块（`details-column`），大屏集中展示中间高精度的流程网络图，提高视觉焦点。
+- **灵动岛胶囊 Tab**：将顶部品类切换重构为固定定位、孤悬于弹窗外的**“灵动岛胶囊”**，支持模糊悬浮效果与霓虹外发光微动效。
+- **关闭机制与双向通信**：在流程画布右上角添加了关闭按钮 (✕)，点击时通过 HTML5 `postMessage` 向 React 父级窗口发送 `close-workflow` 信号，无缝控制模态窗口的开启与关闭，同时在开启时锁定底层网页滚动。
+
+---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
-*Last Updated: 2026-05-19*
+*Last Updated: 2026-05-20*
