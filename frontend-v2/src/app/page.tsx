@@ -15,8 +15,8 @@ export default async function Home() {
   return (
     <div className="container mx-auto max-w-5xl px-8">
       <HomeHero />
-      <WorkGrid videos={videos} images={images} />
       <AIWorkflowGrid />
+      <WorkGrid videos={videos} images={images} />
     </div>
   );
 }
