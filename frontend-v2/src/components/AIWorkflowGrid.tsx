@@ -15,8 +15,7 @@ export default function AIWorkflowGrid() {
       badgeColor: "text-purple-400 bg-purple-500/10 border-purple-500/20",
       textColor: "hover:text-purple-400",
       iconColor: "text-purple-400",
-      description: "使用生成类AI 实现玩法类素材，角色剧情类素材快速复刻，攻略活动类，口播解说类批量生产，使用SKILLS 生产演示动画。",
-      features: ["衍生创意视频", "分镜故事板", "长攻略转信息流", "动效物理渲染"]
+      description: "使用生成类AI 实现玩法类素材，角色剧情类素材快速复刻，攻略活动类，口播解说类批量生产，使用SKILLS 生产演示动画。"
     },
     {
       title: "AI 自动化提效",
@@ -28,8 +27,7 @@ export default function AIWorkflowGrid() {
       badgeColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
       textColor: "hover:text-emerald-400",
       iconColor: "text-emerald-400",
-      description: "基于视频设计师岗位的真实痛点，我用 AI Agent 打造了一套从素材管理、办公流程到资源巡检的全链路自动化工具，把重复低效的工作彻底交给 AI 处理，实现团队效率的系统性提升。",
-      features: ["智能自动重命名", "日报总结与发送", "资源更新自动巡检", "工作群一键推送"]
+      description: "基于视频设计师岗位的真实痛点，我用 AI Agent 打造了一套从素材管理、办公流程到资源巡检的全链路自动化工具，把重复低效的工作彻底交给 AI 处理，实现团队效率的系统性提升。"
     },
     {
       title: "AI 知识库构建",
@@ -41,8 +39,7 @@ export default function AIWorkflowGrid() {
       badgeColor: "text-amber-400 bg-amber-500/10 border-amber-500/20",
       textColor: "hover:text-amber-400",
       iconColor: "text-amber-400",
-      description: "基于 Google NotebookLM 构建。涵盖海量美术资产语义检索引擎、买量多维 ROI 爆款反馈以及版本配置文件冲突校验。",
-      features: ["美术资产语义检索", "高 ROI 剧本大纲", "版本配置逻辑冲突", "实时智能问答终端"]
+      description: "基于 Google NotebookLM 构建。涵盖海量美术资产语义检索引擎、买量多维 ROI 爆款反馈以及版本配置文件冲突校验。"
     }
   ];
 
@@ -103,18 +100,6 @@ export default function AIWorkflowGrid() {
                   </p>
                 </div>
 
-                {/* Features list */}
-                <div className="border-t border-white/5 pt-6 space-y-2">
-                  <div className="text-[10px] font-mono text-zinc-500 tracking-wider uppercase mb-3">Key Pipelines .核心管线</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {item.features.map((feat, fIdx) => (
-                      <span key={fIdx} className="text-xs text-zinc-500 group-hover:text-zinc-300 transition-colors flex items-center gap-1.5">
-                        <span className="w-1 h-1 rounded-full bg-emerald-400/60" />
-                        {feat}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               {/* Action Button */}
