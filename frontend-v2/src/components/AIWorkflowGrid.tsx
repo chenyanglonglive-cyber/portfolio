@@ -28,7 +28,7 @@ export default function AIWorkflowGrid() {
       badgeColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
       textColor: "hover:text-emerald-400",
       iconColor: "text-emerald-400",
-      description: "依托 Hyper Farm 提效套件。实现素材智能重命名标签化分类归档、工作群日报生成及共享盘美术素材自动巡检。",
+      description: "基于视频设计师岗位的真实痛点，我用 AI Agent 打造了一套从素材管理、办公流程到资源巡检的全链路自动化工具，把重复低效的工作彻底交给 AI 处理，实现团队效率的系统性提升。",
       features: ["智能自动重命名", "日报总结与发送", "资源更新自动巡检", "工作群一键推送"]
     },
     {
