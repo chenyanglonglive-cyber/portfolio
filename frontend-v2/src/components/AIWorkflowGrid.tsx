@@ -1,9 +1,32 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Zap, BrainCircuit, ArrowUpRight } from "lucide-react";
-
 export default function AIWorkflowGrid() {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'close-workflow') {
+        setActiveCategory(null);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  useEffect(() => {
+    if (activeCategory) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [activeCategory]);
+
   const workflows = [
     {
       title: "AI 创意生成",
@@ -51,7 +74,7 @@ export default function AIWorkflowGrid() {
             <Sparkles size={24} className="text-emerald-400" /> AI WORKFLOWS <span className="text-zinc-400 ml-2 font-light">.工作流</span>
           </h2>
           <p className="text-zinc-400 text-sm mt-2 max-w-xl">
-            游戏广告创意生产的 AI 工业化整合，点击下方卡片即可跳转至对应的交互大屏 Tab。
+            游戏广告创意生产的 AI 工业化整合，点击下方按钮即可开启对应的交互工作流弹窗。
           </p>
         </div>
       </div>
@@ -103,17 +126,37 @@ export default function AIWorkflowGrid() {
               </div>
 
               {/* Action Button */}
-              <a
-                href={`/AI-Workflow/index.html?category=${item.category}`}
-                className={`mt-8 w-full flex items-center justify-center gap-2 py-3 px-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-semibold text-zinc-300 transition-all duration-300 group-hover:bg-white/10 group-hover:border-white/20 group-hover:text-white ${item.textColor}`}
+              <button
+                type="button"
+                onClick={() => setActiveCategory(item.category)}
+                className={`mt-8 w-full flex items-center justify-center gap-2 py-3 px-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-semibold text-zinc-300 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:text-white cursor-pointer ${item.textColor}`}
               >
-                探索工作流大屏
+                探索工作流
                 <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </a>
+              </button>
             </motion.div>
           );
         })}
       </div>
+
+      {/* Interactive Flowchart Modal */}
+      <AnimatePresence>
+        {activeCategory && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md"
+          >
+            <iframe
+              src={`/AI-Workflow/index.html?category=${activeCategory}`}
+              className="w-full h-full border-none bg-transparent"
+              title="AI Workflow"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

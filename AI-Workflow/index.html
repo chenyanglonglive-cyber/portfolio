@@ -652,6 +652,106 @@
       transform-origin: 50% 50%;
       transition: stroke-dashoffset 0.1s linear;
     }
+
+    /* ── 弹窗版式覆盖样式 ────────────────────────────────────── */
+    body {
+      background-color: transparent !important;
+    }
+    .bg-canvas {
+      background: rgba(9, 9, 11, 0.8) !important;
+      backdrop-filter: blur(12px);
+    }
+    .bg-grid {
+      opacity: 0.4;
+    }
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 24px 40px 24px !important;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      min-height: auto !important;
+      justify-content: center;
+    }
+    header {
+      border: none !important;
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+    .logo-area, .header-controls {
+      display: none !important;
+    }
+    .category-tabs {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(15, 15, 17, 0.85) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      padding: 6px 8px !important;
+      border-radius: 99px !important;
+      backdrop-filter: blur(20px) !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      display: flex !important;
+      gap: 8px !important;
+      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
+    }
+    .dashboard-grid {
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
+      flex: 1;
+    }
+    .nav-column, .details-column, footer {
+      display: none !important;
+    }
+    .canvas-column {
+      background: rgba(18, 18, 20, 0.85) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 28px !important;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 100px rgba(16, 185, 129, 0.02) !important;
+      padding: 24px !important;
+      position: relative !important;
+      backdrop-filter: blur(30px) !important;
+      height: 75vh !important;
+      min-height: 600px !important;
+      animation: modal-entrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .close-modal-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #a1a1aa;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 100;
+    }
+    .close-modal-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      transform: rotate(90deg);
+    }
+    @keyframes modal-entrance {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
@@ -734,6 +834,7 @@
 
       <!-- 中央：图形化流程图渲染 -->
       <div class="canvas-column">
+        <button class="close-modal-btn" id="close-modal-btn" title="关闭">✕</button>
         <div class="canvas-header">
           <div class="canvas-title" id="canvas-title">
             <!-- 标题 -->
@@ -1571,6 +1672,11 @@
         }
       });
     }
+
+    // ── 关闭弹窗事件绑定 ────────────────────────────────────
+    document.getElementById('close-modal-btn')?.addEventListener('click', () => {
+      window.parent.postMessage({ type: 'close-workflow' }, '*');
+    });
 
     initNavigation();
     switchCase(0);
