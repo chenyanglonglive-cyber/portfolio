@@ -1,5 +1,6 @@
 import HomeHero from "@/components/HomeHero";
 import WorkGrid from "@/components/WorkGrid";
+import AIWorkflowGrid from "@/components/AIWorkflowGrid";
 import { getFeaturedWorks } from "@/lib/strapi";
 import { getWorkType, getWorkVideoUrl } from "@/types/work";
 
@@ -15,6 +16,7 @@ export default async function Home() {
     <div className="container mx-auto max-w-5xl px-8">
       <HomeHero />
       <WorkGrid videos={videos} images={images} />
+      <AIWorkflowGrid />
     </div>
   );
 }

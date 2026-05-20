@@ -131,7 +131,6 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                         src={videoUrl}
                         controls
                         autoPlay
-                        muted
                         loop
                         playsInline
                         crossOrigin="anonymous"
