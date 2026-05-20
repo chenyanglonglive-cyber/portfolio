@@ -15,7 +15,7 @@ export default function AIWorkflowGrid() {
       badgeColor: "text-purple-400 bg-purple-500/10 border-purple-500/20",
       textColor: "hover:text-purple-400",
       iconColor: "text-purple-400",
-      description: "集成6大核心创意管线。支持从参考视频提取首帧封面、AI分镜脚本生成、长攻略转录广告及Web动效物理高帧率录屏。",
+      description: "使用生成类AI 实现玩法类素材，角色剧情类素材快速复刻，攻略活动类，口播解说类批量生产，使用SKILLS 生产演示动画。",
       features: ["衍生创意视频", "分镜故事板", "长攻略转信息流", "动效物理渲染"]
     },
     {
