@@ -101,18 +101,18 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-5xl h-full max-h-[75vh] mt-12 bg-zinc-900 border border-white/10 rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-[0_0_100px_rgba(0,0,0,0.8)]"
+            className="relative w-full max-w-5xl h-[85vh] max-h-[85vh] md:h-full md:max-h-[75vh] mt-4 md:mt-12 bg-zinc-900 border border-white/10 rounded-2xl md:rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-[0_0_100px_rgba(0,0,0,0.8)]"
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-6 right-6 z-50 p-2 bg-black/50 hover:bg-white/10 text-white rounded-full transition-colors"
+              className="absolute top-4 right-4 md:top-6 md:right-6 z-50 p-3 md:p-2 bg-black/50 hover:bg-white/10 text-white rounded-full transition-colors"
             >
               <X size={24} />
             </button>
 
             {/* Left: Video Player */}
-            <div className="md:flex-1 bg-black flex items-center justify-center relative overflow-hidden p-8">
+            <div className="w-full aspect-video md:aspect-auto md:flex-1 h-auto md:h-full flex-shrink-0 bg-black flex items-center justify-center relative overflow-hidden p-4 md:p-8">
                 {/* Background diffusion */}
                 {displayCover && (
                   <div 
@@ -143,8 +143,8 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
             </div>
 
             {/* Right: Info Panel with custom scrollbar */}
-            <div className="w-full md:w-[400px] flex flex-col border-l border-white/5">
-              <div className="flex-1 overflow-y-auto p-10 space-y-12 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            <div className="w-full md:w-[400px] flex flex-col border-t md:border-t-0 md:border-l border-white/5 min-h-0 flex-1">
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 md:space-y-12 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 
                 {/* Header Info */}
                 <section className="space-y-4">

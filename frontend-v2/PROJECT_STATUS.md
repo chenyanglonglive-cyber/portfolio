@@ -262,6 +262,29 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
 - **灵动岛胶囊 Tab**：将顶部品类切换重构为固定定位、孤悬于弹窗外的**“灵动岛胶囊”**，支持模糊悬浮效果与霓虹外发光微动效。
 - **关闭机制与双向通信**：在流程画布右上角添加了关闭按钮 (✕)，点击时通过 HTML5 `postMessage` 向 React 父级窗口发送 `close-workflow` 信号，无缝控制模态窗口的开启与关闭，同时在开启时锁定底层网页滚动。
 
+# 🚀 2026-05-21 更新日志 (Mobile Responsive Adaptations & Preferences)
+
+## 1. 移动端适配优化 (Mobile Responsive Layouts)
+- **首页视频详情弹窗 (`WorkModal.tsx`)**：
+  - 针对移动端屏幕（宽度小于 `768px`）将双栏布局重构为单栏垂直滚动布局。
+  - 优化弹窗的间距与排版，防止数据详情内容遮挡视频播放，确保视频区域优先展示。
+  - 将庞杂的数据指标及技术痛点面板在移动端隐藏，只保留最核心的标题、视频内容和关键说明。
+- **AI 工作流交互大屏 (`AI-Workflow/index.html` & `frontend-v2/public/AI-Workflow/index.html`)**：
+  - 将原本宽屏大屏展示的网格重构为适合移动端手势操作的流畅排版。
+  - 将顶部 Tab 切换重构为水平滚动的滑动式灵动岛胶囊，方便移动端单手切换。
+  - 修复了移动端下 SVG 贝塞尔曲线连线的坐标重绘问题，使流光脉冲在屏幕旋转和缩放时精确对齐节点。
+  - 优化了节点内的字号、间距与圆角，使其符合移动端轻量化视觉体验。
+
+## 2. 自动化验证与测试 (Verification & Playwright)
+- 编写 Playwright 移动端仿真脚本，模拟 iPhone 及主流 Android 机型分辨率。
+- 自动化生成移动端布局截图（如 `mobile_home_modal.png`、`mobile_workflow_creative.png` 等）进行视觉回溯，确认无遮挡、无溢出、无重叠。
+
+## 3. 用户偏好配置集成 (User Preferences Config)
+- 遵循用户的个性化偏好配置：
+  1. 在所有可能引发用户授权或卡住的命令执行前运行 `auth_alert.ps1` 提示音。
+  2. 在所有任务彻底完成前运行 `task_complete.ps1` 提示音。
+  3. **新增偏好**：每次推送 Git 前自动检查并更新 `PROJECT_STATUS.md` 状态清单。
+
 ---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
-*Last Updated: 2026-05-20*
+*Last Updated: 2026-05-21*
