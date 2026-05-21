@@ -28,6 +28,8 @@
       --accent-gemini: #4285F4;
       --accent-dreamina: #FF2E93;
       --accent-openai: #10a37f;
+      --accent-gpt: #10a37f;
+      --accent-chatgpt-image: #10a37f;
       --accent-claude: #d97706;
       --accent-hyper: #34d399;
       --accent-capcut: #00F2FE;
@@ -665,9 +667,9 @@
       opacity: 0.4;
     }
     .dashboard-container {
-      max-width: 1200px;
+      max-width: 1360px;
       margin: 0 auto;
-      padding: 100px 24px 40px 24px !important;
+      padding: 32px 24px !important;
       display: flex;
       flex-direction: column;
       height: 100vh;
@@ -675,53 +677,80 @@
       justify-content: center;
     }
     header {
-      border: none !important;
-      padding-bottom: 0 !important;
-      margin-bottom: 0 !important;
-    }
-    .logo-area, .header-controls {
       display: none !important;
     }
-    .category-tabs {
-      position: fixed;
-      top: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      background: rgba(15, 15, 17, 0.85) !important;
-      border: 1px solid rgba(255, 255, 255, 0.12) !important;
-      padding: 6px 8px !important;
-      border-radius: 99px !important;
-      backdrop-filter: blur(20px) !important;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
-      display: flex !important;
-      gap: 8px !important;
-      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
+    .logo-area, .header-controls, .category-tabs {
+      display: none !important;
     }
     .dashboard-grid {
-      grid-template-columns: 1fr !important;
-      gap: 0 !important;
+      grid-template-columns: 280px minmax(480px, 1fr) 320px !important;
+      gap: 16px !important;
       flex: 1;
+      max-height: 78vh;
+      min-height: 560px;
     }
-    .nav-column, .details-column, footer {
+    footer {
       display: none !important;
+    }
+    .nav-column {
+      display: flex !important;
+      padding-right: 2px !important;
+    }
+    .case-card {
+      border-radius: 14px !important;
+      padding: 14px 18px !important;
+      gap: 7px !important;
+      flex: 0 0 auto !important;
+    }
+    .case-title {
+      font-size: 14px !important;
+    }
+    .case-tagline {
+      font-size: 10.5px !important;
+      line-height: 1.4 !important;
     }
     .canvas-column {
       background: rgba(18, 18, 20, 0.85) !important;
       border: 1px solid rgba(255, 255, 255, 0.08) !important;
-      border-radius: 28px !important;
+      border-radius: 22px !important;
       box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 100px rgba(16, 185, 129, 0.02) !important;
-      padding: 24px !important;
+      padding: 18px !important;
       position: relative !important;
       backdrop-filter: blur(30px) !important;
-      height: 75vh !important;
-      min-height: 600px !important;
+      height: auto !important;
+      min-height: 560px !important;
       animation: modal-entrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .canvas-header {
+      padding: 6px 8px 16px 8px !important;
+    }
+    .canvas-title {
+      padding-right: 42px;
+    }
+    .canvas-title .subtitle {
+      display: block;
+      margin-top: 4px;
+      margin-left: 0;
+    }
+    .flowchart-container {
+      min-height: 0 !important;
+      padding: 24px 12px 28px 12px !important;
+      gap: 18px !important;
+    }
+    .node-card {
+      width: min(320px, 100%) !important;
+    }
+    .details-column {
+      display: flex !important;
+      border-radius: 22px !important;
+      padding: 22px !important;
+      gap: 18px !important;
+      min-height: 560px;
     }
     .close-modal-btn {
       position: absolute;
-      top: 24px;
-      right: 24px;
+      top: 18px;
+      right: 18px;
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -750,6 +779,34 @@
       to {
         opacity: 1;
         transform: scale(1) translateY(0);
+      }
+    }
+    @media (max-width: 1180px) {
+      .dashboard-container {
+        padding: 24px 18px !important;
+      }
+      .dashboard-grid {
+        grid-template-columns: 240px minmax(420px, 1fr) 280px !important;
+        gap: 12px !important;
+      }
+      .details-column {
+        padding: 18px !important;
+      }
+    }
+    @media (max-width: 920px) {
+      .dashboard-container {
+        height: auto;
+        min-height: 100vh !important;
+        justify-content: flex-start;
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        max-height: none;
+      }
+      .nav-column,
+      .canvas-column,
+      .details-column {
+        min-height: auto !important;
       }
     }
   </style>
@@ -885,35 +942,30 @@
     
     <!-- Dreamina Icon (Jimeng AI) -->
     <div id="svg-dreamina">
-      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10.5" stroke="url(#jimeng-ring-grad)" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/>
-        <path d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1614 4.30323 16.1348 5.625 17.625C6.875 16 8.5 14.75 10.5 14.25C9.5 13.5 9 12.5 9 11.5C9 9 11 7 13.5 7C14.75 7 15.875 7.5 16.625 8.375C18.125 7 19.375 5.25 19.375 3.5C17.625 3.5 14.75 3.5 12 3.5Z" fill="url(#jimeng-petal-1)" opacity="0.9"/>
-        <path d="M20.5 12C20.5 7.30558 16.6944 3.5 12 3.5C9.83863 3.5 7.86516 4.30323 6.375 5.625C8 6.875 9.25 8.5 9.75 10.5C10.5 9.5 11.5 9 12.5 9C15 9 17 11 17 13.5C17 14.75 16.5 15.875 15.625 16.625C17 18.125 18.75 19.375 20.5 19.375C20.5 17.625 20.5 14.75 20.5 12Z" fill="url(#jimeng-petal-2)" opacity="0.95"/>
-        <circle cx="12" cy="12" r="3.2" fill="#FFFFFF"/>
-        <circle cx="12" cy="12" r="1.5" fill="#09090b"/>
-        <defs>
-          <linearGradient id="jimeng-ring-grad" x1="2" y1="2" x2="22" y2="22">
-            <stop offset="0%" stop-color="#FF2E93"/>
-            <stop offset="35%" stop-color="#9B59B6"/>
-            <stop offset="70%" stop-color="#4285F4"/>
-            <stop offset="100%" stop-color="#34d399"/>
-          </linearGradient>
-          <linearGradient id="jimeng-petal-1" x1="3" y1="3" x2="16" y2="16">
-            <stop offset="0%" stop-color="#FF2E93"/>
-            <stop offset="100%" stop-color="#FBBC04"/>
-          </linearGradient>
-          <linearGradient id="jimeng-petal-2" x1="10" y1="10" x2="21" y2="21">
-            <stop offset="0%" stop-color="#4285F4"/>
-            <stop offset="100%" stop-color="#FF2E93"/>
-          </linearGradient>
-        </defs>
-      </svg>
+      <img class="icon-svg" src="./jimeng-logo.png" alt="即梦 AI">
     </div>
 
     <!-- GPT Icon (ChatGPT Official Hexagonal Star) -->
     <div id="svg-gpt">
-      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M19.06 10.59a3.86 3.86 0 0 0-.25-2.22 3.91 3.91 0 0 0-1.41-1.57A3.91 3.91 0 0 0 13.9 6.2a3.89 3.89 0 0 0-3.32 1.83l-.7-.41a2.82 2.82 0 0 0-2.82 0 2.82 2.82 0 0 0-1.41 2.45v.82l-.7-.4A3.92 3.92 0 0 0 3.5 12a3.91 3.91 0 0 0 1.41 3 3.9 3.9 0 0 0 3.5.61l.7-.4v.82a2.82 2.82 0 0 0 2.82 2.45c1.1 0 2.08-.63 2.53-1.63l.7.4a3.89 3.89 0 0 0 3.32.6 3.91 3.91 0 0 0 2.22-3 3.91 3.91 0 0 0-.94-3.26ZM11.16 18a1.82 1.82 0 0 1-1.18-.43L12 16.4l2.02 1.17c-.36.27-.8.43-1.26.43a1.8 1.8 0 0 1-1.6-1ZM5.5 11c0-.46.16-.9.43-1.26L7.95 10.9v2.2L5.93 14.27A1.8 1.8 0 0 1 5.5 13a1.8 1.8 0 0 1 0-2ZM11.16 6a1.8 1.8 0 0 1 1.6 1L12.76 10H8.74L8 8.7a1.8 1.8 0 0 1 3.16-2.7ZM12 14.86 9.98 13.7v-2.34L12 12.52l2.02-1.17v2.34L12 14.86Zm4.5-1.59-2.02-1.17v-2.2l2.02-1.17c.27.36.43.8.43 1.26a1.8 1.8 0 0 1-.43 1.28ZM12.76 14H8.74L8 15.3a1.8 1.8 0 0 1-1.58.7a1.8 1.8 0 0 1-.79-2.3L7.65 13.1l2.02 1.17L12.76 14Z" fill="#10A37F"/>
+      <svg class="icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.248 18.25q-.825 0-1.568-.314a4.3 4.3 0 0 1-1.32-.874 4 4 0 0 1-1.304.214 4 4 0 0 1-2.046-.544 4.27 4.27 0 0 1-1.518-1.485 4 4 0 0 1-.56-2.095q0-.48.131-1.04A4.4 4.4 0 0 1 2.04 10.71a4.07 4.07 0 0 1 .017-3.4 4.2 4.2 0 0 1 1.056-1.418 3.8 3.8 0 0 1 1.6-.842 3.9 3.9 0 0 1 .76-1.683q.593-.759 1.451-1.188a4.04 4.04 0 0 1 1.832-.429q.825 0 1.567.313.742.314 1.32.875a4 4 0 0 1 1.304-.215q1.106 0 2.046.545a4.14 4.14 0 0 1 1.501 1.485q.578.941.578 2.095 0 .48-.132 1.04.66.61 1.023 1.419.363.792.363 1.666 0 .892-.38 1.717a4.3 4.3 0 0 1-1.072 1.435 3.8 3.8 0 0 1-1.584.825 3.8 3.8 0 0 1-.775 1.683 4.06 4.06 0 0 1-1.436 1.188 4.04 4.04 0 0 1-1.832.429m-4.076-2.062q.825 0 1.435-.347l3.103-1.782a.36.36 0 0 0 .164-.313v-1.42L7.881 14.62a.67.67 0 0 1-.726 0l-3.118-1.798a.5.5 0 0 1-.017.115v.198q0 .841.396 1.551.413.693 1.139 1.089a3.2 3.2 0 0 0 1.617.412m.165-2.69a.4.4 0 0 0 .181.05q.083 0 .165-.05l1.238-.71-3.977-2.31a.7.7 0 0 1-.363-.643v-3.58q-.825.362-1.32 1.122a2.9 2.9 0 0 0-.495 1.65q0 .809.413 1.55.412.743 1.072 1.123zm3.91 3.663q.875 0 1.585-.396a2.96 2.96 0 0 0 1.534-2.64v-3.564a.32.32 0 0 0-.165-.297l-1.254-.726v4.604a.7.7 0 0 1-.363.643l-3.119 1.799a3 3 0 0 0 1.783.577m.627-6.039V8.878L10.01 7.822 8.129 8.878v2.244l1.881 1.056zM7.057 5.859a.7.7 0 0 1 .363-.644l3.119-1.798a3 3 0 0 0-1.782-.578q-.874 0-1.584.396A2.96 2.96 0 0 0 6.05 4.324a3.07 3.07 0 0 0-.396 1.551v3.547q0 .199.165.314l1.237.726zm8.383 7.887q.825-.364 1.303-1.123.495-.758.495-1.65a3.15 3.15 0 0 0-.412-1.55q-.413-.743-1.073-1.123l-3.086-1.782q-.099-.065-.181-.049a.3.3 0 0 0-.165.05l-1.238.692 3.993 2.327a.6.6 0 0 1 .264.264.64.64 0 0 1 .1.363zm-3.317-8.382a.63.63 0 0 1 .726 0l3.135 1.831v-.297q0-.792-.396-1.501a2.86 2.86 0 0 0-1.105-1.155q-.71-.43-1.65-.43-.825 0-1.436.347L8.294 5.941a.36.36 0 0 0-.165.314v1.418z" fill="#10A37F"/>
+      </svg>
+    </div>
+
+    <!-- ChatGPT Image Icon from chatgpt.com sprite svg[2] -->
+    <div id="svg-chatgpt-image">
+      <svg class="icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.248 18.25q-.825 0-1.568-.314a4.3 4.3 0 0 1-1.32-.874 4 4 0 0 1-1.304.214 4 4 0 0 1-2.046-.544 4.27 4.27 0 0 1-1.518-1.485 4 4 0 0 1-.56-2.095q0-.48.131-1.04A4.4 4.4 0 0 1 2.04 10.71a4.07 4.07 0 0 1 .017-3.4 4.2 4.2 0 0 1 1.056-1.418 3.8 3.8 0 0 1 1.6-.842 3.9 3.9 0 0 1 .76-1.683q.593-.759 1.451-1.188a4.04 4.04 0 0 1 1.832-.429q.825 0 1.567.313.742.314 1.32.875a4 4 0 0 1 1.304-.215q1.106 0 2.046.545a4.14 4.14 0 0 1 1.501 1.485q.578.941.578 2.095 0 .48-.132 1.04.66.61 1.023 1.419.363.792.363 1.666 0 .892-.38 1.717a4.3 4.3 0 0 1-1.072 1.435 3.8 3.8 0 0 1-1.584.825 3.8 3.8 0 0 1-.775 1.683 4.06 4.06 0 0 1-1.436 1.188 4.04 4.04 0 0 1-1.832.429m-4.076-2.062q.825 0 1.435-.347l3.103-1.782a.36.36 0 0 0 .164-.313v-1.42L7.881 14.62a.67.67 0 0 1-.726 0l-3.118-1.798a.5.5 0 0 1-.017.115v.198q0 .841.396 1.551.413.693 1.139 1.089a3.2 3.2 0 0 0 1.617.412m.165-2.69a.4.4 0 0 0 .181.05q.083 0 .165-.05l1.238-.71-3.977-2.31a.7.7 0 0 1-.363-.643v-3.58q-.825.362-1.32 1.122a2.9 2.9 0 0 0-.495 1.65q0 .809.413 1.55.412.743 1.072 1.123zm3.91 3.663q.875 0 1.585-.396a2.96 2.96 0 0 0 1.534-2.64v-3.564a.32.32 0 0 0-.165-.297l-1.254-.726v4.604a.7.7 0 0 1-.363.643l-3.119 1.799a3 3 0 0 0 1.783.577m.627-6.039V8.878L10.01 7.822 8.129 8.878v2.244l1.881 1.056zM7.057 5.859a.7.7 0 0 1 .363-.644l3.119-1.798a3 3 0 0 0-1.782-.578q-.874 0-1.584.396A2.96 2.96 0 0 0 6.05 4.324a3.07 3.07 0 0 0-.396 1.551v3.547q0 .199.165.314l1.237.726zm8.383 7.887q.825-.364 1.303-1.123.495-.758.495-1.65a3.15 3.15 0 0 0-.412-1.55q-.413-.743-1.073-1.123l-3.086-1.782q-.099-.065-.181-.049a.3.3 0 0 0-.165.05l-1.238.692 3.993 2.327a.6.6 0 0 1 .264.264.64.64 0 0 1 .1.363zm-3.317-8.382a.63.63 0 0 1 .726 0l3.135 1.831v-.297q0-.792-.396-1.501a2.86 2.86 0 0 0-1.105-1.155q-.71-.43-1.65-.43-.825 0-1.436.347L8.294 5.941a.36.36 0 0 0-.165.314v1.418z" fill="#10A37F"/>
+      </svg>
+    </div>
+
+    <!-- Obsidian Icon -->
+    <div id="svg-obsidian">
+      <svg class="icon-svg" alt="Obsidian" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#A88BFA" d="m6.91927 14.5955c.64053-.1907 1.67255-.4839 2.85923-.5565-.71191-1.7968-.88376-3.3691-.74554-4.76905.15962-1.61678.72977-2.9662 1.28554-4.11442.1186-.24501.2326-.47313.3419-.69198.1549-.30984.3004-.60109.4365-.8953.2266-.48978.3948-.92231.4798-1.32416.0836-.39515.0841-.74806-.0148-1.08657-.099-.338982-.3093-.703864-.7093-1.1038132-.5222-.1353116-1.1017-.0165173-1.53613.3742922l-5.15591 4.638241c-.28758.25871-.47636.60929-.53406.99179l-.44455 2.94723c.69903.6179 2.42435 2.41414 3.47374 4.90644.09364.2224.1819.4505.26358.6838z"/>
+        <path fill="#A88BFA" d="m2.97347 10.3512c-.02431.1037-.05852.205-.10221.3024l-2.724986 6.0735c-.279882.6238-.15095061 1.3552.325357 1.8457l4.288349 4.4163c2.1899-3.2306 1.87062-6.2699.87032-8.6457-.75846-1.8013-1.90801-3.2112-2.65683-3.9922z"/>
+        <path fill="#A88BFA" d="m5.7507 23.5094c.07515.012.15135.0192.2281.0215.81383.0244 2.18251.0952 3.29249.2997.90551.1669 2.70051.6687 4.17761 1.1005 1.1271.3294 2.2886-.5707 2.4522-1.7336.1192-.8481.343-1.8075.7553-2.6869l-.0095.0033c-.6982-1.9471-1.5865-3.2044-2.5178-4.0073-.9284-.8004-1.928-1.1738-2.8932-1.3095-1.60474-.2257-3.07497.1961-4.00103.4682.55465 2.3107.38396 5.0295-1.48417 7.8441z"/>
+        <path fill="#A88BFA" d="m17.3708 19.3102c.9267-1.3985 1.5868-2.4862 1.9352-3.0758.1742-.295.1427-.6648-.0638-.9383-.5377-.7126-1.5666-2.1607-2.1272-3.5015-.5764-1.3785-.6624-3.51876-.6673-4.56119-.0019-.39626-.1275-.78328-.3726-1.09465l-3.3311-4.23183c-.0117.19075-.0392.37998-.0788.56747-.1109.52394-.32 1.04552-.5585 1.56101-.1398.30214-.3014.62583-.4646.95284-.1086.21764-.218.4368-.3222.652-.5385 1.11265-1.0397 2.32011-1.1797 3.73901-.1299 1.31514.0478 2.84484.8484 4.67094.1333.0113.2675.0262.4023.0452 1.1488.1615 2.3546.6115 3.4647 1.5685.9541.8226 1.8163 2.0012 2.5152 3.6463z"/>
       </svg>
     </div>
 
@@ -1004,7 +1056,7 @@
         nodes: [
           { id: "c1-n1", icon: "📹", label: "爆款参考视频", sub: "输入外部验证过的创意" },
           { id: "c1-n2", icon: "🤖", label: "Gemini 克隆智能体", sub: "自动分析并推荐替换元素", brand: "gemini" },
-          { id: "c1-n3", icon: "🎨", label: "素材重组 / AI生图", sub: "根据提示词定制游戏道具" },
+          { id: "c1-n3", icon: "🎨", label: "素材重组 / AI生图", sub: "根据提示词定制游戏道具", brand: "chatgpt-image" },
           { id: "c1-n4", icon: "🖼️", label: "即梦画布规置", sub: "像素级排布并归整画布", brand: "dreamina" },
           { id: "c1-n5", icon: "🎬", label: "衍生创意视频", sub: "一键生成并微调画面", brand: "dreamina" }
         ],
@@ -1034,7 +1086,7 @@
           { id: "c2-n2", icon: "🤖", label: "Gemini 分镜智能体", sub: "提取分镜大纲(景别/表情)", brand: "gemini" },
           { id: "c2-n3", icon: "👥", label: "演员道具前置确认", sub: "智能提问交互确认游戏元素" },
           { id: "c2-n4", icon: "📋", label: "完整分镜脚本", sub: "输出包含镜头描述的结构化大纲", brand: "gpt" },
-          { id: "c2-n5", icon: "🖼️", label: "高清分镜图生成", sub: "配合 ImageGen 瞬间生成原型图" },
+          { id: "c2-n5", icon: "🖼️", label: "高清分镜图生成", sub: "配合 ImageGen 瞬间生成原型图", brand: "chatgpt-image" },
           { id: "c2-n6", icon: "🎬", label: "即梦 2.0 剧情动画", sub: "高一致性角色视频交付", brand: "dreamina" }
         ],
         connections: [
@@ -1059,10 +1111,11 @@
         ],
         efficiency: "传统制作：文案+海报耗时 2 天 ⚡ AI 管线：仅需 10 分钟自动渲染全套",
         tools: ["游戏私有知识库", "GPT ImageGen 2", "运营文案生成器"],
+        navBrand: "obsidian",
         nodes: [
           { id: "c3-n1", icon: "📚", label: "游戏专属知识库", sub: "活动/装备介绍/攻略/主线剧情", brand: "notebooklm" },
           { id: "c3-n2", icon: "✍️", label: "AI 自动生成脚本", sub: "深度结合知识库进行数值校验", brand: "gpt" },
-          { id: "c3-n3", icon: "🖼️", label: "GPT ImageGen 2", sub: "生成高质量福利宣传图片", brand: "gpt" },
+          { id: "c3-n3", icon: "🖼️", label: "GPT ImageGen 2", sub: "生成高质量福利宣传图片", brand: "chatgpt-image" },
           { id: "c3-n4", icon: "📱", label: "福利宣传片与海报", sub: "批量化运营推广物料秒级交付" }
         ],
         connections: [
@@ -1145,8 +1198,8 @@
           { id: "c6-n1", icon: "🗂️", label: "数十个装备图标", sub: "输入多级复杂属性数据" },
           { id: "c6-n2", icon: "📚", label: "布局约束知识库", sub: "确定网格/长宽比/像素边距", brand: "notebooklm" },
           { id: "c6-n3", icon: "🤖", label: "位置与遮罩详细描述", sub: "AI 瞬间计算出所有几何坐标", brand: "gpt" },
-          { id: "c6-n4", icon: "🎨", label: "精准生图控制", sub: "将几何描述直接指挥引擎绘图" },
-          { id: "c6-n5", icon: "🖼️", label: "高精图标合成图", sub: "免人手打字对齐的高清完稿" }
+          { id: "c6-n4", icon: "🎨", label: "精准生图控制", sub: "将几何描述直接指挥引擎绘图", brand: "chatgpt-image" },
+          { id: "c6-n5", icon: "🖼️", label: "高精图标合成图", sub: "免人手打字对齐的高清完稿", brand: "chatgpt-image" }
         ],
         connections: [
           { from: "c6-n1", to: "c6-n2" },
@@ -1356,7 +1409,7 @@
           <div class="case-meta">
             <span class="case-index">CASE ${c.id < 10 ? '0' + c.id : c.id}</span>
             <div class="case-icon-wrap" style="color: ${c.accent};">
-              ${c.nodes[1] && c.nodes[1].brand ? getBrandIconMarkup(c.nodes[1].brand) : '🤖'}
+              ${c.navBrand ? getBrandIconMarkup(c.navBrand) : (c.nodes[1] && c.nodes[1].brand ? getBrandIconMarkup(c.nodes[1].brand) : '🤖')}
             </div>
           </div>
           <div class="case-title">${c.title}</div>
@@ -1426,6 +1479,7 @@
           let brandName = '';
           if (node.brand === 'gemini') brandName = 'Gemini';
           else if (node.brand === 'dreamina') brandName = '即梦 AI';
+          else if (node.brand === 'chatgpt-image') brandName = 'ChatGPT';
           else if (node.brand === 'gpt') brandName = 'GPT-4o';
           else if (node.brand === 'claude') brandName = 'Claude';
           else if (node.brand === 'hyper') brandName = 'Hyper Farm';
