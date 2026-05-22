@@ -286,5 +286,22 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
   3. **新增偏好**：每次推送 Git 前自动检查并更新 `PROJECT_STATUS.md` 状态清单。
 
 ---
+
+# 🚀 2026-05-22 更新日志 (Developer Preferences & Automation Alerts)
+
+## 1. 偏好配置持久化 (Preferences Persistence)
+- **.antigravitycli/preferences.json**：新增了对 Antigravity 专用的偏好设置，规范了开发流程、Git 每日推送、项目状态自动更新、以及禁止在 ECS 上进行远程构建的内存限制。
+- **.cursorrules**：在根目录下创建了全局 AI 规则文件，确保后续任何 AI Agent (Cursor / Windsurf / Claude Code / Antigravity) 在接手该项目时，都能自动读取并严格执行这些操作规范。
+
+## 2. 自动化提示音与通知脚本交付 (Alert & Notification Scripts)
+- **scripts/auth_alert.ps1** [NEW](file:///G:/blog/scripts/auth_alert.ps1)：实现了一个 ASCII 安全的 PowerShell 提示音脚本。在有命令需要用户手动授权或可能卡住时播放警告音（Hand），并调用 Windows 10/11 Toast API 推送系统级通知。
+- **scripts/task_complete.ps1** [NEW](file:///G:/blog/scripts/task_complete.ps1)：实现了一个 ASCII 安全的成功提示音脚本。在任务完全结束、状态更新完毕后播放成功提示音（Asterisk），并发送 Toast 气泡通知。
+- 采用 Unicode-ASCII 安全转义策略，彻底解决了由于 Windows 默认代码页与 UTF-8 编码冲突导致的 PowerShell 语法解析崩溃问题。
+
+## 3. 状态与推送自动化验证
+- 本次更新的所有偏好与自动化配置已被完整记录，并已运行验证通过。
+
+---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
-*Last Updated: 2026-05-21*
+*Last Updated: 2026-05-22*
+

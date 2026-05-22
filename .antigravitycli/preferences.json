@@ -1,0 +1,20 @@
+{
+  "developer_preferences": {
+    "daily_workflow": {
+      "must_update_status_before_push": true,
+      "status_files": [
+        "frontend-v2/PROJECT_STATUS.md",
+        "AI-Workflow/AI_Workflow_Status.md"
+      ],
+      "push_daily": true
+    },
+    "ecs_constraints": {
+      "no_remote_builds": true,
+      "reason": "阿里云 ECS (47.95.242.40) 仅有 2GB 内存，在其上运行 npm run build / strapi build 等编译/打包任务会导致 OOM 宕机。所有的 Admin 页面构建必须在本地（Windows）运行，然后将编译好的 dist 文件夹同步（scp）到 ECS 对应目录（如 /var/www/strapi/dist/）并重启服务。"
+    },
+    "automation_alerts": {
+      "pre_auth_command": "powershell -File G:\\blog\\scripts\\auth_alert.ps1",
+      "task_complete_command": "powershell -File G:\\blog\\scripts\\task_complete.ps1"
+    }
+  }
+}
