@@ -143,16 +143,37 @@ const server = http.createServer((req, res) => {
       const outMB = (outSize / 1024 / 1024).toFixed(1);
       console.log('[compress] Done:', inMB, 'MB ->', outMB, 'MB');
 
-      // Upload to Strapi via curl
-      const curlOut = sh(
-        'curl -s -X POST ' + STRAPI + '/api/upload ' +
-        '-H "Authorization: Bearer ' + TOKEN + '" ' +
-        '-F "files=@' + outputPath + '"'
-      );
-      const upData = JSON.parse(curlOut);
+      // Upload to Strapi via native fetch & FormData
+      const formData = new FormData();
+      const fileBuffer = fs.readFileSync(outputPath);
+      const fileBlob = new Blob([fileBuffer], { type: 'video/mp4' });
+      formData.append('files', fileBlob, outputName);
+
+      // Forward extra metadata (like folder and fileInfo) if present
+      for (const part of parts) {
+        if (part.name !== 'files') {
+          formData.append(part.name, part.body.toString('utf-8'));
+        }
+      }
+
+      console.log('[compress] Uploading to Strapi natively...');
+      const uploadRes = await fetch(STRAPI + '/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + TOKEN,
+        },
+        body: formData,
+      });
+
+      if (!uploadRes.ok) {
+        const errText = await uploadRes.text();
+        throw new Error('Strapi upload failed (' + uploadRes.status + '): ' + errText.slice(0, 200));
+      }
+
+      const upData = await uploadRes.json();
       const result = upData[0];
       if (!result || !result.id) {
-        throw new Error('Strapi upload failed: ' + curlOut.slice(0, 200));
+        throw new Error('Strapi upload returned invalid response');
       }
 
       console.log('[compress] Upload OK:', result.id);

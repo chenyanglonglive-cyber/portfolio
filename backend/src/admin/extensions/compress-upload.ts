@@ -127,6 +127,12 @@ export function injectCompressUpload() {
   async function processVideoUpload(task) {
     var fd = new FormData();
     fd.append('files', task.file);
+    if (task.folder) {
+      fd.append('folder', task.folder);
+    }
+    if (task.fileInfo) {
+      fd.append('fileInfo', typeof task.fileInfo === 'string' ? task.fileInfo : JSON.stringify(task.fileInfo));
+    }
     var resp = await fetch(window.location.origin + '/compress', {
       method: 'POST',
       headers: task.authHeader ? { Authorization: task.authHeader } : {},
@@ -311,6 +317,33 @@ export function injectCompressUpload() {
     for (var k = 0; k < videoFiles.length; k++) {
       idx++;
       var vf = videoFiles[k];
+
+      // Extract folder and corresponding fileInfo
+      var folderValue = null;
+      if (init.body && init.body.get) {
+        folderValue = init.body.get('folder');
+      }
+      var fileInfoValue = null;
+      if (init.body && init.body.getAll) {
+        var fileInfos = init.body.getAll('fileInfo');
+        if (fileInfos.length === 1) {
+          fileInfoValue = fileInfos[0];
+        } else if (fileInfos.length > 1) {
+          for (var i = 0; i < fileInfos.length; i++) {
+            try {
+              var info = typeof fileInfos[i] === 'string' ? JSON.parse(fileInfos[i]) : fileInfos[i];
+              if (info && info.name === vf.name) {
+                fileInfoValue = fileInfos[i];
+                break;
+              }
+            } catch (e) {}
+          }
+          if (!fileInfoValue && k < fileInfos.length) {
+            fileInfoValue = fileInfos[k];
+          }
+        }
+      }
+
       var task = {
         file: vf,
         name: vf.name,
@@ -318,6 +351,8 @@ export function injectCompressUpload() {
         idx: idx,
         total: total,
         authHeader: authHeader,
+        folder: folderValue,
+        fileInfo: fileInfoValue,
       };
       await processVideoUpload(task);
       // We can't easily aggregate video results since they upload separately
