@@ -313,7 +313,11 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
 ## 4. 状态与推送自动化验证
 - 本次更新的所有偏好与自动化配置已被完整记录，且已运行验证通过。
 
+## 5. 视频压缩 504 吞吐超时与并发 OOM 解决 (FFmpeg Async Refactor & Sequential Queue)
+- **非阻塞异步重构**：将 [server.js](file:///G:/blog/compress-service/server.js) 中阻塞事件循环的 `execSync` 替换为基于 Promise 的异步 `exec`。这释放了 Node.js 主线程，避免了多视频并发上传时 Nginx socket 缓冲区堆积导致的 504 Gateway Timeout 错误。
+- **服务端排队机制 (Karpathy 最小修改原则)**：在服务端引入了一个轻量级的单通道顺序执行队列（`queueChain`）。当用户同时上传多个视频时，Node.js 能够并发且互不干扰地接收视频数据并写入磁盘，随后在服务端排队串行执行 FFmpeg 压缩和 Strapi 上传。这防止了 ECS 小内存服务器（仅 1.6G 内存）因并发运行多个 FFmpeg 而发生 OOM 挂机，同时完全不影响前端用户流畅上传体验。
+
 ---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
-*Last Updated: 2026-05-22*
+*Last Updated: 2026-05-22 15:38*
 

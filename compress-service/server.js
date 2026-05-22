@@ -9,7 +9,7 @@
  */
 
 const http = require('http');
-const { execSync } = require('child_process');
+const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -25,7 +25,30 @@ function json(res, code, body) {
 
 function sh(cmd) {
   console.log('[compress]', cmd.slice(0, 250));
-  return execSync(cmd, { timeout: 300_000, encoding: 'utf-8', stdio: 'pipe' });
+  return new Promise((resolve, reject) => {
+    exec(cmd, { timeout: 300_000, maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
+      if (error) {
+        reject(new Error(error.message + '\nStderr: ' + stderr));
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+}
+
+let queueChain = Promise.resolve();
+
+function enqueue(task) {
+  return new Promise((resolve, reject) => {
+    queueChain = queueChain.then(async () => {
+      try {
+        const result = await task();
+        resolve(result);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
 }
 
 function verifyStrapiJWT(token) {
@@ -130,66 +153,70 @@ const server = http.createServer((req, res) => {
       const inMB = (filePart.body.length / 1024 / 1024).toFixed(1);
       console.log('[compress] Received:', inMB, 'MB');
 
-      // FFmpeg
-      sh('ffmpeg -i ' + JSON.stringify(inputPath) +
-         ' -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k -movflags +faststart ' +
-         JSON.stringify(outputPath) + ' -y');
+      // FFmpeg & Upload (queued sequentially to protect ECS CPU/RAM)
+      const outFile = await enqueue(async () => {
+        // FFmpeg
+        await sh('ffmpeg -i ' + JSON.stringify(inputPath) +
+           ' -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k -movflags +faststart ' +
+           JSON.stringify(outputPath) + ' -y');
 
-      if (!fs.existsSync(outputPath)) {
-        throw new Error('FFmpeg output not found');
-      }
-
-      const outSize = fs.statSync(outputPath).size;
-      const outMB = (outSize / 1024 / 1024).toFixed(1);
-      console.log('[compress] Done:', inMB, 'MB ->', outMB, 'MB');
-
-      // Upload to Strapi via native fetch & FormData
-      const formData = new FormData();
-      const fileBuffer = fs.readFileSync(outputPath);
-      const fileBlob = new Blob([fileBuffer], { type: 'video/mp4' });
-      formData.append('files', fileBlob, outputName);
-
-      // Forward extra metadata (like folder and fileInfo) if present
-      for (const part of parts) {
-        if (part.name !== 'files') {
-          formData.append(part.name, part.body.toString('utf-8'));
+        if (!fs.existsSync(outputPath)) {
+          throw new Error('FFmpeg output not found');
         }
-      }
 
-      console.log('[compress] Uploading to Strapi natively...');
-      const uploadRes = await fetch(STRAPI + '/api/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + TOKEN,
-        },
-        body: formData,
+        const outSize = fs.statSync(outputPath).size;
+        const outMB = (outSize / 1024 / 1024).toFixed(1);
+        console.log('[compress] Done:', inMB, 'MB ->', outMB, 'MB');
+
+        // Upload to Strapi via native fetch & FormData
+        const formData = new FormData();
+        const fileBuffer = fs.readFileSync(outputPath);
+        const fileBlob = new Blob([fileBuffer], { type: 'video/mp4' });
+        formData.append('files', fileBlob, outputName);
+
+        // Forward extra metadata (like folder and fileInfo) if present
+        for (const part of parts) {
+          if (part.name !== 'files') {
+            formData.append(part.name, part.body.toString('utf-8'));
+          }
+        }
+
+        console.log('[compress] Uploading to Strapi natively...');
+        const uploadRes = await fetch(STRAPI + '/api/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + TOKEN,
+          },
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          const errText = await uploadRes.text();
+          throw new Error('Strapi upload failed (' + uploadRes.status + '): ' + errText.slice(0, 200));
+        }
+
+        const upData = await uploadRes.json();
+        const result = upData[0];
+        if (!result || !result.id) {
+          throw new Error('Strapi upload returned invalid response');
+        }
+
+        console.log('[compress] Upload OK:', result.id);
+
+        // Return Strapi-compatible format (array of file objects)
+        return {
+          id: result.id,
+          url: result.url,
+          name: result.name,
+          size: outSize,
+          hash: result.hash || '',
+          mime: result.mime || 'video/mp4',
+          ext: result.ext || '.mp4',
+          width: result.width || null,
+          height: result.height || null,
+        };
       });
 
-      if (!uploadRes.ok) {
-        const errText = await uploadRes.text();
-        throw new Error('Strapi upload failed (' + uploadRes.status + '): ' + errText.slice(0, 200));
-      }
-
-      const upData = await uploadRes.json();
-      const result = upData[0];
-      if (!result || !result.id) {
-        throw new Error('Strapi upload returned invalid response');
-      }
-
-      console.log('[compress] Upload OK:', result.id);
-
-      // Return Strapi-compatible format (array of file objects)
-      const outFile = {
-        id: result.id,
-        url: result.url,
-        name: result.name,
-        size: outSize,
-        hash: result.hash || '',
-        mime: result.mime || 'video/mp4',
-        ext: result.ext || '.mp4',
-        width: result.width || null,
-        height: result.height || null,
-      };
       json(res, 200, [outFile]);
     } catch (err) {
       console.error('[compress] Error:', err.message);
