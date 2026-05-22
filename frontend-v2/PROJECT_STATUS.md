@@ -287,19 +287,31 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
 
 ---
 
-# 🚀 2026-05-22 更新日志 (Developer Preferences & Automation Alerts)
+# 🚀 2026-05-22 更新日志 (Developer Preferences & Upload Logic Optimization)
 
-## 1. 偏好配置持久化 (Preferences Persistence)
-- **.antigravitycli/preferences.json**：新增了对 Antigravity 专用的偏好设置，规范了开发流程、Git 每日推送、项目状态自动更新、以及禁止在 ECS 上进行远程构建的内存限制。
+## 1. 媒体库视频上传逻辑优化 (Upload Logic & Folder Routing Fixes)
+- **后端上传重构 (`compress-service/server.js`)**：
+  - 彻底废弃了极易受系统语言环境（Locale）影响的子进程 `curl` 命令行上传方式。
+  - 改用 Node.js 原生的 `fetch` 与 `FormData` API 组合上传至 Strapi 接口。
+  - **解决乱码问题**：原生 JS 运行时以规范的 UTF-8 报头传输，从而完美根治了中文文件名在 Strapi 媒体库中显示为乱码（Mojibake）的问题。
+  - **解决文件夹丢失问题**：修改了 `/compress` 接口，支持接收并解析前端发来的 `folder`（目标文件夹 ID）和 `fileInfo` 元数据，并在 native fetch 请求中完整向下透传，使压缩后的视频能精确归档入指定的文件夹（例如 `冲冲冲`），而不会默认掉进 `API Uploads` 根目录。
+- **前端上传 Hook 优化 (`backend/src/admin/extensions/compress-upload.ts`)**：
+  - 重构了表单拦截 and 转发函数，从原始的上传 `FormData` 中解析提取出 `folder` 文件夹属性及 `fileInfo` 文件信息，追加至压缩接口的参数包中，打通了整条端到端的元数据传输链路。
+- **构建与部署同步**：
+  - 在本地成功编译 Strapi Admin 前端（`npm run build`），生成最新的 `dist` 目录。
+  - 使用 SCP 将 `dist` 安全同步至阿里云 ECS `/var/www/strapi/dist/`，重启 PM2 中的 `strapi` 和 `compress` 服务，完全规避了 ECS 服务器上 2G 内存的构建宕机隐患。
+
+## 2. 偏好配置持久化 (Preferences Persistence)
+- **.antigravitycli/preferences.json**：新增了对 Antigravity 专用的偏好设置，规范了开发流程、Git 每日推送、项目状态自动更新、以及禁止在 ECS 上进行远程构建 of 内存限制。
 - **.cursorrules**：在根目录下创建了全局 AI 规则文件，确保后续任何 AI Agent (Cursor / Windsurf / Claude Code / Antigravity) 在接手该项目时，都能自动读取并严格执行这些操作规范。
 
-## 2. 自动化提示音与通知脚本交付 (Alert & Notification Scripts)
+## 3. 自动化提示音与通知脚本交付 (Alert & Notification Scripts)
 - **scripts/auth_alert.ps1** [NEW](file:///G:/blog/scripts/auth_alert.ps1)：实现了一个 ASCII 安全的 PowerShell 提示音脚本。在有命令需要用户手动授权或可能卡住时播放警告音（Hand），并调用 Windows 10/11 Toast API 推送系统级通知。
 - **scripts/task_complete.ps1** [NEW](file:///G:/blog/scripts/task_complete.ps1)：实现了一个 ASCII 安全的成功提示音脚本。在任务完全结束、状态更新完毕后播放成功提示音（Asterisk），并发送 Toast 气泡通知。
 - 采用 Unicode-ASCII 安全转义策略，彻底解决了由于 Windows 默认代码页与 UTF-8 编码冲突导致的 PowerShell 语法解析崩溃问题。
 
-## 3. 状态与推送自动化验证
-- 本次更新的所有偏好与自动化配置已被完整记录，并已运行验证通过。
+## 4. 状态与推送自动化验证
+- 本次更新的所有偏好与自动化配置已被完整记录，且已运行验证通过。
 
 ---
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*

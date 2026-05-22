@@ -156,11 +156,15 @@ npx @playwright/cli show --annotate
 * **SVG 连线动态重绘**：优化了 resize 事件监听与重绘节流算法，确保在移动端设备旋转屏幕、或改变浏览器尺寸时，SVG 物理连线能够实时重新计算端点，始终精准连接上下级节点。
 * **文字与间距微调**：针对移动端优化了节点标题、子项文字的行高与字号，隐藏冗余的装饰性元素，确保移动端依然保持高对比度与高易读性。
 
-## 八、 2026-05-22 个人开发偏好与约束落库
+## 八、 2026-05-22 视频上传重构与个人开发偏好落库
 
+* **媒体库视频上传逻辑优化 (Upload Logic & Folder Routing Fixes)**：
+  - **后端上传重构 (`compress-service/server.js`)**：彻底废弃子进程 `curl` 命令行，改用 Node.js 原生的 `fetch` 与 `FormData` API 组合上传至 Strapi 接口。在原生 UTF-8 编码下完美根治中文文件名乱码（Mojibake）的问题。同时支持接收并解析前端发来的 `folder`（目标文件夹 ID）和 `fileInfo` 元数据，向下透传使压缩后的视频能精确归档入指定的文件夹（例如 `冲冲冲`）。
+  - **前端上传 Hook 优化 (`backend/src/admin/extensions/compress-upload.ts`)**：重构了表单拦截和转发函数，从原始的上传 `FormData` 中解析提取出 `folder` 文件夹属性及 `fileInfo` 文件信息，追加至压缩接口的参数包中，打通整条传输链路。
+  - **构建与部署安全同步**：在本地成功编译 Strapi Admin 前端（`npm run build`），并使用 SCP 将 `dist` 同步至远程服务器 `/var/www/strapi/dist/`，重启 PM2 服务，完美规避了 ECS 服务器上 2G 内存的构建宕机隐患。
 * **Agent 开发准则约束化**：建立了 `.cursorrules` 与 `.antigravitycli/preferences.json`，将“每日更新状态后推送 Git”、“禁止在 2GB 内存 ECS 上进行构建/编译操作”以及“运行授权提示音 scripts/auth_alert.ps1 与完成提示音 scripts/task_complete.ps1”写入底座配置。
 * **本地与云端协同测试**：本地运行 PowerShell 提示音及 Toast 通知脚本正常触发。
 
 **文档状态记录者**：Antigravity AI Agent  
-**更新时间**：2026年5月22日 12:30 (GMT+8)  
-**当前状态**：🎉 **工作流大屏兼容性正常，开发流程偏好与提示音脚本已经完美落库并在本地通过双向验证。**
+**更新时间**：2026年5月22日 13:45 (GMT+8)  
+**当前状态**：🎉 **工作流大屏兼容性正常，视频上传乱码和文件夹归类丢失问题已彻底解决，偏好配置与提示音脚本也已完美落库并成功推送。**
