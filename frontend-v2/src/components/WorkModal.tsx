@@ -29,13 +29,14 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
   }, [isOpen]);
 
   const isVideo = work ? getWorkType(work) === 'video' : false;
+  const isCompressing = isVideo && work && 'video' in work && (work.video as any)?.alternativeText === 'compressing';
   const coverUrl = work ? getStrapiMedia(getWorkCoverUrl(work)) : undefined;
-  const videoUrl = isVideo && work ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;
+  const videoUrl = isVideo && work && !isCompressing ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;
   const activeGeneratedCover = work && generatedCover?.workId === work.documentId ? generatedCover.url : null;
 
   // 自动从视频提取首帧作为封面
   useEffect(() => {
-    if (!work || !isVideo || coverUrl || !videoUrl || activeGeneratedCover) return;
+    if (!work || !isVideo || coverUrl || !videoUrl || activeGeneratedCover || isCompressing) return;
 
     const workId = work.documentId;
 
@@ -77,7 +78,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
     tempVideo.addEventListener('seeked', handleSeeked);
 
     return cleanup;
-  }, [work, coverUrl, videoUrl, activeGeneratedCover]);
+  }, [work, coverUrl, videoUrl, activeGeneratedCover, isCompressing]);
 
   if (!work) return null;
 
@@ -137,7 +138,18 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                         className="max-h-full max-w-full object-contain shadow-2xl rounded-xl"
                      />
                    ) : (
-                     displayCover && <img src={displayCover} className="max-h-full max-w-full object-contain shadow-2xl rounded-xl" alt={work.Title} />
+                     <>
+                       {displayCover && <img src={displayCover} className="max-h-full max-w-full object-contain shadow-2xl rounded-xl" alt={work.Title} />}
+                       {isVideo && isCompressing && (
+                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm text-yellow-400 z-20 p-4 text-center rounded-xl border border-yellow-500/20">
+                           <div className="text-4xl mb-4 animate-bounce">⏳</div>
+                           <h4 className="text-lg font-bold text-white mb-2">视频正在排队压缩中...</h4>
+                           <p className="text-xs text-zinc-400 max-w-xs">
+                             当前视频正在服务器后台进行格式与画质优化，压缩完成后将自动支持流畅播放。
+                           </p>
+                         </div>
+                       )}
+                     </>
                    )}
                 </div>
             </div>

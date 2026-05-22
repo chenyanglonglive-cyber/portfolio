@@ -30,9 +30,10 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const isVideo = getWorkType(work) === 'video';
+  const isCompressing = isVideo && (work as any).video?.alternativeText === 'compressing';
   const rawCoverUrl = getWorkCoverUrl(work);
   const coverUrl = getStrapiMedia(rawCoverUrl);
-  const videoProxyUrl = isVideo ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;
+  const videoProxyUrl = isVideo && !isCompressing ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;
 
   // Restore cached state on mount (survives page navigation)
   const [videoSrc, setVideoSrc] = useState<string>(() => {
@@ -40,6 +41,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
     return '';
   });
   const [duration, setDuration] = useState<string>(() => {
+    if (isCompressing) return '排队中';
     if (videoProxyUrl) return fmtDuration(getCachedDuration(videoProxyUrl));
     return '00:30';
   });
@@ -56,7 +58,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
   // ── Hover ──────────────────────────────────────────────────────
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
-    if (!isVideo || !videoProxyUrl) return;
+    if (!isVideo || !videoProxyUrl || isCompressing) return;
 
     if (!videoSrc) setVideoSrc(videoProxyUrl);
 
@@ -68,7 +70,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
         if (err.name !== 'AbortError') console.error('Video play failed:', err);
       });
     });
-  }, [isVideo, videoProxyUrl, videoSrc]);
+  }, [isVideo, videoProxyUrl, videoSrc, isCompressing]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
@@ -82,7 +84,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
   // ── Proximity preload ──────────────────────────────────────────
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      if (!videoProxyUrl || videoSrc) return; // already loaded → skip
+      if (!videoProxyUrl || videoSrc || isCompressing) return; // already loaded or compressing → skip
       const rect = cardRef.current?.getBoundingClientRect();
       if (!rect) return;
 
@@ -93,7 +95,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
 
       if (dist < PRELOAD_DISTANCE_PX) preloadVideo(videoProxyUrl);
     },
-    [videoProxyUrl, videoSrc]
+    [videoProxyUrl, videoSrc, isCompressing]
   );
 
   // ── Metadata (only fires for the visible <video>) ──────────────
@@ -131,7 +133,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
         )}
 
         {/* Video preview — src injected lazily */}
-        {isVideo && (
+        {isVideo && !isCompressing && (
           <video
             ref={videoRef}
             src={videoSrc || undefined}
@@ -147,10 +149,20 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
           />
         )}
 
+        {/* Compressing status overlay */}
+        {isCompressing && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px] text-yellow-400">
+            <div className="text-xl mb-1 animate-pulse">⏳</div>
+            <span className="text-[10px] font-bold tracking-wider uppercase text-yellow-200 bg-yellow-950/80 px-2 py-0.5 rounded border border-yellow-700/30">
+              排队压缩中
+            </span>
+          </div>
+        )}
+
         {/* Duration / type badge */}
         <div className="absolute top-3 left-3 z-20 px-2 py-1 rounded-md text-[10px] font-bold bg-black/50 backdrop-blur-md text-white border border-white/10 flex items-center gap-1.5 uppercase tracking-wider">
           {isVideo ? <Play size={10} fill="currentColor" /> : null}
-          {isVideo ? duration : 'IMAGE'}
+          {isCompressing ? '排队中' : (isVideo ? duration : 'IMAGE')}
         </div>
 
         {/* Hover overlay */}
