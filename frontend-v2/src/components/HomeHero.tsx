@@ -9,13 +9,13 @@ export default function HomeHero() {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative w-32 h-32 mb-12"
+        className="relative w-[180px] h-[180px] mb-12"
       >
         <Image
-          src="/photo.png"
+          src="/Avatar2.png"
           alt="Avatar"
-          width={128}
-          height={128}
+          width={180}
+          height={180}
           priority
           className="rounded-full w-full h-full object-cover border-4 border-white/10 shadow-2xl"
         />

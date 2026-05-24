@@ -9,10 +9,10 @@ export default function Hero() {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative w-32 h-32 mb-8"
+        className="relative w-[180px] h-[180px] mb-8"
       >
         <img
-          src="/photo.png"
+          src="/Avatar2.png"
           alt="Avatar"
           className="rounded-full w-full h-full object-cover border-4 border-white/20 shadow-xl"
         />
