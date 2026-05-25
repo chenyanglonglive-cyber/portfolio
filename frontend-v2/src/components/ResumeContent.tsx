@@ -7,11 +7,26 @@ import type { About } from "@/types/about";
 import CustomBlocksRenderer from "@/components/CustomBlocksRenderer";
 
 const SKILLS = [
-  { name: "创意能力", icon: <Rocket size={20} />, desc: "9年买量广告创意背景，擅长将 IP 沉淀与现代买量策略结合，创造行业标杆素材。" },
-  { name: "视频制作", icon: <Video size={20} />, desc: "精通合成制作与剪辑，具备从脚本策划、视觉表现到后期包装的全链路能力。" },
-  { name: "效率提升", icon: <Zap size={20} />, desc: "主导企业级 AI 工作流搭建，优化制作管线，显著提升团队生产与创意迭代效率。" },
-  { name: "AI工作流", icon: <Cpu size={20} />, desc: "深度钻研 AI 在视频流中的落地应用，负责公司级 AI 提效体系的设计与全员赋能。" },
-  { name: "团队管理", icon: <Users size={20} />, desc: "作为 AI 发展负责人，具备从项目操盘到跨部门团队管理的综合领导能力。" },
+  {
+    name: "创意能力",
+    icon: <Rocket size={20} />,
+    desc: "游戏影视发烧友，深耕流行文化与亚文化，熟悉海内外多元影视、文学与网络梗生态；以跨文化洞察为创意源，擅长将用户共鸣点转化为适配不同市场的高吸引力素材，持续打造现象级创意内容。"
+  },
+  {
+    name: "视频制作",
+    icon: <Video size={20} />,
+    desc: "动画专业背景，精通分镜、手绘、合成与剪辑；具备从脚本策划、镜头设计到后期包装的全链路制作能力，不仅仅是精通工具，更掌握信息流广告的剧情节奏。"
+  },
+  {
+    name: "效率与管理",
+    icon: <Users size={20} />,
+    desc: "能针对岗位痛点和团队真实需求，自研工具与智能体打造自动化办公。搭建团队知识库管理散乱素材，为生成式 AI 和客服团队赋能。"
+  },
+  {
+    name: "AI 工作流",
+    icon: <Cpu size={20} />,
+    desc: "深度钻研 AI 在视频领域的落地应用，自研 Gemini 智能体与多场景 AI 流水线；覆盖创意衍生、分镜生成、成片制作。构建可复用的 AI 提效体系。"
+  }
 ];
 
 const TOOLS = [
