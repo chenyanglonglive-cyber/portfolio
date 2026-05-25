@@ -16,15 +16,21 @@ interface WorkModalProps {
 export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
   const [generatedCover, setGeneratedCover] = useState<{ workId: string; url: string } | null>(null);
 
-  // Lock body scroll when modal is open
+  // Lock body scroll when modal is open and restore scroll position on close
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    if (!isOpen) return;
+
+    const scrollY = window.scrollY;
+
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen]);
 
@@ -176,16 +182,16 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                    </h3>
                    <div className="grid grid-cols-3 gap-3">
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                         <p className="text-[9px] text-zinc-500 uppercase mb-1">Spend</p>
-                         <p className="text-sm font-mono font-bold text-white">${(work.Spend || 0).toLocaleString()}</p>
+                         <p className="text-xs text-zinc-500 uppercase mb-1">Spend</p>
+                         <p className="text-lg font-mono font-bold text-emerald-400">¥{(work.Spend || 0).toLocaleString()}</p>
                       </div>
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                         <p className="text-[9px] text-zinc-500 uppercase mb-1">CTR</p>
-                         <p className="text-sm font-mono font-bold text-emerald-400">{(work.CTR || 0)}%</p>
+                         <p className="text-xs text-zinc-500 uppercase mb-1">CTR</p>
+                         <p className="text-lg font-mono font-bold text-emerald-400">{(work.CTR || 0)}%</p>
                       </div>
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                         <p className="text-[9px] text-zinc-500 uppercase mb-1">ROI</p>
-                         <p className="text-sm font-mono font-bold text-emerald-400">{(work.ROI_7D || 0)}</p>
+                         <p className="text-xs text-zinc-500 uppercase mb-1">ROI</p>
+                         <p className="text-lg font-mono font-bold text-emerald-400">{(work.ROI_7D || 0)}</p>
                       </div>
                    </div>
                 </section>
