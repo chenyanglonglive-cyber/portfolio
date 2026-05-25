@@ -5,11 +5,10 @@ As a developer AI agent working on this repository, you MUST follow these guidel
 ## 1. 每日状态更新与 Git 推送 (Daily Status Update & Git Push)
 - **要求**：每次完成开发任务、或者每天开发结束推送代码前，**必须先更新项目状态文档**。
 - **状态文件路径**：
-  - `frontend-v2/PROJECT_STATUS.md` — 前后端主要开发进度、部署和移交清单
-  - `AI-Workflow/AI_Workflow_Status.md` — AI工作流大屏的开发状态、视觉设计与交互文档
+  - `PROJECT_STATUS.md` — 项目开发进度、部署和移交清单（包含 AI 工作流大屏项目状态）
 - **步骤**：
   1. 完成代码修改并验证通过。
-  2. 在上述两个 `.md` 状态文档的最新一章（或新建当天日志）中详细记录开发内容、已完成项、未完成待办及注意事项。
+  2. 在 `PROJECT_STATUS.md` 状态文档的最新一章（或新建当天日志）中详细记录开发内容、已完成项、未完成待办及注意事项。
   3. 执行 `git add` 将修改后的状态文档和代码一同提交，并推送至远程仓库（`git push`）。
 
 ## 2. 阿里云 ECS 部署约束 (No Remote Builds on ECS)

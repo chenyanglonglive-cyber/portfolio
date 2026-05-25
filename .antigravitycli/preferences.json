@@ -3,8 +3,7 @@
     "daily_workflow": {
       "must_update_status_before_push": true,
       "status_files": [
-        "frontend-v2/PROJECT_STATUS.md",
-        "AI-Workflow/AI_Workflow_Status.md"
+        "PROJECT_STATUS.md"
       ],
       "push_daily": true
     },

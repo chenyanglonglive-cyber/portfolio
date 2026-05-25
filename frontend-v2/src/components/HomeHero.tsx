@@ -25,10 +25,10 @@ export default function HomeHero() {
       </motion.div>
 
       <h1 className="text-5xl md:text-7xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 tracking-tighter uppercase pr-4">
-        用视觉捕捉游戏之魂
+        创意为核AI为刃，把想法变成爆款素材
       </h1>
       <p className="text-xl text-zinc-400 max-w-3xl mx-auto leading-relaxed">
-        资深游戏广告设计师。专注于 30s 内高转化短视频与沉浸式视觉素材，为全球顶级游戏品牌提供创意支持。
+        游戏影视发烧友 + 网感敏锐+技术极客，创意源源不断，AIGC全链路放大创作，自动化提效，打造海内外高转化爆款游戏广告。
       </p>
     </section>
   );

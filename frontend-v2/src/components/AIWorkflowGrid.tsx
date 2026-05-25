@@ -73,9 +73,6 @@ export default function AIWorkflowGrid() {
           <h2 className="text-2xl font-bold flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
             <Sparkles size={24} className="text-emerald-400" /> AI WORKFLOWS <span className="text-zinc-400 ml-2 font-light">.工作流</span>
           </h2>
-          <p className="text-zinc-400 text-sm mt-2 max-w-xl">
-            游戏广告创意生产的 AI 工业化整合，点击下方按钮即可开启对应的交互工作流弹窗。
-          </p>
         </div>
       </div>
 
@@ -88,8 +85,9 @@ export default function AIWorkflowGrid() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
+              onClick={() => setActiveCategory(item.category)}
               whileHover={{ y: -6, scale: 1.02 }}
-              className={`group relative bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-8 flex flex-col justify-between transition-all duration-300 ${item.color}`}
+              className={`group relative bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer ${item.color}`}
               style={{
                 boxShadow: `0 4px 30px rgba(0, 0, 0, 0.2)`
               }}
