@@ -515,4 +515,34 @@ npx @playwright/cli show --annotate
 * **Agent 开发准则约束化**：建立了 `.cursorrules` 与 `.antigravitycli/preferences.json`，将“每日更新状态后推送 Git”、“禁止在 2GB 内存 ECS 上进行构建/编译操作”以及“运行授权提示音 scripts/auth_alert.ps1 与完成提示音 scripts/task_complete.ps1”写入底座配置。
 * **本地与云端协同测试**：本地运行 PowerShell 提示音及 Toast 通知脚本正常触发。
 
+---
+
+# 🚀 2026-05-25 更新日志 (Avatar, Scroll Fix, Data Styling & Skills Consolidation)
+
+## 1. 核心视觉成果 (UI & Visual Updates)
+*   **头像替换与尺寸放大**：
+    - 更换了全新个人头像 [Avatar2.png](file:///d:/blog/portfolio/frontend-v2/public/Avatar2.png)。
+    - 将头像尺寸放大了 40%（从 `128px` 调整为 `180px`），对 [HomeHero.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/HomeHero.tsx) 和 [Hero.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/Hero.tsx) 进行了重构。
+*   **工具展示区高精度图标渲染**：
+    - 更新 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx) 中的“工具展示”版块。
+    - 将展示工具替换为：`Photoshop`、`After Effects`、`Jianying`、`Maya`、`Spine`、`Claude Code`、`Codex`、`Chat GPT`、`Gemini`、`Seedance`。
+    - 用 JSX 手绘了 10 个对应的高精度官方感/概念 SVG 图标，并重构了排版，配合 `flex items-center gap-2.5` 左右对其，视觉效果极大提升。
+
+## 2. 弹窗滚动回归修复 (Scroll Lock & Position Restoration Fix)
+*   **问题诊断**：由于全局 `html, body` 设定了 `height: 100%`，因此当开启详情弹窗时设置 `body.style.overflow = 'hidden'` 会导致浏览器丢弃并重置当前的页面滚动位置为 0，关闭弹窗后页面会强制跳回顶端。
+*   **优雅修复**：
+    - 在 [WorkModal.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkModal.tsx) 和 [AIWorkflowGrid.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/AIWorkflowGrid.tsx) 中重构了滚动锁定逻辑。
+    - 打开弹窗时记录 `window.scrollY` 并设定 body 为 `position: fixed` 将屏幕锁定在当前滑动处；关闭弹窗时还原 body 样式并通过 `window.scrollTo` 瞬间无缝回到原滚动高度，彻底解决了“关闭弹窗被迫回顶”的交互痛点。
+
+## 3. 详情弹窗数据精修 (Data Dashboard Styling)
+*   **字号调大**：在 [WorkModal.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkModal.tsx) 的 Performance Data 板块中，将指标值字号从 `text-sm` 调大至 `text-lg`，指标名词字号从 `text-[9px]` 调大至 `text-xs`，可读性显著提升。
+*   **颜色与货币单位修正**：
+    - 将美元符号 `$` 替换为人民币符号 `¥`。
+    - 将消耗（Spend）数值的字体颜色由白色改为翡翠绿色（`text-emerald-400`），与 CTR/ROI 样式保持完美统一。
+
+## 4. 技能卡片精简与文案重构 (Skills Card Consolidation)
+*   **卡片精简合并**：在 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx) 的“技能展示”版块中，将原先的 5 个卡片精简整合为 4 个（合并了“效率提升”与“团队管理”为 **“效率与管理”** 模块）。
+*   **新文案同步**：更新了“创意能力”、“视频制作”、“效率与管理”、“AI 工作流” 4 大卡片的全部标题与具体专业文案。
+
+
 
