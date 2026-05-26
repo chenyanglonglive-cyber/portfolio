@@ -101,7 +101,47 @@ export default function ResumeContent({ about }: ResumeContentProps) {
               {about?.content ? (
                 <CustomBlocksRenderer content={about.content} />
               ) : (
-                <p><span className="text-white font-bold">资深广告创意设计师 / AI 工作流负责人</span>。9年深耕广告设计，以数据驱动创意，用 AI 重塑增长，专注百万级消耗高 ROI 爆款素材。</p>
+                <div className="space-y-6 mt-4">
+                  <p className="text-white font-bold text-lg md:text-xl">资深广告创意设计师 / AI 工作流负责人</p>
+                  <div className="space-y-4">
+                    {[
+                      {
+                        num: 1,
+                        title: "爆款素材与投放战绩突出",
+                        desc: <>主导《雷霆战机》微信小游戏买量，产出抖音巨量<span className="font-bold text-white">单条消耗超500万</span>、广点通<span className="font-bold text-white">单条消耗超60万</span>的现象级素材，数据至今无人打破；项目稳居<span className="font-bold text-white">微信小游戏畅销榜TOP10</span>，海外Bingo游戏长期霸榜<span className="font-bold text-white">iOS Casino排行榜TOP1-3</span>，擅长打造高转化、高量级跑量素材。</>
+                      },
+                      {
+                        num: 2,
+                        title: "AIGC全链路能力强，懂AI提效与工具化",
+                        desc: <>精通AI视频全流程，自研<span className="font-bold text-white">Gemini智能体+场景化工作流</span>，覆盖创意衍生、分镜生成、成片制作；擅长用AI Agent解决岗位痛点，<span className="font-bold text-white">自动化素材管理、日报生成、资源巡检</span>，显著提升个人与团队效率。</>
+                      },
+                      {
+                        num: 3,
+                        title: "创意储备深厚，网感强、文字能力突出",
+                        desc: <>阅片量极大，熟悉<span className="font-bold text-white">北美文化、美剧、好莱坞电影</span>，长期跟进海外热点与流行梗；网感敏锐、文字组织与脚本写作能力强，<span className="font-bold text-white">能把文化洞察、热点趋势快速转化为高吸引力创意</span>，素材更抓用户、更懂市场。</>
+                      },
+                      {
+                        num: 4,
+                        title: "海内外买量经验全面，懂休闲游戏与信息流",
+                        desc: <>国内擅长微信小游戏、抖音信息流，海外深耕<span className="font-bold text-white">solitaire、bingo、block</span>等休闲游戏买量；熟悉北美用户画像与投放逻辑，能根据产品阶段精准调整素材方向，<span className="font-bold text-white">在吸量与ROI提升上有成熟方法论</span>。</>
+                      },
+                      {
+                        num: 5,
+                        title: "动画专业+PM+UI跨界背景，画面与镜头感扎实",
+                        desc: <>动画本科，<span className="font-bold text-white">手绘能力强、分镜与镜头语言成熟</span>；具备产品UI经验，懂人机交互与用户体验，兼顾视觉冲击力与转化逻辑，素材好看、好懂、好转化。</>
+                      }
+                    ].map(item => (
+                      <div key={item.num} className="flex items-start gap-3 leading-relaxed">
+                        <span className="font-black text-emerald-400 select-none shrink-0 w-6 text-left text-lg md:text-xl">
+                          {item.num}.
+                        </span>
+                        <div className="flex-1 text-zinc-200 text-base md:text-lg">
+                          <span className="font-bold text-white">{item.title}</span>：{item.desc}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </div>
