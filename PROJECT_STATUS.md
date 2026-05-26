@@ -329,8 +329,6 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
     - 检测文本是否以数字序号开头（如 `1. `、`2. `）。若是，则剔除序号，将数字与剩余内容渲染为 Flex 排版布局，数字在左，文本内容在右，实现完美的左悬挂缩进（序号后内容全部垂直对齐）。
 *   **富文本内嵌 Markdown 粗体解析**：
     - 设计并实现了双重 Markdown 粗体解析引擎：第一步清除包裹已有 Strapi bold 节点的冗余 `**` 字符；第二步自动将段落中的 `**重点词**` 字符串解析并转换成真正的 `{ type: "text", bold: true }` 节点，使页面中的核心成就词句（如 **单条消耗超500万**、**iOS Casino排行榜TOP1-3** 等）能够正确加粗高亮展示。
-*   **同步高保真 Fallback 数据备份**：
-    - 更新了 [ResumeContent.tsx](file:///g:/blog/frontend-v2/src/components/ResumeContent.tsx) 中的备用数据（Fallback），将最新的 5 条核心个人优势进行高保真排版并写入前端代码，保证即使后端 API 请求失败，用户也能看到精美排版的完整优势亮点。
 *   **本地构建与验证**：
     - 在本地执行 `npm run build` 成功完成项目打包编译，TypeScript 与 Next.js 静态预渲染检查全部一次性顺利通过。
 
