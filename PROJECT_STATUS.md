@@ -548,6 +548,18 @@ npx @playwright/cli show --annotate
 *   **数据完整填充**：在 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx) 中将原有的工作经历，完全填充为 4 段详细真实的经历内容（北京爱乐游、北京欢忻网络科技有限公司、北京乐城堡科技有限公司、浙文互联集团）。
 *   **多行排版优化**：为工作经历的描述段落标签 `<p>` 增加了 `whitespace-pre-line` 样式，保证了产品经理角色中多行条目化（1.、2.、3. ...）工作职责描述的换行正常渲染。
 
+---
+
+# 🚀 2026-05-27 更新日志 (Tool Icons Crop & Compression)
+
+## 1. 核心视觉成果 (UI & Visual Updates)
+*   **工具展示区官方图标替换**：
+    - 针对用户上传的 10 大工具主图片（包含 Photoshop, After Effects, 剪映, ChatGPT, Claude Code, Codex, Maya, Spine, Gemini, Seedance 官方图标）。
+    - 编写了 Node.js 像素色域分析脚本 [find_icons.js](file:///d:/blog/portfolio/scratch/find_icons.js) 定位各图标精确像素边界。
+    - 使用 FFmpeg 批处理裁剪脚本 [crop_icons.js](file:///d:/blog/portfolio/scratch/crop_icons.js) 对各个官方图标进行精准裁剪，并统一压缩转换为 Web-optimized 的高保真 **WebP 图像格式**（文件体积压缩至仅 1.5KB - 4.7KB）。
+    - 已在 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx#L32) 中将工具模块的原有手绘 SVG 替换为这些新裁剪出来的 WebP 图标，大幅提升了“工具展示”版块的整体视觉还原度与品质感。
+
+
 
 
 
