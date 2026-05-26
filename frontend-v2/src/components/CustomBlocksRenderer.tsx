@@ -57,45 +57,87 @@ export default function CustomBlocksRenderer({ content }: { content: any }) {
   const processedContent = preprocessContent(content);
 
   return (
-    <BlocksRenderer 
-      content={processedContent} 
-      blocks={{
-        heading: ({ children, level }: any) => {
-          const text = children[0]?.props?.text || "";
-          const id = text ? `heading-${text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')}` : undefined;
-          const Tag = `h${level}` as any;
-          return <Tag id={id}>{children}</Tag>;
-        },
-        paragraph: ({ children }: any) => {
-          // Check if children[0] is a string starting with a number and dot (e.g. "1. ")
-          if (children && children.length > 0 && typeof children[0] === 'string') {
-            const match = children[0].match(/^\s*(\d+)\.\s*(.*)$/);
-            if (match) {
-              const num = match[1];
-              const rest = match[2];
-              const remainingChildren = rest 
-                ? [rest, ...children.slice(1)] 
-                : children.slice(1);
+    <>
+      <BlocksRenderer 
+        content={processedContent} 
+        blocks={{
+          heading: ({ children, level }: any) => {
+            const text = children[0]?.props?.text || "";
+            const id = text ? `heading-${text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')}` : undefined;
+            const Tag = `h${level}` as any;
+            return <Tag id={id}>{children}</Tag>;
+          },
+          paragraph: ({ children }: any) => {
+            // Check if children[0] is a string starting with a number and dot (e.g. "1. ")
+            if (children && children.length > 0 && typeof children[0] === 'string') {
+              const match = children[0].match(/^\s*(\d+)\.\s*(.*)$/);
+              if (match) {
+                const num = match[1];
+                const rest = match[2];
+                const remainingChildren = rest 
+                  ? [rest, ...children.slice(1)] 
+                  : children.slice(1);
 
-              return (
-                <div className="flex items-start gap-3 mb-6 leading-relaxed">
-                  <span className="font-black text-emerald-400 select-none shrink-0 w-6 text-left text-lg md:text-xl">
-                    {num}.
-                  </span>
-                  <div className="flex-1 text-zinc-200 text-base md:text-lg">
-                    {remainingChildren}
+                return (
+                  <div className="flex items-start gap-3 mb-6 leading-relaxed">
+                    <span className="font-black text-emerald-400 select-none shrink-0 w-6 text-left text-lg md:text-xl">
+                      {num}.
+                    </span>
+                    <div className="flex-1 text-zinc-200 text-base md:text-lg">
+                      {remainingChildren}
+                    </div>
                   </div>
-                </div>
+                );
+              }
+            }
+            return (
+              <p className="mb-6 leading-relaxed text-zinc-200 text-base md:text-lg">
+                {children}
+              </p>
+            );
+          },
+          list: ({ children, format }: any) => {
+            if (format === 'ordered') {
+              return (
+                <ol className="space-y-6 custom-ordered-list mb-6">
+                  {children}
+                </ol>
               );
             }
+            return <ul className="space-y-2 list-disc pl-5 mb-6 text-zinc-200">{children}</ul>;
+          },
+          'list-item': ({ children }: any) => {
+            return (
+              <li className="custom-ordered-list-item text-zinc-200 text-base md:text-lg leading-relaxed">
+                {children}
+              </li>
+            );
           }
-          return (
-            <p className="mb-6 leading-relaxed text-zinc-200 text-base md:text-lg">
-              {children}
-            </p>
-          );
+        }}
+      />
+      <style>{`
+        .custom-ordered-list {
+          counter-reset: ordered-counter;
+          list-style: none;
+          padding-left: 0;
         }
-      }}
-    />
+        .custom-ordered-list-item {
+          position: relative;
+          padding-left: 2rem;
+        }
+        .custom-ordered-list-item::before {
+          counter-increment: ordered-counter;
+          content: counter(ordered-counter) ".";
+          position: absolute;
+          left: 0;
+          top: 0;
+          color: #34d399; /* Emerald-400 */
+          font-weight: 900;
+          font-size: 1.1em;
+          width: 1.5rem;
+          text-align: left;
+        }
+      `}</style>
+    </>
   );
 }

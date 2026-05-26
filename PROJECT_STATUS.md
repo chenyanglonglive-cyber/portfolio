@@ -321,14 +321,16 @@ CF_ACCESS_SECRET: a5472dcdcc8af3af4de781addc3257a2a4067c831a42d220db8efe640734ab
 *记录人：Antigravity AI (Your Agentic Coding Assistant)*
 *Last Updated: 2026-05-22 15:38*
 
-# 🚀 2026-05-26 更新日志 (About Section Styling & Formatting)
+# 🚀 2026-05-26 更新日志 (About Section Database Migration & List Styling)
 
-## 1. 个人优势 (About) 样式优化与解析适配 (Resume Content Styling & Parser)
-*   **自适应编号缩进**：
-    - 在 [CustomBlocksRenderer.tsx](file:///g:/blog/frontend-v2/src/components/CustomBlocksRenderer.tsx) 中自定义了 `paragraph` 渲染器。
-    - 检测文本是否以数字序号开头（如 `1. `、`2. `）。若是，则剔除序号，将数字与剩余内容渲染为 Flex 排版布局，数字在左，文本内容在右，实现完美的左悬挂缩进（序号后内容全部垂直对齐）。
-*   **富文本内嵌 Markdown 粗体解析**：
-    - 设计并实现了双重 Markdown 粗体解析引擎：第一步清除包裹已有 Strapi bold 节点的冗余 `**` 字符；第二步自动将段落中的 `**重点词**` 字符串解析并转换成真正的 `{ type: "text", bold: true }` 节点，使页面中的核心成就词句（如 **单条消耗超500万**、**iOS Casino排行榜TOP1-3** 等）能够正确加粗高亮展示。
+## 1. 个人优势 (About) 后端格式调整与有序列表渲染 (Resume Content DB Migration & List Rendering)
+*   **后端数据结构原生化调整**：
+    - 编写并执行了本地数据库更新脚本 [update_about_db.js](file:///g:/blog/scratch/update_about_db.js)。通过 SSH 秘钥登录阿里云 ECS 并安全连接本地 PostgreSQL 数据库，将 `abouts` 表中记录（ID 5 与 ID 8）的 `content` 格式从原本普通的 `paragraph` 段落结构，迁移转换为了 Strapi 官方标准的 **Ordered List (有序列表)** 嵌套块结构。
+    - 在数据库中剥离了手动拼写的序号前缀（如 `1. `）和冗余的 markdown 符号，从底层实现了结构化设计。
+*   **自定义有序列表样式渲染**：
+    - 在 [CustomBlocksRenderer.tsx](file:///g:/blog/frontend-v2/src/components/CustomBlocksRenderer.tsx) 中添加了对 `list` 与 `list-item` 的自定义渲染函数。
+    - 使用 CSS 计数器（`counter-reset` / `counter-increment`）配合 `::before` 伪元素，将列表原生序号渲染为极客黑体加粗的翡翠绿（`#34d399`）样式。
+    - 统一设定左内边距（`padding-left: 2rem`），保证列表中所有文字段落悬挂缩进对齐，彻底告别了前端写死（Hardcode）的做法。
 *   **本地构建与验证**：
     - 在本地执行 `npm run build` 成功完成项目打包编译，TypeScript 与 Next.js 静态预渲染检查全部一次性顺利通过。
 
