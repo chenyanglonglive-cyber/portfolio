@@ -544,5 +544,10 @@ npx @playwright/cli show --annotate
 *   **卡片精简合并**：在 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx) 的“技能展示”版块中，将原先的 5 个卡片精简整合为 4 个（合并了“效率提升”与“团队管理”为 **“效率与管理”** 模块）。
 *   **新文案同步**：更新了“创意能力”、“视频制作”、“效率与管理”、“AI 工作流” 4 大卡片的全部标题与具体专业文案。
 
+## 5. 工作经历数据填充 (Work Experiences Hydration)
+*   **数据完整填充**：在 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx) 中将原有的工作经历，完全填充为 4 段详细真实的经历内容（北京爱乐游、北京欢忻网络科技有限公司、北京乐城堡科技有限公司、浙文互联集团）。
+*   **多行排版优化**：为工作经历的描述段落标签 `<p>` 增加了 `whitespace-pre-line` 样式，保证了产品经理角色中多行条目化（1.、2.、3. ...）工作职责描述的换行正常渲染。
+
+
 
 

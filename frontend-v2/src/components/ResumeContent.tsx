@@ -177,16 +177,28 @@ const PROJECTS = [
 
 const WORK_EXPERIENCES = [
   {
-    period: "2023.09 - 2026.06",
+    period: "2023.09 - 至今",
     company: "北京爱乐游",
-    role: "买量视频创意 / AI 发展负责人",
-    desc: "负责买量视频创意与制作，主导公司 AI 发展。参与多款国内外核心项目，具备全流程项目操盘与团队 AI 赋能能力。"
+    role: "买量视频创意 / 制作 / AI 发展负责人",
+    desc: "负责买量视频创意与制作，参与多款国内外核心项目，具备全流程项目操盘与团队 AI 赋能能力。主导公司 AI 发展，培训团队 AI 技能，设计新人培训流程，设计工程化管理报表。"
   },
   {
-    period: "2021.07 - 2023.05",
-    company: "某知名买量代理公司",
-    role: "广告视频设计师",
-    desc: "负责快手、抖音、广点通多平台信息流视频制作。单条素材创造 300万+ 利润，连获季度最佳项目奖。"
+    period: "2021.12 - 2023.06",
+    company: "北京欢忻网络科技有限公司",
+    role: "视频创意设计师",
+    desc: "负责玩法创意视频、真人脚本、可试玩广告以及原生创意视频脚本输出。负责多款核心项目的 Top 级爆款素材产出，精准把握副玩法方向与视频节奏，助力产品长期霸榜 iOS Casino 排行榜第 1-3 名。"
+  },
+  {
+    period: "2020.03 - 2021.12",
+    company: "北京乐城堡科技有限公司",
+    role: "视频设计师",
+    desc: "负责 Bingo Frenzy 广告投放视频素材的制作。所创造的创意方向为团队开辟了全新的主题突破点，并成功将创意主题反哺至产品设计中，获得优秀的回收表现。"
+  },
+  {
+    period: "2017.05 - 2020.03",
+    company: "浙文互联集团",
+    role: "产品经理",
+    desc: "负责奥迪内容工程、奥迪全员营销及奥迪 DS-CRM 项目。\n1. 与奥迪市场部客户对接，深挖业务需求，制定针对性产品方案；\n2. 参与项目提案，协助客户完成立项与论证；\n3. 独立进行原型制作与 PRD 撰写，推进 UI 设计与项目进度管理，协调多方开发团队，组织测试并确保按时上线；\n4. 参与运营策略制定及运营数据分析，根据反馈持续迭代项目；\n5. 主导项目验收并撰写结案及验收报告，同时充当客户的产品顾问对其他业务线给出建议。"
   }
 ];
 
@@ -314,7 +326,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                   <h3 className="text-xl font-bold text-white">{exp.company}</h3>
                   <p className="text-emerald-400/80 font-medium text-sm">{exp.role}</p>
                 </div>
-                <p className="text-zinc-200 leading-relaxed max-w-2xl text-sm">{exp.desc}</p>
+                <p className="text-zinc-200 leading-relaxed max-w-2xl text-sm whitespace-pre-line">{exp.desc}</p>
               </div>
             ))}
           </div>
