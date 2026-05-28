@@ -570,6 +570,8 @@ npx @playwright/cli show --annotate
     - 利用 `<strong className="text-white font-bold">` 样式对重要指标和关键词（如：**IP 情怀回归策略**、**个人素材总消耗破2千万**、**刮刮卡创意素材持续跑量多年**等）进行了加粗高亮处理。
 *   **工作经历文字修正**：
     - 修复了浙文互联集团工作经历描述中的错别字，将 `"负责奥迪内容工程"` 修正为 `"负责奥迪内容工厂"`。
+*   **技能展示文字更新**：
+    - 更新了 [ResumeContent.tsx](file:///g:/blog/frontend-v2/src/components/ResumeContent.tsx) 中“AI 工作流”技能展示卡片的描述文字，增加了自研智能体、游戏创意模拟器与自动化效率工具等细节内容。
 
 ## 2. 个人优势 (About) 数据库内容迁移与同步
 *   **数据库指标更新**：
