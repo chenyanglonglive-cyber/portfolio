@@ -554,12 +554,25 @@ npx @playwright/cli show --annotate
 
 ## 1. 核心视觉成果 (UI & Visual Updates)
 *   **工具展示区官方图标替换**：
-    - 针对用户上传的 10 大工具主图片（包含 Photoshop, After Effects, 剪映, ChatGPT, Claude Code, Codex, Maya, Spine, Gemini, Seedance 官方图标）。
+    - 针对用户上传 of 10 大工具主图片（包含 Photoshop, After Effects, 剪映, ChatGPT, Claude Code, Codex, Maya, Spine, Gemini, Seedance 官方图标）。
     - 编写了 Node.js 像素色域分析脚本 [find_icons.js](file:///d:/blog/portfolio/scratch/find_icons.js) 定位各图标精确像素边界。
     - 使用 FFmpeg 批处理裁剪脚本 [crop_icons.js](file:///d:/blog/portfolio/scratch/crop_icons.js) 对各个官方图标进行精准裁剪，并统一压缩转换为 Web-optimized 的高保真 **WebP 图像格式**（文件体积压缩至仅 1.5KB - 4.7KB）。
     - 已在 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx#L32) 中将工具模块的原有手绘 SVG 替换为这些新裁剪出来的 WebP 图标，大幅提升了“工具展示”版块的整体视觉还原度与品质感。
 
+---
 
+# 🚀 2026-05-28 更新日志 (Resume Update & Database Migration)
 
+## 1. 简历项目更新 (Resume Projects Update)
+*   **项目列表静态内容更新**：
+    - 在 [ResumeContent.tsx](file:///g:/blog/frontend-v2/src/components/ResumeContent.tsx) 中更新了 `PROJECTS` 列表。
+    - 录入了《雷霆战机》、《Bingo Clash》、《Solitaire Clash》和《Bingo Frenzy》四个核心项目的描述，包含了核心创意、制作团队、流水及消耗等关键业务指标。
+    - 利用 `<strong className="text-white font-bold">` 样式对重要指标和关键词（如：**IP 情怀回归策略**、**个人素材总消耗破2千万**、**刮刮卡创意素材持续跑量多年**等）进行了加粗高亮处理。
+*   **工作经历文字修正**：
+    - 修复了浙文互联集团工作经历描述中的错别字，将 `"负责奥迪内容工程"` 修正为 `"负责奥迪内容工厂"`。
 
-
+## 2. 个人优势 (About) 数据库内容迁移与同步
+*   **数据库指标更新**：
+    - 更新并执行了数据库脚本 [update_about_db.js](file:///g:/blog/scratch/update_about_db.js)，将 ECS PostgreSQL 数据库 `abouts` 表中第 5 和第 8 条记录中关于抖音消耗的段落描述，从 `"单条消耗超500万"` 修改为最新的 `"单条消耗超800万"`。
+*   **本地构建验证**：
+    - 在 `frontend-v2` 中执行 `npm run build` 进行本地构建校验，TypeScript 静态预编译及全部静态页面导出均一次性校验通过。

@@ -14,7 +14,7 @@ const listContent = [
         "children": [
           { "type": "text", "bold": true, "text": "爆款素材与投放战绩突出" },
           { "type": "text", "text": "：主导《雷霆战机》微信小游戏买量，产出抖音巨量" },
-          { "type": "text", "bold": true, "text": "单条消耗超500万" },
+          { "type": "text", "bold": true, "text": "单条消耗超800万" },
           { "type": "text", "text": "、广点通" },
           { "type": "text", "bold": true, "text": "单条消耗超60万" },
           { "type": "text", "text": "的现象级素材，数据至今无人打破；项目稳居" },
