@@ -97,7 +97,7 @@
 - Modify: `backend/src/api/video/content-types/video/schema.json`
 - Modify: `backend/src/api/image/content-types/image/schema.json`
 
-- [ ] **Step 1: 在 Video 的 schema 中添加 tags 多对多关联字段**
+- [x] **Step 1: 在 Video 的 schema 中添加 tags 多对多关联字段**
   
   编辑 `backend/src/api/video/content-types/video/schema.json`，在 `attributes` 对象中插入 `tags` 属性：
   ```json
@@ -109,7 +109,7 @@
       }
   ```
 
-- [ ] **Step 2: 在 Image 的 schema 中添加 tags 多对多关联字段**
+- [x] **Step 2: 在 Image 的 schema 中添加 tags 多对多关联字段**
   
   编辑 `backend/src/api/image/content-types/image/schema.json`，在 `attributes` 对象中插入 `tags` 属性：
   ```json
@@ -121,12 +121,12 @@
       }
   ```
 
-- [ ] **Step 3: 运行后端构建进行架构与模式解析校验**
+- [x] **Step 3: 运行后端构建进行架构与模式解析校验**
   
   在 `backend` 目录下运行：`npm run build`
   预期输出：编译成功。
 
-- [ ] **Step 4: 提交代码**
+- [x] **Step 4: 提交代码**
   
   ```bash
   git add backend/src/api/video/content-types/video/schema.json backend/src/api/image/content-types/image/schema.json
@@ -140,7 +140,7 @@
 **Files:**
 - Modify: `backend/src/index.ts`
 
-- [ ] **Step 1: 在 bootstrap 钩子中订阅 upload.file 创建事件**
+- [x] **Step 1: 在 bootstrap 钩子中订阅 upload.file 创建事件**
   
   编辑 `backend/src/index.ts`，替换 bootstrap 方法以监测客户端 `auto-cover.jpg` 和服务端 `cover_` 前缀的封面文件创建：
   ```typescript
@@ -179,12 +179,12 @@
   };
   ```
 
-- [ ] **Step 2: 运行编译验证**
+- [x] **Step 2: 运行编译验证**
   
   在 `backend` 目录下运行：`npm run build`
   预期输出：编译成功。
 
-- [ ] **Step 3: 提交代码**
+- [x] **Step 3: 提交代码**
   
   ```bash
   git add backend/src/index.ts
@@ -198,7 +198,7 @@
 **Files:**
 - Modify: `backend/src/api/video/content-types/video/lifecycles.ts`
 
-- [ ] **Step 1: 在 video 的生命周期中集成已使用视频的状态监测**
+- [x] **Step 1: 在 video 的生命周期中集成已使用视频的状态监测**
   
   编辑 `backend/src/api/video/content-types/video/lifecycles.ts`，增加 `syncVideoUsedStatuses` 处理函数，并在创建、更新和删除后自动执行：
   ```typescript
@@ -342,12 +342,12 @@
   }
   ```
 
-- [ ] **Step 2: 编译测试后端逻辑**
+- [x] **Step 2: 编译测试后端逻辑**
   
   在 `backend` 目录下运行：`npm run build`
   预期输出：编译成功。
 
-- [ ] **Step 3: 提交代码**
+- [x] **Step 3: 提交代码**
   
   ```bash
   git add backend/src/api/video/content-types/video/lifecycles.ts
@@ -361,7 +361,7 @@
 **Files:**
 - Create: `backend/scripts/grant_tag_permissions.js`
 
-- [ ] **Step 1: 创建用于在本地和 ECS 上设置权限的 SQL 脚本**
+- [x] **Step 1: 创建用于在本地和 ECS 上设置权限的 SQL 脚本**
   
   创建文件 `backend/scripts/grant_tag_permissions.js`，内容如下：
   ```javascript
@@ -423,7 +423,7 @@
   run();
   ```
 
-- [ ] **Step 2: 在本地和 ECS 生产环境中执行此脚本**
+- [x] **Step 2: 在本地和 ECS 生产环境中执行此脚本**
 
   本地执行校验：`node backend/scripts/grant_tag_permissions.js`
   预期输出：显示权限插入并成功关联至相应 Role 的提示。
@@ -433,7 +433,7 @@
   SSH 执行脚本：`ssh -i agent.pem root@47.95.242.40 "node /var/www/strapi/scripts/grant_tag_permissions.js"`
   预期输出：远程 ECS 服务器提示数据库更新完成。
 
-- [ ] **Step 3: 提交代码**
+- [x] **Step 3: 提交代码**
 
   ```bash
   git add backend/scripts/grant_tag_permissions.js
@@ -448,7 +448,7 @@
 - Modify: `frontend-v2/src/types/work.ts`
 - Modify: `frontend-v2/src/app/works/page.tsx`
 
-- [ ] **Step 1: 更新 VideoWork 与 ImageWork 类型声明**
+- [x] **Step 1: 更新 VideoWork 与 ImageWork 类型声明**
 
   编辑 `frontend-v2/src/types/work.ts`，为作品接口增加 `tags` 属性声明：
   ```typescript
@@ -484,7 +484,7 @@
   }
   ```
 
-- [ ] **Step 2: 修改 Works Page 查询，关联 tags 字段并拉取所有标签**
+- [x] **Step 2: 修改 Works Page 查询，关联 tags 字段并拉取所有标签**
 
   编辑 `frontend-v2/src/app/works/page.tsx`，在 `videoFields` 与 `imageFields` 中添加 `"populate[tags][fields][0]=Name"` 关联查询：
   ```typescript
@@ -523,12 +523,12 @@
   ```
   更新 `WorksFilterGrid` 渲染调用：`<WorksFilterGrid initialVideos={videos} initialImages={images} tags={tags} />`
 
-- [ ] **Step 3: 运行本地打包编译，验证类型检查**
+- [x] **Step 3: 运行本地打包编译，验证类型检查**
   
   在 `frontend-v2` 目录下运行：`npm run build`
   预期输出：静态页面成功导出，无编译报错。
 
-- [ ] **Step 4: 提交代码**
+- [x] **Step 4: 提交代码**
   
   ```bash
   git add frontend-v2/src/types/work.ts frontend-v2/src/app/works/page.tsx
@@ -542,7 +542,7 @@
 **Files:**
 - Modify: `frontend-v2/src/components/WorksFilterGrid.tsx`
 
-- [ ] **Step 1: 让 WorksFilterGrid 支持 tags 属性与标签过滤状态**
+- [x] **Step 1: 让 WorksFilterGrid 支持 tags 属性与标签过滤状态**
 
   编辑 `frontend-v2/src/components/WorksFilterGrid.tsx`，将 `tags` 加入 Props 声明并新增 `selectedTagId` 状态：
   ```typescript
@@ -561,7 +561,7 @@
     const [isModalOpen, setIsModalOpen] = useState(false);
   ```
 
-- [ ] **Step 2: 在 JSX 中渲染美观的毛玻璃标签过滤器按钮栏**
+- [x] **Step 2: 在 JSX 中渲染美观的毛玻璃标签过滤器按钮栏**
 
   在分类切换 Tabs 下方渲染横向滚动的标签选择区：
   ```typescript
@@ -596,7 +596,7 @@
         )}
   ```
 
-- [ ] **Step 3: 在 `useMemo` 中整合标签过滤逻辑**
+- [x] **Step 3: 在 `useMemo` 中整合标签过滤逻辑**
 
   修改 `filteredAndSortedWorks` 筛选逻辑，增加根据 `selectedTagId` 匹配 `work.tags` 的功能：
   ```typescript
@@ -619,12 +619,12 @@
     }, [currentWorks, sortBy, selectedTagId]);
   ```
 
-- [ ] **Step 4: 本地编译测试，保证全部静态页面生成正常**
+- [x] **Step 4: 本地编译测试，保证全部静态页面生成正常**
   
   在 `frontend-v2` 目录下运行：`npm run build`
   预期输出：构建成功。
 
-- [ ] **Step 5: 提交代码**
+- [x] **Step 5: 提交代码**
 
   ```bash
   git add frontend-v2/src/components/WorksFilterGrid.tsx

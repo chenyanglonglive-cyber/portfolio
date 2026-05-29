@@ -30,7 +30,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const isVideo = getWorkType(work) === 'video';
-  const isCompressing = isVideo && (work as any).video?.alternativeText === 'compressing';
+  const isCompressing = isVideo && 'video' in work && work.video?.alternativeText === 'compressing';
   const rawCoverUrl = getWorkCoverUrl(work);
   const coverUrl = getStrapiMedia(rawCoverUrl);
   const videoProxyUrl = isVideo && !isCompressing ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;

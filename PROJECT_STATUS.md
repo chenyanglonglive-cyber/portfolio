@@ -578,3 +578,26 @@ npx @playwright/cli show --annotate
     - 更新并执行了数据库脚本 [update_about_db.js](file:///g:/blog/scratch/update_about_db.js)，将 ECS PostgreSQL 数据库 `abouts` 表中第 5 和第 8 条记录中关于抖音消耗的段落描述，从 `"单条消耗超500万"` 修改为最新的 `"单条消耗超800万"`。
 *   **本地构建验证**：
     - 在 `frontend-v2` 中执行 `npm run build` 进行本地构建校验，TypeScript 静态预编译及全部静态页面导出均一次性校验通过。
+
+---
+
+# 🚀 2026-05-29 更新日志 (Tag Taxonomy, Media Auto-Folder, Used Indicators & Review Fixes)
+
+## 1. 核心数据模型与标签系统 (Tag Taxonomy & Relations)
+*   **新建 Tag 集合类型**：创建了 `api::tag` 模型，并在 `api::video` 和 `api::image` 模型中建立了双向多对多（many-to-many）关联。
+*   **公共角色权限配置**：编写并执行了权限迁移脚本 [grant_tag_permissions.js](file:///g:/blog/backend/scripts/grant_tag_permissions.js)，在本地与远程 ECS 数据库的 `up_permissions` 和 `up_permissions_role_lnk` 表中自动插入并关联了 `api::tag.tag.find` 与 `api::tag.tag.findOne` 权限（针对 Public 与 Authenticated 角色），使得前端能够正常获取标签数据。
+
+## 2. 媒体库封面自动分类 (Auto-Folder Organization)
+*   **封面文件生命周期劫持**：在 `backend/src/index.ts` 的 Strapi 启动逻辑中注册了数据库生命周期订阅（Subscriber），监测 `plugin::upload.file` 的 `afterCreate` 事件。
+*   **自动归档**：当检测到上传的封面文件名符合客户端 `auto-cover` 或服务端 `cover_` 前缀规则时，自动将该文件移动至媒体库中的 `cover` 目录（若不存在则自动创建），避免无序混杂。
+
+## 3. 被引用视频状态标记 (Used Video Emoji Indicator)
+*   **视频使用状态同步**：在 `backend/src/api/video/content-types/video/lifecycles.ts` 的生命周期钩子中实现了异步且非阻塞的 `syncVideoUsedStatuses()` 逻辑。
+*   **自动 emoji 前缀**：监测 Video 作品的创建、更新与删除事件，对于被作品引用的视频资源，自动在媒体库展示名中追加 `✅ ` 前缀；当该视频未被任何作品引用时，自动移除该前缀。
+
+## 4. 前端类型安全与 UI 标签筛选 (TypeScript Security & Tag Filtering)
+*   **玻璃态标签过滤 UI**：在作品页 [WorksFilterGrid.tsx](file:///g:/blog/frontend-v2/src/components/WorksFilterGrid.tsx) 中集成了极具品质感的磨砂玻璃微动效标签过滤器（匹配 zinc-900 / emerald-400 视觉风格），前端利用 `useMemo` 支持一键实时无缝筛选过滤。
+*   **代码合规与类型安全重构 (Review Fixes)**：
+    - **类型安全增强**：定义了 `StrapiMedia` 接口并应用于 [work.ts](file:///g:/blog/frontend-v2/src/types/work.ts)，消除了 [WorkCard.tsx](file:///g:/blog/frontend-v2/src/components/WorkCard.tsx) 和 [WorkModal.tsx](file:///g:/blog/frontend-v2/src/components/WorkModal.tsx) 中所有的 `as any` 类型断言，实现纯净类型安全。
+    - **接口解析防御**：在 `frontend-v2` 的上传逻辑 [actions.ts](file:///g:/blog/frontend-v2/src/app/admin/upload/actions.ts) 中对视频压缩服务端 `/compress` 接口的返回类型进行了防御性重构，自适应处理数组包与对象包装结构，消除潜在的转换崩坏。
+*   **构建验证**：本地运行 `npm run build` 打包 `frontend-v2` 顺利通过所有 TypeScript 与页面生成校验。

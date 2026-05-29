@@ -9,12 +9,19 @@ export interface Tag {
   Name: string;
 }
 
+export interface StrapiMedia {
+  url: string;
+  alternativeText?: string | null;
+  name?: string;
+  size?: number;
+}
+
 export interface VideoWork {
   id: number;
   documentId: string;
   Title: string;
-  video?: { url: string };
-  cover?: { url: string };
+  video?: StrapiMedia;
+  cover?: StrapiMedia;
   Story?: string;
   IsFeatured: boolean;
   Spend: number;
@@ -29,7 +36,7 @@ export interface ImageWork {
   id: number;
   documentId: string;
   Title: string;
-  image?: { url: string };
+  image?: StrapiMedia;
   Story?: string;
   IsFeatured: boolean;
   Spend: number;

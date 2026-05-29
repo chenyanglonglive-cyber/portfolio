@@ -35,7 +35,7 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
   }, [isOpen]);
 
   const isVideo = work ? getWorkType(work) === 'video' : false;
-  const isCompressing = isVideo && work && 'video' in work && (work.video as any)?.alternativeText === 'compressing';
+  const isCompressing = isVideo && work && 'video' in work && work.video?.alternativeText === 'compressing';
   const coverUrl = work ? getStrapiMedia(getWorkCoverUrl(work)) : undefined;
   const videoUrl = isVideo && work && !isCompressing ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;
   const activeGeneratedCover = work && generatedCover?.workId === work.documentId ? generatedCover.url : null;

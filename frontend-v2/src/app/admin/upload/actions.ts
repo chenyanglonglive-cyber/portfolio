@@ -61,7 +61,7 @@ export async function compressAndUploadVideo(formData: FormData): Promise<{
   }
 
   const json = await response.json();
-  return json.data;
+  return Array.isArray(json) ? json[0] : (json.data || json);
 }
 
 /**
