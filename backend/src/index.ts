@@ -1,20 +1,33 @@
-// import type { Core } from '@strapi/strapi';
+import type { Core } from '@strapi/strapi';
 
 export default {
-  /**
-   * An asynchronous register function that runs before
-   * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
-   */
-  register(/* { strapi }: { strapi: Core.Strapi } */) {},
+  register() {},
 
-  /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
-   */
-  bootstrap(/* { strapi }: { strapi: any } */) {},
+  bootstrap({ strapi }: { strapi: any }) {
+    strapi.db.lifecycles.subscribe({
+      models: ["plugin::upload.file"],
+      async afterCreate(event: any) {
+        const { result } = event;
+        const name = result.name || '';
+        if (name.startsWith('cover_') || name.startsWith('auto-cover') || name === 'auto-cover.jpg') {
+          try {
+            const folderService = strapi.plugins.upload.services.folder;
+            let folder = await strapi.query('plugin::upload.folder').findOne({
+              where: { name: 'cover' }
+            });
+            if (!folder) {
+              folder = await folderService.create({ name: 'cover' });
+            }
+            await strapi.db.query('plugin::upload.file').update({
+              where: { id: result.id },
+              data: { folder: folder.id }
+            });
+            console.log(`[Lifecycle] Moved auto-cover ${result.name} (ID: ${result.id}) to 'cover' folder (ID: ${folder.id})`);
+          } catch (err: any) {
+            console.error('[Lifecycle] Failed to move cover to folder:', err.message);
+          }
+        }
+      }
+    });
+  },
 };
