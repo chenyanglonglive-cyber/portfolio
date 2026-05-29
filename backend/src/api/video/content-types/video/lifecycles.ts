@@ -6,12 +6,55 @@ import os from 'os';
 
 const execP = promisify(exec);
 
+async function syncVideoUsedStatuses() {
+  try {
+    const videoEntries = await strapi.db.query('api::video.video').findMany({
+      populate: ['video'],
+    });
+
+    const referencedIds = new Set<number>();
+    for (const entry of videoEntries) {
+      if (entry.video && entry.video.id) {
+        referencedIds.add(entry.video.id);
+      }
+    }
+
+    const files = await strapi.db.query('plugin::upload.file').findMany();
+    const videoFiles = files.filter((f: any) => f.mime && f.mime.startsWith('video/'));
+
+    for (const file of videoFiles) {
+      const isUsed = referencedIds.has(file.id);
+      const name = file.name || '';
+      const hasUsedEmoji = name.startsWith('✅ ');
+
+      if (isUsed && !hasUsedEmoji) {
+        const newName = `✅ ${name}`;
+        await strapi.db.query('plugin::upload.file').update({
+          where: { id: file.id },
+          data: { name: newName }
+        });
+        console.log(`[Used Status] Marked video '${name}' as used (✅).`);
+      } else if (!isUsed && hasUsedEmoji) {
+        const newName = name.replace(/^✅\s*/, '');
+        await strapi.db.query('plugin::upload.file').update({
+          where: { id: file.id },
+          data: { name: newName }
+        });
+        console.log(`[Used Status] Unmarked video '${name}' as unused.`);
+      }
+    }
+  } catch (err: any) {
+    console.error('[Used Status] Failed to sync video used statuses:', err?.message ?? err);
+  }
+}
+
 export default {
   async afterCreate(event: any) {
     const { result } = event;
     if (result.video && !result.cover) {
       await generateCover(result.documentId, result.video);
     }
+    await syncVideoUsedStatuses();
   },
 
   async afterUpdate(event: any) {
@@ -19,7 +62,12 @@ export default {
     if (result.video && !result.cover) {
       await generateCover(result.documentId, result.video);
     }
+    await syncVideoUsedStatuses();
   },
+
+  async afterDelete(event: any) {
+    await syncVideoUsedStatuses();
+  }
 };
 
 async function generateCover(documentId: string, videoData: any) {
