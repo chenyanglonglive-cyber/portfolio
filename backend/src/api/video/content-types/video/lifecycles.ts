@@ -19,8 +19,11 @@ async function syncVideoUsedStatuses() {
       }
     }
 
-    const files = await strapi.db.query('plugin::upload.file').findMany();
-    const videoFiles = files.filter((f: any) => f.mime && f.mime.startsWith('video/'));
+    const videoFiles = await strapi.db.query('plugin::upload.file').findMany({
+      where: {
+        mime: { $startsWith: 'video/' }
+      }
+    });
 
     for (const file of videoFiles) {
       const isUsed = referencedIds.has(file.id);
@@ -51,22 +54,38 @@ async function syncVideoUsedStatuses() {
 export default {
   async afterCreate(event: any) {
     const { result } = event;
-    if (result.video && !result.cover) {
-      await generateCover(result.documentId, result.video);
+    try {
+      const entry = await strapi.documents('api::video.video').findOne({
+        documentId: result.documentId,
+        populate: ['video', 'cover']
+      });
+      if (entry?.video && !entry?.cover) {
+        await generateCover(result.documentId, entry.video);
+      }
+    } catch (err: any) {
+      console.error('[Lifecycles] afterCreate error:', err.message);
     }
-    await syncVideoUsedStatuses();
+    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
   },
 
   async afterUpdate(event: any) {
     const { result } = event;
-    if (result.video && !result.cover) {
-      await generateCover(result.documentId, result.video);
+    try {
+      const entry = await strapi.documents('api::video.video').findOne({
+        documentId: result.documentId,
+        populate: ['video', 'cover']
+      });
+      if (entry?.video && !entry?.cover) {
+        await generateCover(result.documentId, entry.video);
+      }
+    } catch (err: any) {
+      console.error('[Lifecycles] afterUpdate error:', err.message);
     }
-    await syncVideoUsedStatuses();
+    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
   },
 
   async afterDelete(event: any) {
-    await syncVideoUsedStatuses();
+    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
   }
 };
 
@@ -85,7 +104,6 @@ async function generateCover(documentId: string, videoData: any) {
     const videoUrl: string = entry.video.url;
     console.log(`Generating cover for video ${documentId}: ${videoUrl}`);
 
-    // Resolve local file path — avoid HTTP download since we're on the same machine
     const publicDir = path.join(strapi.dirs?.app?.root ?? process.cwd(), 'public');
     const localPath = path.join(publicDir, videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`);
     if (!fs.existsSync(localPath)) {
@@ -137,4 +155,3 @@ async function generateCover(documentId: string, videoData: any) {
     console.error('Error in generateCover:', err?.message ?? err);
   }
 }
-
