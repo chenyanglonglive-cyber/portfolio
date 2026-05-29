@@ -522,6 +522,36 @@ export interface ApiImageImage extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiTagTag extends Struct.CollectionTypeSchema {
+  collectionName: 'tags';
+  info: {
+    description: 'Tags for portfolio works';
+    displayName: 'Tag';
+    pluralName: 'tags';
+    singularName: 'tag';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    images: Schema.Attribute.Relation<'manyToMany', 'api::image.image'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'> &
+      Schema.Attribute.Private;
+    Name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    videos: Schema.Attribute.Relation<'manyToMany', 'api::video.video'>;
+  };
+}
+
 export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
   collectionName: 'videos';
   info: {
@@ -568,35 +598,28 @@ export interface ApiWorkWork extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    Cover: Schema.Attribute.Media<'images'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     CTR: Schema.Attribute.Decimal;
+    Description: Schema.Attribute.Text;
     IsFeatured: Schema.Attribute.Boolean;
-    LaunchDate: Schema.Attribute.Date;
+    LaunchDate: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::work.work'> &
       Schema.Attribute.Private;
-    Media: Schema.Attribute.DynamicZone<
-      ['media.video-item', 'media.image-item']
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMax<
-        {
-          max: 1;
-          min: 1;
-        },
-        number
-      >;
     publishedAt: Schema.Attribute.DateTime;
     Rank: Schema.Attribute.Integer;
     ROI_7D: Schema.Attribute.Decimal;
     Spend: Schema.Attribute.BigInteger;
     Story: Schema.Attribute.Text;
     Title: Schema.Attribute.String;
+    Type: Schema.Attribute.Enumeration<['video', 'image']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Video: Schema.Attribute.Media<'videos'>;
   };
 }
 
@@ -1114,6 +1137,7 @@ declare module '@strapi/strapi' {
       'api::about.about': ApiAboutAbout;
       'api::article.article': ApiArticleArticle;
       'api::image.image': ApiImageImage;
+      'api::tag.tag': ApiTagTag;
       'api::video.video': ApiVideoVideo;
       'api::work.work': ApiWorkWork;
       'plugin::content-releases.release': PluginContentReleasesRelease;
