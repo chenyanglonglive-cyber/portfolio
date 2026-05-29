@@ -60,7 +60,7 @@ export default {
         populate: ['video', 'cover']
       });
       if (entry?.video && !entry?.cover) {
-        await generateCover(result.documentId, entry.video);
+        await generateCover(result.documentId, entry.video, !!entry.publishedAt);
       }
     } catch (err: any) {
       console.error('[Lifecycles] afterCreate error:', err.message);
@@ -76,7 +76,7 @@ export default {
         populate: ['video', 'cover']
       });
       if (entry?.video && !entry?.cover) {
-        await generateCover(result.documentId, entry.video);
+        await generateCover(result.documentId, entry.video, !!entry.publishedAt);
       }
     } catch (err: any) {
       console.error('[Lifecycles] afterUpdate error:', err.message);
@@ -89,19 +89,15 @@ export default {
   }
 };
 
-async function generateCover(documentId: string, videoData: any) {
+async function generateCover(documentId: string, videoData: any, isPublished: boolean) {
+  let thumbPath = '';
   try {
-    const entry = await strapi.documents('api::video.video').findOne({
-      documentId,
-      populate: ['video'],
-    });
-
-    if (!entry?.video?.url) {
-      console.log('No video found for document:', documentId);
+    if (!videoData?.url) {
+      console.log('No video URL provided for cover generation.');
       return;
     }
 
-    const videoUrl: string = entry.video.url;
+    const videoUrl: string = videoData.url;
     console.log(`Generating cover for video ${documentId}: ${videoUrl}`);
 
     const publicDir = path.join(strapi.dirs?.app?.root ?? process.cwd(), 'public');
@@ -113,7 +109,7 @@ async function generateCover(documentId: string, videoData: any) {
 
     const tempDir = os.tmpdir();
     const thumbName = `thumb_${documentId}_${Date.now()}.jpg`;
-    const thumbPath = path.join(tempDir, thumbName);
+    thumbPath = path.join(tempDir, thumbName);
 
     const ffmpegCmd = `ffmpeg -i "${localPath}" -ss 00:00:01 -vframes 1 -f image2 "${thumbPath}" -y`;
 
@@ -146,12 +142,17 @@ async function generateCover(documentId: string, videoData: any) {
     await strapi.documents('api::video.video').update({
       documentId,
       data: { cover: coverId },
-      status: entry.publishedAt ? 'published' : 'draft',
+      status: isPublished ? 'published' : 'draft',
     });
 
     console.log(`Cover generated for ${documentId}`);
-    fs.unlinkSync(thumbPath);
   } catch (err: any) {
     console.error('Error in generateCover:', err?.message ?? err);
+  } finally {
+    if (thumbPath && fs.existsSync(thumbPath)) {
+      try {
+        fs.unlinkSync(thumbPath);
+      } catch {}
+    }
   }
 }
