@@ -26,6 +26,7 @@ export default async function WorksPage() {
   const videoFields = [
     "populate[video][fields][0]=url",
     "populate[cover][fields][0]=url",
+    "populate[tags][fields][0]=Name",
     "fields[0]=Title",
     "fields[1]=IsFeatured",
     "fields[2]=Rank",
@@ -39,6 +40,7 @@ export default async function WorksPage() {
 
   const imageFields = [
     "populate[image][fields][0]=url",
+    "populate[tags][fields][0]=Name",
     "fields[0]=Title",
     "fields[1]=IsFeatured",
     "fields[2]=Rank",
@@ -50,9 +52,10 @@ export default async function WorksPage() {
     "pagination[pageSize]=50",
   ].join("&");
 
-  const [videosResult, imagesResult] = await Promise.all([
+  const [videosResult, imagesResult, tags] = await Promise.all([
     fetchWorks('videos', videoFields),
     fetchWorks('images', imageFields),
+    queryStrapi<any[]>('tags').catch(() => []),
   ]);
 
   const videos = videosResult.data
@@ -81,6 +84,7 @@ export default async function WorksPage() {
       <WorksFilterGrid
         initialVideos={videos}
         initialImages={images}
+        tags={tags}
         error={globalError}
       />
     </div>

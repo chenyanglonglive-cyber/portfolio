@@ -16,6 +16,7 @@ export interface VideoWork {
   CTR: number;
   Rank: number;
   LaunchDate?: string;
+  tags?: { id: number; documentId: string; Name: string }[];
 }
 
 export interface ImageWork {
@@ -30,6 +31,7 @@ export interface ImageWork {
   CTR: number;
   Rank: number;
   LaunchDate?: string;
+  tags?: { id: number; documentId: string; Name: string }[];
 }
 
 /** 统一类型，前端组件可以用这个来处理所有作品 */
