@@ -351,7 +351,7 @@ export default function UploadForm() {
                 </div>
                 <div
                   className={`rounded-2xl overflow-hidden border border-white/10 bg-black ${
-                    mode === "video" ? "aspect-[9/16]" : "aspect-video"
+                    mode === "video" ? "aspect-[4/5]" : "aspect-video"
                   }`}
                 >
                   <img

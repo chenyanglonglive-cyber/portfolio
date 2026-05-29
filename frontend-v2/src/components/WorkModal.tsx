@@ -183,15 +183,21 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
                    <div className="grid grid-cols-3 gap-3">
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
                          <p className="text-xs text-zinc-500 uppercase mb-1">Spend</p>
-                         <p className="text-lg font-mono font-bold text-emerald-400">¥{(work.Spend || 0).toLocaleString()}</p>
+                         <p className="text-lg font-mono font-bold text-emerald-400">
+                           {work.Spend !== null && work.Spend !== undefined ? `¥${work.Spend.toLocaleString()}` : '—'}
+                         </p>
                       </div>
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
                          <p className="text-xs text-zinc-500 uppercase mb-1">CTR</p>
-                         <p className="text-lg font-mono font-bold text-emerald-400">{(work.CTR || 0)}%</p>
+                         <p className="text-lg font-mono font-bold text-emerald-400">
+                           {work.CTR !== null && work.CTR !== undefined ? `${work.CTR}%` : '—'}
+                         </p>
                       </div>
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5">
                          <p className="text-xs text-zinc-500 uppercase mb-1">ROI</p>
-                         <p className="text-lg font-mono font-bold text-emerald-400">{(work.ROI_7D || 0)}</p>
+                         <p className="text-lg font-mono font-bold text-emerald-400">
+                           {work.ROI_7D !== null && work.ROI_7D !== undefined ? work.ROI_7D : '—'}
+                         </p>
                       </div>
                    </div>
                 </section>

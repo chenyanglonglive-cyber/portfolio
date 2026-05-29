@@ -116,7 +116,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
       whileHover={{ y: -5, transition: { duration: 0.3 } }}
     >
       <div
-        className={`${isVideo ? 'aspect-[9/16]' : 'aspect-[16/9]'} relative bg-black`}
+        className={`${isVideo ? 'aspect-[4/5]' : 'aspect-[16/9]'} relative bg-black`}
       >
         {/* Cover */}
         {displayCover ? (

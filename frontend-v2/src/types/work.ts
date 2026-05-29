@@ -24,9 +24,9 @@ export interface VideoWork {
   cover?: StrapiMedia;
   Story?: string;
   IsFeatured: boolean;
-  Spend: number;
-  ROI_7D: number;
-  CTR: number;
+  Spend: number | null;
+  ROI_7D: number | null;
+  CTR: number | null;
   Rank: number;
   LaunchDate?: string;
   tags?: Tag[];
@@ -39,9 +39,9 @@ export interface ImageWork {
   image?: StrapiMedia;
   Story?: string;
   IsFeatured: boolean;
-  Spend: number;
-  ROI_7D: number;
-  CTR: number;
+  Spend: number | null;
+  ROI_7D: number | null;
+  CTR: number | null;
   Rank: number;
   LaunchDate?: string;
   tags?: Tag[];
@@ -71,9 +71,9 @@ export function getWorkCoverUrl(work: Work): string | undefined {
 export function normalizeWork(work: any): Work {
   return {
     ...work,
-    Spend: Number(work.Spend) || 0,
-    ROI_7D: Number(work.ROI_7D) || 0,
-    CTR: Number(work.CTR) || 0,
+    Spend: work.Spend !== null && work.Spend !== undefined && work.Spend !== "" ? Number(work.Spend) : null,
+    ROI_7D: work.ROI_7D !== null && work.ROI_7D !== undefined && work.ROI_7D !== "" ? Number(work.ROI_7D) : null,
+    CTR: work.CTR !== null && work.CTR !== undefined && work.CTR !== "" ? Number(work.CTR) : null,
     Rank: Number(work.Rank) || 0,
   };
 }

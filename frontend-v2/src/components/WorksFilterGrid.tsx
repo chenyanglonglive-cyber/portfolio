@@ -38,7 +38,7 @@ export default function WorksFilterGrid({ initialVideos, initialImages, tags = [
     }
 
     if (sortBy === 'spend') {
-      result.sort((a, b) => b.Spend - a.Spend);
+      result.sort((a, b) => (b.Spend ?? -1) - (a.Spend ?? -1));
     } else {
       result.sort((a, b) => (b.Rank || 0) - (a.Rank || 0) || (b.id || 0) - (a.id || 0));
     }

@@ -6,7 +6,98 @@
       "Bash(npm install *)",
       "WebSearch",
       "Bash(gh --version)",
-      "Bash(gh auth *)"
+      "Bash(gh auth *)",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "WebFetch(domain:wcyblog.space)",
+      "WebFetch(domain:dazzling-family-6d1f24102d.strapiapp.com)",
+      "WebFetch(domain:portfolio-chenyang-s-projects.vercel.app)",
+      "Bash(npx vercel *)",
+      "WebFetch(domain:portfolio-q7efg6v41-chenyang-s-projects.vercel.app)",
+      "Bash(curl -s -H \"Authorization: Bearer 13edd982031b227ab7ac15c954fe708c8548288331a887f7e2c4414f818c02681042f6541c454667f815716dcba52a9cda67ae008714094ba9c54fe2d80ca049490b53240323c297b1bfa075e2add760fdbdebf648a5bebe6da81e4b9288630f75d59cc3ab7add3e818e4108efb60daf425d175bc7ce48b1544df3080f991f77\" \"https://dazzling-family-6d1f24102d.strapiapp.com/api/videos?populate=*\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(node *)",
+      "Bash(where ffmpeg *)",
+      "Bash(where ffprobe *)",
+      "WebFetch(domain:www.wcyblog.space)",
+      "Bash(curl *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(f'Total videos: {len\\(d[\\\\\"data\\\\\"]\\)}'\\)\")",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(npx --package typescript tsc --noEmit)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(python3 -c \"import sys; print\\(sys.executable\\)\")",
+      "Bash(where python *)",
+      "Bash(winget install *)",
+      "Read(//d/Python312/**)",
+      "Bash(D:/Python312/python.exe --version)",
+      "Bash(C:/Users/leave/AppData/Local/Programs/Python/Python312/python.exe *)",
+      "Bash(python3 *)",
+      "Bash(ffmpeg -f concat -safe 0 -i concat_list.txt -c copy \"AI游戏广告创意工作流-6大案例.mp4\" -y)",
+      "Bash(npx skills *)",
+      "Bash(hyperframes --version)",
+      "Bash(Get-ChildItem -Path \"D:\\\\blog\\\\portfolio\" -Depth 1)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(Select-Object -First 30)",
+      "PowerShell(git push *)",
+      "PowerShell(npx tsc --noEmit --pretty 2>&1)",
+      "PowerShell(git *)",
+      "Bash(Get-ChildItem *)",
+      "Bash(ssh *)",
+      "Bash(choco install *)",
+      "Bash(scoop install *)",
+      "Bash(ssh-keygen -t ed25519 -f ~/.ssh/alicloud_ecs -N \"\" -q)",
+      "Read(//c/Users/leave/.ssh/**)",
+      "Bash(ssh-keygen -l -f ~/.ssh/alicloud_ecs)",
+      "Bash(chmod 600 ~/.ssh/alicloud_ecs)",
+      "Bash(chmod 644 ~/.ssh/alicloud_ecs.pub)",
+      "Bash(pip install *)",
+      "Bash(chmod 600 /c/Users/leave/Downloads/agent.pem)",
+      "Bash(pg_dump --version)",
+      "Bash(tar -czf /tmp/strapi-backend.tar.gz --exclude='node_modules' --exclude='.tmp' --exclude='package-lock.json' backend/)",
+      "Read(//tmp/**)",
+      "Bash(scp -i /c/Users/leave/Downloads/agent.pem -o StrictHostKeyChecking=no /tmp/strapi-backend.tar.gz root@47.95.242.40:/tmp/)",
+      "Bash(npm run *)",
+      "Bash(scp -i /c/Users/leave/Downloads/agent.pem -o StrictHostKeyChecking=no -r D:/blog/portfolio/backend/dist root@47.95.242.40:/var/www/strapi/)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(nslookup www.wcyblog.space)",
+      "Bash(nslookup strapi.wcyblog.space)",
+      "Bash(Select-Object -First 5)",
+      "Bash(Remove-Item *)",
+      "Bash(where.exe wrangler *)",
+      "Bash(where.exe cloudflared *)",
+      "Bash(where.exe nslookup *)",
+      "Bash(nslookup *)",
+      "PowerShell(ssh -i \"$env:USERPROFILE\\\\.ssh\\\\alicloud_ecs\" -o ConnectTimeout=5 -o StrictHostKeyChecking=no root@47.95.242.40 \"cat /etc/os-release | head -4; echo '---'; which nginx; echo '---'; which certbot; echo '---'; nginx -v 2>&1\")",
+      "PowerShell(Get-Content *)",
+      "Bash(scp *)",
+      "Bash(git *)"
+    ]
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node D:\\blog\\portfolio\\scripts\\claude_notify.js --auth"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node D:\\blog\\portfolio\\scripts\\claude_notify.js --done"
+          }
+        ]
+      }
     ]
   }
 }

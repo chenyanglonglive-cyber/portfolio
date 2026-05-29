@@ -558,8 +558,8 @@ npx @playwright/cli show --annotate
     - 编写了 Node.js 像素色域分析脚本 [find_icons.js](file:///d:/blog/portfolio/scratch/find_icons.js) 定位各图标精确像素边界。
     - 使用 FFmpeg 批处理裁剪脚本 [crop_icons.js](file:///d:/blog/portfolio/scratch/crop_icons.js) 对各个官方图标进行精准裁剪，并统一压缩转换为 Web-optimized 的高保真 **WebP 图像格式**（文件体积压缩至仅 1.5KB - 4.7KB）。
     - 已在 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx#L32) 中将工具模块的原有手绘 SVG 替换为这些新裁剪出来的 WebP 图标，大幅提升了“工具展示”版块的整体视觉还原度与品质感。
-
 ---
+
 
 # 🚀 2026-05-28 更新日志 (Resume Update & Database Migration)
 
@@ -601,3 +601,29 @@ npx @playwright/cli show --annotate
     - **类型安全增强**：定义了 `StrapiMedia` 接口并应用于 [work.ts](file:///g:/blog/frontend-v2/src/types/work.ts)，消除了 [WorkCard.tsx](file:///g:/blog/frontend-v2/src/components/WorkCard.tsx) 和 [WorkModal.tsx](file:///g:/blog/frontend-v2/src/components/WorkModal.tsx) 中所有的 `as any` 类型断言，实现纯净类型安全。
     - **接口解析防御**：在 `frontend-v2` 的上传逻辑 [actions.ts](file:///g:/blog/frontend-v2/src/app/admin/upload/actions.ts) 中对视频压缩服务端 `/compress` 接口的返回类型进行了防御性重构，自适应处理数组包与对象包装结构，消除潜在的转换崩坏。
 *   **构建验证**：本地运行 `npm run build` 打包 `frontend-v2` 顺利通过所有 TypeScript 与页面生成校验。
+
+---
+
+# 🚀 2026-05-30 更新日志 (Video Format Fix, 4:5 Aspect Ratio & Null Value Styling)
+
+## 1. 媒体与视频加载修复 (H.265 to H.264 Transcoding)
+*   **问题定位**：视频「丽莎自拍」的源视频文件被压制为了 **H.265 (HEVC)** 编码。由于大部分浏览器（包括 Windows Chrome/Firefox）对网页端 HEVC 解码兼容度较低，因此只能播放声音、视频区域全黑。
+*   **原地转码**：通过 SSH 连接阿里云 ECS 服务器，对该媒体文件 (`_5a8a7e9675.mp4`) 进行了备份 (`_5a8a7e9675_backup.mp4`)，然后使用 `ffmpeg` 原地转码为标准的 **H.264 (yuv420p)** 编码，已测试能实现各大主流浏览器的直接流畅播放。
+
+## 2. 核心视觉与布局优化 (UI & Visual Updates)
+*   **视频容器宽高比调整为 4:5**：
+    - 将前台 [WorkCard.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkCard.tsx#L119) 中视频卡片的 aspect 容器比例从原先的 `9:16` 调整为更主流的 **`4:5`**。
+    - 将后台视频上传预览框 [UploadForm.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/admin/upload/UploadForm.tsx#L354) 的 aspect 比例也同步调整为 **`4:5`**，保证前后端视觉一致。
+*   **作品页副标题删除**：
+    - 移除了作品页 [page.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/works/page.tsx#L75) 中主标题下方的副标题文字，优化了版面纯净感。
+
+## 3. 数据缺省值处理与容错 (Null Value Compatibility)
+*   **允许字段 Null/空值**：
+    - 修改了 [types/work.ts](file:///d:/blog/portfolio/frontend-v2/src/types/work.ts#L56) 中的 `normalizeWork` 标准化函数，当 API 返回的 `Spend`、`CTR`、`ROI_7D` 为空（未在 Strapi 后台填写）时，保留为 `null` 而不再强制强转为数字 `0`。
+    - 修复了前台 [WorksFilterGrid.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorksFilterGrid.tsx#L31) 在对 nullable 消耗数值进行排序时可能导致的空指针排序类型错误。
+*   **缺省值用横杠代替**：
+    - 修改了前台作品详情弹窗 [WorkModal.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkModal.tsx#L183)，当检测到对应指标为 `null` 时，自动用优雅的横杠 `—` 代替展示，消除了未配置数据时显示为 `0` 的误导。
+
+## 4. 自动化与验证
+*   **本地构建无报错**：本地成功编译并打包（`npm run build`），无任何 TS 语法或 lint 报错。
+*   **提示音播放**：任务结束时，自动执行了 `task_complete.ps1` 播放了成功完成提示音。

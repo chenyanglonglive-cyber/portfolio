@@ -75,9 +75,6 @@ export default async function WorksPage() {
           <h1 className="text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 tracking-tighter uppercase pr-4">
             Portfolio <span className="text-emerald-400 ml-2 text-2xl md:text-4xl">.作品</span>
           </h1>
-          <p className="text-zinc-500 max-w-xl text-lg">
-            展示 9:16 及 16:9 全尺寸广告创意。
-          </p>
         </div>
       </div>
 
