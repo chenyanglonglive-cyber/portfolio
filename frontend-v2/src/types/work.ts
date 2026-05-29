@@ -3,6 +3,12 @@
  * 旧的 Dynamic Zone (WorkMediaVideo / WorkMediaImage) 已废弃
  */
 
+export interface Tag {
+  id: number;
+  documentId: string;
+  Name: string;
+}
+
 export interface VideoWork {
   id: number;
   documentId: string;
@@ -16,7 +22,7 @@ export interface VideoWork {
   CTR: number;
   Rank: number;
   LaunchDate?: string;
-  tags?: { id: number; documentId: string; Name: string }[];
+  tags?: Tag[];
 }
 
 export interface ImageWork {
@@ -31,7 +37,7 @@ export interface ImageWork {
   CTR: number;
   Rank: number;
   LaunchDate?: string;
-  tags?: { id: number; documentId: string; Name: string }[];
+  tags?: Tag[];
 }
 
 /** 统一类型，前端组件可以用这个来处理所有作品 */

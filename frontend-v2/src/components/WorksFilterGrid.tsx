@@ -3,17 +3,19 @@
 import { useState, useMemo } from 'react';
 import WorkCard from '@/components/WorkCard';
 import WorkModal from '@/components/WorkModal';
-import { Work } from '@/types/work';
+import { Work, Tag } from '@/types/work';
 
 interface WorksFilterGridProps {
   initialVideos: Work[];
   initialImages: Work[];
+  tags?: Tag[];
   error?: string;
 }
 
-export default function WorksFilterGrid({ initialVideos, initialImages, error }: WorksFilterGridProps) {
+export default function WorksFilterGrid({ initialVideos, initialImages, tags = [], error }: WorksFilterGridProps) {
   const [filter, setFilter] = useState<'video' | 'image'>('video');
   const [sortBy, setSortBy] = useState<'default' | 'spend'>('default');
+  const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -26,14 +28,22 @@ export default function WorksFilterGrid({ initialVideos, initialImages, error }:
   const currentWorks = filter === 'video' ? initialVideos : initialImages;
 
   const filteredAndSortedWorks = useMemo(() => {
-    const result = [...currentWorks];
+    let result = [...currentWorks];
+    
+    // 按选中的标签进行过滤
+    if (selectedTagId !== null) {
+      result = result.filter(work => 
+        work.tags && work.tags.some(t => t.documentId === selectedTagId)
+      );
+    }
+
     if (sortBy === 'spend') {
       result.sort((a, b) => b.Spend - a.Spend);
     } else {
       result.sort((a, b) => (b.Rank || 0) - (a.Rank || 0) || (b.id || 0) - (a.id || 0));
     }
     return result;
-  }, [currentWorks, sortBy]);
+  }, [currentWorks, sortBy, selectedTagId]);
 
   return (
     <>
@@ -68,6 +78,36 @@ export default function WorksFilterGrid({ initialVideos, initialImages, error }:
         >
           {sortBy === 'spend' ? '消耗排序 ↓' : '默认排序'}
         </button>
+
+        {/* 标签过滤栏 */}
+        {tags && tags.length > 0 && (
+          <div className="w-full flex flex-wrap items-center gap-2 mt-4 py-2 border-t border-white/5">
+            <span className="text-[10px] text-zinc-500 uppercase tracking-widest mr-2">标签过滤:</span>
+            <button
+              onClick={() => setSelectedTagId(null)}
+              className={`px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wider transition-all duration-300 ${
+                selectedTagId === null
+                  ? 'bg-emerald-400/20 text-emerald-400 border border-emerald-400/30 shadow-[0_0_12px_rgba(52,211,153,0.15)]'
+                  : 'bg-white/5 text-zinc-400 border border-transparent hover:text-white hover:bg-white/10'
+              }`}
+            >
+              全部
+            </button>
+            {tags.map((t) => (
+              <button
+                key={t.documentId}
+                onClick={() => setSelectedTagId(t.documentId)}
+                className={`px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wider transition-all duration-300 ${
+                  selectedTagId === t.documentId
+                    ? 'bg-emerald-400/20 text-emerald-400 border border-emerald-400/30 shadow-[0_0_12px_rgba(52,211,153,0.15)]'
+                    : 'bg-white/5 text-zinc-400 border border-transparent hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {t.Name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {filteredAndSortedWorks.length === 0 ? (
