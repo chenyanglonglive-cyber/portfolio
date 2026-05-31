@@ -56,6 +56,12 @@
       "relation": "manyToMany",
       "target": "api::tag.tag",
       "mappedBy": "videos"
+    },
+    "project": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::project.project",
+      "inversedBy": "videos"
     }
   }
 }

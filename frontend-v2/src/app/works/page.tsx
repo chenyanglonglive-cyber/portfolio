@@ -27,6 +27,8 @@ export default async function WorksPage() {
     "populate[video][fields][0]=url",
     "populate[cover][fields][0]=url",
     "populate[tags][fields][0]=Name",
+    "populate[project][fields][0]=Name",
+    "populate[project][fields][1]=Rank",
     "fields[0]=Title",
     "fields[1]=IsFeatured",
     "fields[2]=Rank",
@@ -41,6 +43,8 @@ export default async function WorksPage() {
   const imageFields = [
     "populate[image][fields][0]=url",
     "populate[tags][fields][0]=Name",
+    "populate[project][fields][0]=Name",
+    "populate[project][fields][1]=Rank",
     "fields[0]=Title",
     "fields[1]=IsFeatured",
     "fields[2]=Rank",
@@ -52,10 +56,11 @@ export default async function WorksPage() {
     "pagination[pageSize]=50",
   ].join("&");
 
-  const [videosResult, imagesResult, tags] = await Promise.all([
+  const [videosResult, imagesResult, tags, projects] = await Promise.all([
     fetchWorks('videos', videoFields),
     fetchWorks('images', imageFields),
     queryStrapi<any[]>('tags').catch(() => []),
+    queryStrapi<any[]>('projects?sort=Rank:desc').catch(() => []),
   ]);
 
   const videos = videosResult.data
@@ -82,6 +87,7 @@ export default async function WorksPage() {
         initialVideos={videos}
         initialImages={images}
         tags={tags}
+        projects={projects}
         error={globalError}
       />
     </div>

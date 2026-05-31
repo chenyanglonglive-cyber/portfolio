@@ -3,19 +3,27 @@
 import { useState, useMemo } from 'react';
 import WorkCard from '@/components/WorkCard';
 import WorkModal from '@/components/WorkModal';
-import { Work, Tag } from '@/types/work';
+import { Work, Tag, Project } from '@/types/work';
 
 interface WorksFilterGridProps {
   initialVideos: Work[];
   initialImages: Work[];
   tags?: Tag[];
+  projects?: Project[];
   error?: string;
 }
 
-export default function WorksFilterGrid({ initialVideos, initialImages, tags = [], error }: WorksFilterGridProps) {
+export default function WorksFilterGrid({ 
+  initialVideos, 
+  initialImages, 
+  tags = [], 
+  projects = [],
+  error 
+}: WorksFilterGridProps) {
   const [filter, setFilter] = useState<'video' | 'image'>('video');
   const [sortBy, setSortBy] = useState<'default' | 'spend'>('default');
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -30,6 +38,11 @@ export default function WorksFilterGrid({ initialVideos, initialImages, tags = [
   const filteredAndSortedWorks = useMemo(() => {
     let result = [...currentWorks];
     
+    // 按选中的项目进行过滤
+    if (selectedProjectId !== 'all') {
+      result = result.filter(work => work.project?.documentId === selectedProjectId);
+    }
+
     // 按选中的标签进行过滤
     if (selectedTagId !== null) {
       result = result.filter(work => 
@@ -43,7 +56,9 @@ export default function WorksFilterGrid({ initialVideos, initialImages, tags = [
       result.sort((a, b) => (b.Rank || 0) - (a.Rank || 0) || (b.id || 0) - (a.id || 0));
     }
     return result;
-  }, [currentWorks, sortBy, selectedTagId]);
+  }, [currentWorks, sortBy, selectedTagId, selectedProjectId]);
+
+  const isProjectActive = selectedProjectId !== 'all';
 
   return (
     <>
@@ -53,7 +68,11 @@ export default function WorksFilterGrid({ initialVideos, initialImages, tags = [
           {(['video', 'image'] as const).map((t) => (
             <button
               key={t}
-              onClick={() => setFilter(t)}
+              onClick={() => {
+                setFilter(t);
+                // Switch tabs should preserve filters, or we can reset them if needed,
+                // but keeping them is standard
+              }}
               className={`px-8 py-2.5 rounded-full text-xs font-black tracking-widest transition-all duration-300 uppercase ${
                 filter === t
                   ? 'bg-white text-black shadow-lg'
@@ -78,6 +97,35 @@ export default function WorksFilterGrid({ initialVideos, initialImages, tags = [
         >
           {sortBy === 'spend' ? '消耗排序 ↓' : '默认排序'}
         </button>
+
+        {/* 项目筛选下拉菜单 */}
+        {projects && projects.length > 0 && (
+          <div className="relative">
+            <select
+              value={selectedProjectId}
+              onChange={(e) => setSelectedProjectId(e.target.value)}
+              className={`appearance-none bg-zinc-950/80 backdrop-blur-md border font-medium rounded-lg py-2 pl-4 pr-10 text-[10px] tracking-wider transition-all outline-none cursor-pointer ${
+                isProjectActive 
+                  ? 'border-emerald-400/50 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.1)]' 
+                  : 'border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
+              }`}
+            >
+              <option value="all">所有项目</option>
+              {projects.map((p) => (
+                <option key={p.documentId} value={p.documentId} className="bg-zinc-950 text-zinc-300">
+                  {p.Name}
+                </option>
+              ))}
+            </select>
+            <div className={`absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none transition-colors ${
+              isProjectActive ? 'text-emerald-400' : 'text-zinc-500'
+            }`}>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        )}
 
         {/* 标签过滤栏 */}
         {tags && tags.length > 0 && (
@@ -109,6 +157,7 @@ export default function WorksFilterGrid({ initialVideos, initialImages, tags = [
           </div>
         )}
       </div>
+
 
       {filteredAndSortedWorks.length === 0 ? (
         <div className="col-span-full flex flex-col items-center justify-center py-32 text-center">

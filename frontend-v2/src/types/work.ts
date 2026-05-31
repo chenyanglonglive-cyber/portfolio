@@ -3,6 +3,13 @@
  * 旧的 Dynamic Zone (WorkMediaVideo / WorkMediaImage) 已废弃
  */
 
+export interface Project {
+  id: number;
+  documentId: string;
+  Name: string;
+  Rank: number;
+}
+
 export interface Tag {
   id: number;
   documentId: string;
@@ -30,6 +37,7 @@ export interface VideoWork {
   Rank: number;
   LaunchDate?: string;
   tags?: Tag[];
+  project?: Project | null;
 }
 
 export interface ImageWork {
@@ -45,6 +53,7 @@ export interface ImageWork {
   Rank: number;
   LaunchDate?: string;
   tags?: Tag[];
+  project?: Project | null;
 }
 
 /** 统一类型，前端组件可以用这个来处理所有作品 */
@@ -75,5 +84,12 @@ export function normalizeWork(work: any): Work {
     ROI_7D: work.ROI_7D !== null && work.ROI_7D !== undefined && work.ROI_7D !== "" ? Number(work.ROI_7D) : null,
     CTR: work.CTR !== null && work.CTR !== undefined && work.CTR !== "" ? Number(work.CTR) : null,
     Rank: Number(work.Rank) || 0,
+    project: work.project ? {
+      id: work.project.id,
+      documentId: work.project.documentId,
+      Name: work.project.Name,
+      Rank: Number(work.project.Rank) || 0
+    } : null
   };
 }
+
