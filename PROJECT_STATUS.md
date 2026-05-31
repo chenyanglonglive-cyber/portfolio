@@ -627,3 +627,30 @@ npx @playwright/cli show --annotate
 ## 4. 自动化与验证
 *   **本地构建无报错**：本地成功编译并打包（`npm run build`），无任何 TS 语法或 lint 报错。
 *   **提示音播放**：任务结束时，自动执行了 `task_complete.ps1` 播放了成功完成提示音。
+
+---
+
+# 🚀 2026-05-31 更新日志 (Project Entity & Currency & 4-Column Layout)
+
+## 1. 自动关联项目与动态数据填充 (Project Collections & Linkage Script)
+*   **新增 Project 集合类型**：创建了 `api::project` 模型，并在 `api::video` 和 `api::image` 模型中建立了双向一对多（many-to-one）关联。
+*   **项目公开查询权限配置**：编写并在阿里云 ECS 数据库上执行了 [grant_project_permissions.js](file:///d:/blog/portfolio/backend/scripts/grant_project_permissions.js)，开放了项目的 `find` 与 `findOne` 匿名公开查询 API。
+*   **智能自动数据关联**：编写并在 ECS 运行了 [seed_projects.js](file:///d:/blog/portfolio/backend/scripts/seed_projects.js) 关联脚本。该脚本：
+    1. 动态读取数据库已存在的 `Tag` 列表，自动创建了同名 `Project`（如 `雷霆战机`、`bingo clash`）并增加默认兜底项目 `其他`。
+    2. 遍历现有视频和图片作品。优先根据已绑定的 `Tag` 进行同名项目映射绑定，无 Tag 的降级扫描作品标题关键字（如“悍将” -> `雷霆战机`），无任何匹配的归类为 `其他`，完成了一键智能迁移。
+
+## 2. 后端多币种支持与初始化 (Multi-Currency Support)
+*   **新增 Currency 枚举字段**：在视频和图片 Schema 中添加了 `Currency` 枚举字段（选项为 `CNY` 和 `USD`，默认为 `CNY`）。
+*   **历史数据回填 (SQL)**：在 ECS 数据库中运行更新 SQL 脚本，将所有已存在的 40 条数据记录的 `currency` 字段值批量回填并初始化为 `CNY` (￥)，保障渲染安全。
+
+## 3. 前端 UI 组件升级与交互重构 (UI/UX Refactoring)
+*   **全站统一风格项目下拉框**：在作品页 [WorksFilterGrid.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorksFilterGrid.tsx) 中集成了极具品质感、匹配 zinc-900 / bg-zinc-950/80 风格的项目选择下拉框。当用户选择特定项目（非“所有项目”）时，下拉边框与文本会高亮为翡翠绿（`emerald-400`）。
+*   **字号与高度统一对齐**：将下拉框与右上角排序按钮的字号从 `text-[10px]` 统一调整至 `text-xs`，并在纵向 padding 上与左侧的 tab 按钮高度对齐（`py-2.5`），使整个控制区的视觉更加和谐统一。
+*   **作品卡片常驻底部遮罩 (WorkCard)**：在 [WorkCard.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkCard.tsx) 容器底部，添加了常驻半透明黑色毛玻璃遮罩 (`bg-zinc-950/70 backdrop-blur-md`)。左侧展示截断的标题，右侧通过绿底小药丸展示千分位格式化并适配对应 `￥`/`$` 货币符号的消耗金额。
+*   **中心 Hover 查看案例 Badge**：移除了原本在底部的悬停文字，修改为悬停时在卡片正中心平滑淡入并稍微放大呈现绿底黑字的 **“查看案例”**（Case Study）精美小徽章，完全避免了文字重叠。
+*   **作品网格升级为 4 列布局**：将网格布局从原来的 3 列调整为 sm:2列、md:3列、lg:4列 (`lg:grid-cols-4`) 并适当收窄间距 (`gap-6`)，大屏下视野更充实、排版更紧密。
+
+## 4. 验证与上线 (Build & Verification)
+*   **本地静态构建**：前端本地运行 `npm run build` 打包，Next.js 与 TypeScript 100% 成功编译，所有静态页面导出正常。
+*   **Git 触发自动上线**：代码修改均已推送到 GitHub 仓库并已触发 Vercel 云端部署，完成整套需求在生产环境的一站式上线。
+
