@@ -165,18 +165,27 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
           {isCompressing ? '排队中' : (isVideo ? duration : 'IMAGE')}
         </div>
 
-        {/* Hover overlay */}
+        {/* Hover overlay (Centered Case Study Badge) */}
         <div
-          className={`absolute inset-0 z-10 flex flex-col justify-end p-6 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-500 ${
-            isHovered ? 'opacity-100' : 'opacity-10'
+          className={`absolute inset-0 z-10 flex items-center justify-center bg-black/25 transition-opacity duration-300 pointer-events-none ${
+            isHovered ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <h3 className="text-lg font-black text-white uppercase tracking-tighter leading-none mb-1 group-hover:translate-x-1 transition-transform duration-500">
+          <div className="bg-emerald-400 text-black text-[10px] font-black tracking-widest uppercase rounded-full px-5 py-2.5 shadow-lg shadow-emerald-400/20 transform scale-90 group-hover:scale-100 transition-transform duration-300">
+            查看案例
+          </div>
+        </div>
+
+        {/* Bottom persistent info overlay (semi-transparent black) */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 bg-zinc-950/70 backdrop-blur-md border-t border-white/5 px-4 py-3 flex items-center justify-between gap-3 select-none">
+          <span className="text-xs font-bold text-white truncate max-w-[65%] tracking-tight">
             {work.Title}
-          </h3>
-          <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100">
-            View Case Study →
-          </p>
+          </span>
+          {work.Spend !== null && work.Spend !== undefined && (
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-1.5 py-0.5 rounded font-mono shrink-0">
+              {work.Currency === 'USD' ? '$' : '￥'}{Number(work.Spend).toLocaleString()}
+            </span>
+          )}
         </div>
       </div>
     </motion.div>

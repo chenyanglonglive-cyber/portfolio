@@ -37,6 +37,7 @@ export default async function WorksPage() {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "fields[8]=Currency",
     "pagination[pageSize]=50",
   ].join("&");
 
@@ -53,6 +54,7 @@ export default async function WorksPage() {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "fields[8]=Currency",
     "pagination[pageSize]=50",
   ].join("&");
 

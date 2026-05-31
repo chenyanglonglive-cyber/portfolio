@@ -62,6 +62,14 @@
       "relation": "manyToOne",
       "target": "api::project.project",
       "inversedBy": "videos"
+    },
+    "Currency": {
+      "type": "enumeration",
+      "enum": [
+        "CNY",
+        "USD"
+      ],
+      "default": "CNY"
     }
   }
 }

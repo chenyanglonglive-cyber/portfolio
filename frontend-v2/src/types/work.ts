@@ -38,6 +38,7 @@ export interface VideoWork {
   LaunchDate?: string;
   tags?: Tag[];
   project?: Project | null;
+  Currency?: 'CNY' | 'USD' | null;
 }
 
 export interface ImageWork {
@@ -54,6 +55,7 @@ export interface ImageWork {
   LaunchDate?: string;
   tags?: Tag[];
   project?: Project | null;
+  Currency?: 'CNY' | 'USD' | null;
 }
 
 /** 统一类型，前端组件可以用这个来处理所有作品 */
@@ -89,7 +91,8 @@ export function normalizeWork(work: any): Work {
       documentId: work.project.documentId,
       Name: work.project.Name,
       Rank: Number(work.project.Rank) || 0
-    } : null
+    } : null,
+    Currency: work.Currency || 'CNY'
   };
 }
 

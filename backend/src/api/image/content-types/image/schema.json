@@ -56,6 +56,14 @@
       "relation": "manyToOne",
       "target": "api::project.project",
       "inversedBy": "images"
+    },
+    "Currency": {
+      "type": "enumeration",
+      "enum": [
+        "CNY",
+        "USD"
+      ],
+      "default": "CNY"
     }
   }
 }
