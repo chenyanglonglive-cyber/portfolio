@@ -89,10 +89,10 @@ export default function WorksFilterGrid({
         {/* 排序按钮 */}
         <button
           onClick={() => setSortBy(sortBy === 'spend' ? 'default' : 'spend')}
-          className={`px-5 py-2 rounded-lg text-[10px] font-medium tracking-wider transition-all border ${
+          className={`px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wider transition-all border ${
             sortBy === 'spend'
               ? 'bg-emerald-400/10 border-emerald-400/30 text-emerald-400'
-              : 'border-zinc-800 text-zinc-600 hover:text-zinc-400 hover:border-zinc-700'
+              : 'border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
           }`}
         >
           {sortBy === 'spend' ? '消耗排序 ↓' : '默认排序'}
@@ -104,7 +104,7 @@ export default function WorksFilterGrid({
             <select
               value={selectedProjectId}
               onChange={(e) => setSelectedProjectId(e.target.value)}
-              className={`appearance-none bg-zinc-950/80 backdrop-blur-md border font-medium rounded-lg py-2 pl-4 pr-10 text-[10px] tracking-wider transition-all outline-none cursor-pointer ${
+              className={`appearance-none bg-zinc-950/80 backdrop-blur-md border font-semibold rounded-lg py-2.5 pl-4 pr-10 text-xs tracking-wider transition-all outline-none cursor-pointer ${
                 isProjectActive 
                   ? 'border-emerald-400/50 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.1)]' 
                   : 'border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
