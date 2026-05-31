@@ -426,6 +426,38 @@
       gap: 20px;
       min-height: 600px;
       z-index: 2;
+      overflow-y: auto;
+    }
+
+    /* Thin scrollbar for flowchart-container */
+    .flowchart-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .flowchart-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .flowchart-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+    }
+    .flowchart-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* ── Case 10 特殊分叉布局 (Desktop) ───────────────────────────── */
+    .flowchart-container.case-10 {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      justify-items: center !important;
+      gap: 16px 20px !important;
+      width: 100% !important;
+    }
+    .flowchart-container.case-10 .node-card {
+      grid-column: span 2;
+    }
+    .flowchart-container.case-10 #c10-n6 {
+      grid-column: 2 !important;
+      width: min(280px, 100%) !important;
     }
 
     /* 流程节点卡片 */
@@ -961,6 +993,19 @@
         font-size: 10px !important;
         padding: 4px 8px !important;
       }
+      
+      /* Case 10 Mobile Grid Collapse Overrides */
+      .flowchart-container.case-10 {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 14px !important;
+      }
+      .flowchart-container.case-10 .node-card,
+      .flowchart-container.case-10 #c10-n6 {
+        grid-column: auto !important;
+        width: 270px !important;
+      }
     }
   </style>
 </head>
@@ -1442,27 +1487,41 @@
       {
         id: 10,
         category: "knowledge",
-        title: "美术资产元数据知识库",
-        subtitle: "自动分析特征提取与自然语言跨格式秒级检索",
-        accent: "var(--accent-notebooklm)",
-        desc: "通过 AI 自动解析大规模美术盘（3D模型、贴图、动作），自动提取内容标签、分辨率、画风与材质属性，在 <b>NotebookLM</b> 向量库中沉淀为语义数据库。其他协同团队可以直接用自然语言高精检索，拒绝低效“盲找”。",
+        title: "AI素材资产中心",
+        subtitle: "全链路素材扫描、元数据提取与多模态AI检索服务",
+        accent: "var(--accent-hyper)",
+        desc: "搭建一套完整的美术资产全链路处理管线：通过 <b>Python 素材扫描器</b> 定时检索 <b>公共盘/NAS</b> 中的多格式美术资源，利用 <b>元数据提取</b> 与 <b>缩略图生成系统</b> 解析源文件并生成预览；接入 <b>AI 分析引擎</b> 提取自动标签、图像描述并生成 <b>向量 Embedding</b>，沉淀至 <b>数据存储中心</b>（SQLite 与向量库）；最终经由 <b>FastAPI 接口服务</b> 向 <b>Vue 前端</b> 暴露多模态检索能力，支持协同团队在 <b>用户交互层</b> 进行自然语言搜索、一键定位及打开源文件。",
         painPoints: [
-          "海量美术素材堆积，人工挨个文件夹检索查找如同大海捞针",
-          "缺乏规范的属性标签和元数据记录，导致重复制作相同资产",
-          "协同部门缺乏美术专业软件，难以快速预览或检索特定格式文件"
+          "美术资产零散堆积在公共盘，依靠传统文件夹检索无异于大海捞针",
+          "Spine、PSD、AE工程等复杂文件无法直接预览，协同团队效率低下",
+          "缺乏自动化的多维标签与语义索引机制，导致相同素材重复外包制作"
         ],
-        efficiency: "传统检索：人工在盘中筛选查找 1~2 小时 ⚡ AI 知识库：自然语言 2 秒内秒级定位",
-        tools: ["美术元数据扫描仪", "语义特征嵌入向量库", "NLP 检索问答接口"],
+        efficiency: "人工作业：繁琐翻查与跨部门沟通需 1~2 小时 ⚡ AI 管线：2 秒内高精定位，多格式实时预览并一键打开",
+        efficiencySub: "利用自动化资源特征扫描与多维向量特征索引，实现全资产库高速语义检索与跨终端定位",
+        tools: ["Python 扫描器", "AI 标签描述引擎", "SQLite & 向量数据库", "FastAPI + Vue 3"],
         nodes: [
-          { id: "c10-n1", icon: "💾", label: "海量美术设计盘", sub: "大体量、多格式原始美术文件" },
-          { id: "c10-n2", icon: "🔍", label: "智能扫描特征提取", sub: "自动提取格式、风格、分辨率标签", brand: "hyper" },
-          { id: "c10-n3", icon: "📚", label: "语义向量知识库", sub: "构建高度结构化的元数据库", brand: "notebooklm" },
-          { id: "c10-n4", icon: "💬", label: "自然语言检索终端", sub: "支持多端协同问答与模糊检索", brand: "gpt" }
+          { id: "c10-n1", icon: "💾", label: "公共盘/NAS", sub: "PSD / 图片 / 视频 / Spine / AE工程" },
+          { id: "c10-n2", icon: "⚙️", label: "素材扫描器", sub: "Python 自动化轮询扫描", brand: "hyper" },
+          { id: "c10-n3", icon: "📋", label: "元数据提取", sub: "解析PSD图层、Spine与视频信息" },
+          { id: "c10-n4", icon: "🖼️", label: "缩略图生成系统", sub: "PSD/Spine预览与视频关键帧" },
+          { id: "c10-n5", icon: "🧠", label: "AI分析引擎", sub: "自动标签与多模态内容描述" },
+          { id: "c10-n6", icon: "🧬", label: "向量Embedding", sub: "生成特征向量与语义索引", brand: "notebooklm" },
+          { id: "c10-n7", icon: "🗄️", label: "数据存储中心", sub: "SQLite与向量库多维存取" },
+          { id: "c10-n8", icon: "⚡", label: "FastAPI服务", sub: "素材/标签/向量/语义搜索API" },
+          { id: "c10-n9", icon: "💻", label: "Vue前端", sub: "素材浏览、标签筛选与时间线" },
+          { id: "c10-n10", icon: "👥", label: "用户交互层", sub: "自然语言检索与源文件一键打开", brand: "gpt" }
         ],
         connections: [
           { from: "c10-n1", to: "c10-n2" },
           { from: "c10-n2", to: "c10-n3" },
-          { from: "c10-n3", to: "c10-n4" }
+          { from: "c10-n3", to: "c10-n4" },
+          { from: "c10-n4", to: "c10-n5" },
+          { from: "c10-n5", to: "c10-n6" },
+          { from: "c10-n5", to: "c10-n7" },
+          { from: "c10-n6", to: "c10-n7" },
+          { from: "c10-n7", to: "c10-n8" },
+          { from: "c10-n8", to: "c10-n9" },
+          { from: "c10-n9", to: "c10-n10" }
         ]
       },
       {
@@ -1615,6 +1674,8 @@
       const existingCards = flowchartContainer.querySelectorAll('.node-card');
       existingCards.forEach(card => card.remove());
       svgLayer.innerHTML = ''; // 清空连线
+      flowchartContainer.className = `flowchart-container case-${c.id}`;
+      flowchartContainer.scrollTop = 0; // 重置滚动条位置
 
       c.nodes.forEach((node, nodeIdx) => {
         const nodeDiv = document.createElement('div');
@@ -1674,7 +1735,7 @@
             <span class="efficiency-icon">🚀</span>
             <div class="efficiency-text">
               <h4>${c.efficiency}</h4>
-              <p>利用智能体决策和图像视频模型进行几何级别的无缝合成与秒级渲染</p>
+              <p>${c.efficiencySub || '利用智能体决策和图像视频模型进行几何级别的无缝合成与秒级渲染'}</p>
             </div>
           </div>
         </div>
@@ -1739,6 +1800,15 @@
     const drawConnections = (c) => {
       svgLayer.innerHTML = '';
       const containerRect = flowchartContainer.getBoundingClientRect();
+      
+      // Update SVG size to match scrollable dimensions
+      const scrollWidth = flowchartContainer.scrollWidth;
+      const scrollHeight = flowchartContainer.scrollHeight;
+      svgLayer.style.width = scrollWidth + 'px';
+      svgLayer.style.height = scrollHeight + 'px';
+      
+      const scrollTop = flowchartContainer.scrollTop;
+      const scrollLeft = flowchartContainer.scrollLeft;
 
       c.connections.forEach(conn => {
         const fromEl = document.getElementById(conn.from);
@@ -1750,10 +1820,11 @@
         const toRect = toEl.getBoundingClientRect();
 
         // 计算相对坐标 (从上方卡片的底端中心，连线到下方卡片的顶端中心)
-        const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
-        const y1 = fromRect.bottom - containerRect.top;
-        const x2 = toRect.left + toRect.width / 2 - containerRect.left;
-        const y2 = toRect.top - containerRect.top;
+        // 加上滚动偏移量以确保即使在溢出滚动时连线也完美贴合
+        const x1 = fromRect.left + fromRect.width / 2 - containerRect.left + scrollLeft;
+        const y1 = fromRect.bottom - containerRect.top + scrollTop;
+        const x2 = toRect.left + toRect.width / 2 - containerRect.left + scrollLeft;
+        const y2 = toRect.top - containerRect.top + scrollTop;
 
         // 绘制垂直贝塞尔曲线，使线条流动感极佳且完美对齐
         const dy = y2 - y1;
