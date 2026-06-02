@@ -21,8 +21,24 @@ export function injectImportFolderUI() {
     return window.location.origin;
   }
 
-  /** Find the field container by checking label text prefix */
+  /** Find the field container by checking label text prefix and relation input */
   function findFieldContainer(fieldName) {
+    const inputs = document.querySelectorAll('input[placeholder*="relation" i], input[placeholder*="关联" i]');
+    for (const input of inputs) {
+      const container = input.closest('[class*="Field"]') || 
+                        input.closest('[class*="field"]') || 
+                        input.closest('[class*="Relation"]') ||
+                        input.closest('[class*="relation"]') ||
+                        input.parentElement.parentElement.parentElement;
+      if (container) {
+        const header = container.querySelector('label, h2, h3, span, p');
+        const headerText = (header?.textContent || container.textContent || '').toLowerCase();
+        if (headerText.includes(fieldName.toLowerCase())) {
+          return container;
+        }
+      }
+    }
+    // Fallback: search labels
     const labels = document.querySelectorAll('label');
     for (const label of labels) {
       const text = (label.textContent || '').trim().toLowerCase();
