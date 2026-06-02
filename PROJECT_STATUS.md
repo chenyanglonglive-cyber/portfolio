@@ -654,3 +654,21 @@ npx @playwright/cli show --annotate
 *   **本地静态构建**：前端本地运行 `npm run build` 打包，Next.js 与 TypeScript 100% 成功编译，所有静态页面导出正常。
 *   **Git 触发自动上线**：代码修改均已推送到 GitHub 仓库并已触发 Vercel 云端部署，完成整套需求在生产环境的一站式上线。
 
+---
+
+# 🚀 2026-06-02 更新日志 (Media Folder Auto-Import & JWT Fixes)
+
+## 1. 批量导入项目媒体文件夹功能（功能完善与缺陷修复）
+*   **JWT 授权失效修复 (401 报错)**：
+    - **问题**：Strapi 5 在浏览器中将 `jwtToken` 存储为 JSON 序列化后的带引号字符串（如 `'"eyJ..."'`）。旧注入脚本直接发送该字符串作为 Header，导致 Strapi 校验返回 `401 Unauthorized`，无法拉取文件夹，阻断了下拉菜单的渲染。
+    - **修复**：修改了 [import-folder.ts](file:///g:/blog/backend/src/admin/extensions/import-folder.ts) 和 [auto-cover.ts](file:///g:/blog/backend/src/admin/extensions/auto-cover.ts) 的 `getToken()`，增加正则/截取逻辑自动剔除前后的双引号，恢复了授权与渲染。
+*   **自动补充创建条目与发布同步 (Draft/Publish Sync)**：
+    - **设计决策**：批量导入的视频/图片条目默认直接设定为 **已发布（Published）状态**，实现“一键导入、自动抽帧、立即上线”的极简体验。
+    - **条目自动补全**：修改了自定义控制器 [project.ts](file:///g:/blog/backend/src/api/project/controllers/project.ts)。遍历所选媒体库文件夹下所有的目标文件（按 MIME 筛选 `video/` 或 `image/`）。如果某文件在后台尚无对应的 Video/Image 数据条目，接口会自动为其新建条目（标题自动剥离扩展名和 Emoji），并绑定 Project 关系。
+    - **发布状态同步**：调用 Strapi 5 的 Document Service `publish` 接口进行发布，使得已发布版本的关系与草稿版本完全同步，彻底解决了“导入成功但 Project 编辑页中列表数量不更新”的问题。
+
+## 2. 部署与同步 (Deploy & Synchronization)
+*   **全量构建与部署**：在本地测试通过 Vite 打包后，运行 `deploy.ps1` 部署至 ECS 服务器并安全重启，经测试封面自动抽帧和批量文件夹关联完全正常。
+*   **代码追踪**：最新代码已安全推送至 GitHub `main` 分支。
+
+
