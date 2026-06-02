@@ -3,7 +3,7 @@
 # ECS 服务器铁律
 **永远不要在 ECS (47.95.242.40) 上执行 build、npm install、或任何吃内存的操作。**
 - ECS 只有 1.6GB RAM + 1GB swap，`npm run build` 必 OOM 挂机
-- 所有构建本地完成，SCP 上传：`scp -i "G:/blog/agent.pem" -r <local> root@47.95.242.40:<remote>`
+- 所有构建本地完成，打包成 tar.gz 上传解压。可直接运行：`powershell -File scripts/deploy.ps1`
 - SSH 连接用 `-i "G:/blog/agent.pem"`，git push 用 `-4` (IPv4)
 
 # 2026-05-19 工作状态

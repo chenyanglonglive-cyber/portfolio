@@ -52,20 +52,19 @@ ECS:   阿里云 ECS 北京 (47.95.242.40)
 
 ### 正确的部署流程
 
-```bash
-# ① 本地构建（在 g:\blog\backend 目录）
-cd g:\blog\backend
-npm run build
+使用打包压缩（tar.gz）部署，极大减少小文件传输带来的网络延迟与连接断开风险：
 
-# ② SCP 上传 dist 目录到 ECS
-scp -i "g:\blog\agent.pem" -r dist root@47.95.242.40:/var/www/strapi/
-
-# ③ 如果有新增 src 文件（如 lifecycles、admin extensions），也要同步
-scp -i "g:\blog\agent.pem" -r src root@47.95.242.40:/var/www/strapi/
-
-# ④ 重启 Strapi
-ssh -i agent.pem root@47.95.242.40 "pm2 restart strapi"
+```powershell
+# 一键本地构建、打包、上传、解压并重启 PM2 服务
+powershell -File scripts/deploy.ps1
 ```
+
+#### 手动分步流程说明：
+1. **本地构建**：在 `backend` 目录下执行 `npm run build`。
+2. **打包压缩**：使用 `tar -czf backend.tar.gz dist src` 压缩 `dist` 和 `src` 文件夹。
+3. **上传包**：使用 `scp -i agent.pem backend.tar.gz root@47.95.242.40:/var/www/strapi/`。
+4. **远程解压**：通过 SSH 登录并在 ECS 执行 `tar -xzf backend.tar.gz` 覆盖，并删除压缩包。
+5. **重启服务**：在 ECS 执行 `pm2 restart strapi`。
 
 ### 其他运维命令
 
