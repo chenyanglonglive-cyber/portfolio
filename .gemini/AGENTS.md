@@ -147,9 +147,11 @@ Skills 位于 `C:\Users\admin\superpowers\skills\`，可用的包括：
 
 ### 工作流规范
 
-1. **复杂任务**使用子智能体驱动方案（参考 `subagent-driven-development/SKILL.md`）
-2. **实施计划**必须先产出中文方案，获得用户批准后执行
-3. **实施计划**存放于 `docs/superpowers/plans/` 目录，以日期命名
+1. **先计划后行动（核心铁律）**：针对所有新需求，必须**先制定详细的实施计划（implementation_plan.md）**，严禁在未获批准前擅自修改代码。
+2. **细节澄清**：计划中必须包含“Open Questions”章节，将任何不明确、含糊或有潜在设计冲突的细节列出并询问用户，达成一致后再执行。
+3. **沉淀铁律**：在计划制定和细节明确的过程中，若有涉及项目标准、技术限制（如 ECS 内存限制）、开发约定或架构变动的通用规则，必须**第一时间补充写入本文件（AGENTS.md）**，作为后续开发的最优先级准则。
+4. **复杂任务**使用子智能体驱动方案（参考 `subagent-driven-development/SKILL.md`）。
+5. **实施计划存档**：实施计划存放于 `docs/superpowers/plans/` 目录，以日期命名。
 
 ---
 
