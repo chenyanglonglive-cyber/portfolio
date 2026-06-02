@@ -47,43 +47,86 @@ export default factories.createCoreController('api::project.project', ({ strapi 
       });
 
       const fileIds = files.map((f: any) => f.id);
-      if (fileIds.length === 0) {
-        return ctx.send({ count: 0, message: 'No files found in this folder' });
+      let targetFiles = [];
+      if (type === 'video') {
+        targetFiles = files.filter((f: any) => f.mime && f.mime.startsWith('video/'));
+      } else {
+        targetFiles = files.filter((f: any) => f.mime && f.mime.startsWith('image/'));
+      }
+
+      if (targetFiles.length === 0) {
+        return ctx.send({ count: 0, message: `No ${type} files found in this folder` });
       }
 
       let count = 0;
       if (type === 'video') {
-        // Query videos where video file matches
-        const videos = await strapi.db.query('api::video.video').findMany({
-          populate: ['video'],
-          where: {
-            video: { id: { $in: fileIds } }
-          }
-        });
-
-        for (const v of videos) {
-          await strapi.documents('api::video.video').update({
-            documentId: v.documentId,
-            data: { project: id },
-            status: 'published'
+        for (const f of targetFiles) {
+          // Check if a Video entry already exists for this file
+          const existing = await strapi.db.query('api::video.video').findOne({
+            populate: ['video'],
+            where: {
+              video: f.id
+            }
           });
+
+          if (existing) {
+            // Update and publish existing video's relation
+            await strapi.documents('api::video.video').update({
+              documentId: existing.documentId,
+              data: { project: id }
+            });
+            await strapi.documents('api::video.video').publish({
+              documentId: existing.documentId
+            });
+          } else {
+            // Create a new Video entry
+            const cleanTitle = f.name
+              .replace(/^✅\s*/, '') // Remove used emoji prefix if present
+              .replace(/\.[^/.]+$/, ''); // Strip file extension
+            
+            await strapi.documents('api::video.video').create({
+              data: {
+                Title: cleanTitle,
+                video: f.id,
+                project: id
+              },
+              status: 'published'
+            });
+          }
           count++;
         }
       } else if (type === 'image') {
-        // Query images where image file matches
-        const images = await strapi.db.query('api::image.image').findMany({
-          populate: ['image'],
-          where: {
-            image: { id: { $in: fileIds } }
-          }
-        });
-
-        for (const img of images) {
-          await strapi.documents('api::image.image').update({
-            documentId: img.documentId,
-            data: { project: id },
-            status: 'published'
+        for (const f of targetFiles) {
+          // Check if an Image entry already exists for this file
+          const existing = await strapi.db.query('api::image.image').findOne({
+            populate: ['image'],
+            where: {
+              image: f.id
+            }
           });
+
+          if (existing) {
+            // Update and publish existing image's relation
+            await strapi.documents('api::image.image').update({
+              documentId: existing.documentId,
+              data: { project: id }
+            });
+            await strapi.documents('api::image.image').publish({
+              documentId: existing.documentId
+            });
+          } else {
+            // Create a new Image entry
+            const cleanTitle = f.name.replace(/\.[^/.]+$/, ''); // Strip file extension
+            
+            await strapi.documents('api::image.image').create({
+              data: {
+                Title: cleanTitle,
+                image: f.id,
+                project: id
+              },
+              status: 'published'
+            });
+          }
           count++;
         }
       }
