@@ -696,9 +696,11 @@ npx @playwright/cli show --annotate
 *   **布局与节点优化**：重构了 AI 工作流交互大屏 Case 10（“AI素材资产中心”）的 10 个节点和分叉 Grid 连线布局。
 *   **滚动重绘机制**：修复了在 iframe 容器中发生 `scrollTop`/`scrollLeft` 滚动时，SVG 物理连线偏移的问题，实现了基于滚动的连接线动态重绘。
 
-## 3. 联系栏电话按钮右上角分离 (Socials Layout Optimization)
-*   **右上角悬浮电话按钮**：重构了 [Socials.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/Socials.tsx)，将“电话”按钮从底部联系栏中拆离出来，置于页面右上角，采用 `.glass` 浮动圆形按钮设计，支持 Hover 展示电话号码的 Popover 气泡，完美融入当前站点的 UI 规范。
-*   **自适应底部联系栏**：底部联系栏自适应宽度，只保留邮箱和微信二维码展示。
+## 3. 联系方式按钮组右上角集成与底部栏清理 (Socials Layout Optimization)
+*   **右上角三按钮集成**：重构了 [Socials.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/Socials.tsx)，将“电话”、“邮箱”和“微信”三项联系方式从原本的布局彻底拆分，并在右上角以 `fixed` 控制台形式并排呈现。
+*   **独立的浮动玻璃态按钮**：三个按钮均采用极简的毛玻璃圆钮（`.glass` + `rounded-full`）设计，在移动端自适应收缩间距与尺寸，完美避开中部 Navbar 导航。
+*   **独立 Hover 悬浮气泡**：每个按钮均绑定了独立的 Hover 触发动画，悬浮时分别在按钮正下方淡入展示电话号码、邮箱地址和微信二维码，支持点击唤醒原生 `tel:` 及 `mailto:` 链接。
+*   **彻底移除底部栏**：全面清空并移除了底部的 Dock 联系栏，极大释放了全站各页面（特别是作品网格和工作流大屏）的首屏纵向视觉空间。
 
 ## 4. 全局 AI 规则与规范升级 (Global AI Rules Upgrade)
 *   **.cursorrules 中文化与卡帕西原则集成**：对根目录下的 [.cursorrules](file:///d:/blog/portfolio/.cursorrules) 进行了全面的中文重写。
