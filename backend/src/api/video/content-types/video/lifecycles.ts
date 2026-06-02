@@ -139,6 +139,25 @@ async function generateCover(documentId: string, videoData: any, isPublished: bo
 
     const coverId = uploadedFiles[0].id;
 
+    // Move cover to the 'cover' folder in media library
+    try {
+      let coverFolder = await strapi.db.query('plugin::upload.folder').findOne({
+        where: { name: 'cover' }
+      });
+      if (!coverFolder) {
+        const folderService = (strapi.plugins.upload.services as any).folder;
+        coverFolder = await folderService.create({ name: 'cover' });
+        console.log(`[Cover] Created 'cover' folder (ID: ${coverFolder.id})`);
+      }
+      await strapi.db.query('plugin::upload.file').update({
+        where: { id: coverId },
+        data: { folder: coverFolder.id, folderPath: `/${coverFolder.id}` }
+      });
+      console.log(`[Cover] Moved cover (ID: ${coverId}) to 'cover' folder (ID: ${coverFolder.id})`);
+    } catch (folderErr: any) {
+      console.error('[Cover] Failed to move cover to folder:', folderErr?.message ?? folderErr);
+    }
+
     await strapi.documents('api::video.video').update({
       documentId,
       data: { cover: coverId },

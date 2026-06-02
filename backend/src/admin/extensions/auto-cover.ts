@@ -103,6 +103,38 @@ export function injectAutoCover() {
 
   // ---------- 上传 ----------
 
+  async function findOrCreateCoverFolder() {
+    // Search for existing 'cover' folder
+    const searchResp = await fetch(
+      getStrapiOrigin() + '/upload/folders?filters[$and][0][name][$eq]=cover',
+      { headers: { Authorization: 'Bearer ' + getToken() } }
+    );
+    if (searchResp.ok) {
+      const folders = await searchResp.json();
+      const list = folders.data || folders;
+      if (Array.isArray(list) && list.length > 0) {
+        return list[0].id;
+      }
+    }
+    // Create 'cover' folder if not found
+    const createResp = await fetch(
+      getStrapiOrigin() + '/upload/folders',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + getToken()
+        },
+        body: JSON.stringify({ name: 'cover', parent: null })
+      }
+    );
+    if (createResp.ok) {
+      const created = await createResp.json();
+      return (created.data || created).id;
+    }
+    return null;
+  }
+
   async function uploadToStrapi(blob) {
     const fd = new FormData();
     fd.append('files', new File([blob], 'auto-cover.jpg', { type: 'image/jpeg' }));
@@ -116,7 +148,30 @@ export function injectAutoCover() {
       throw new Error(err.error?.message || '上传失败 ' + resp.status);
     }
     const data = await resp.json();
-    return data[0];
+    const uploaded = data[0];
+
+    // Move to 'cover' folder
+    try {
+      const folderId = await findOrCreateCoverFolder();
+      if (folderId && uploaded.id) {
+        await fetch(
+          getStrapiOrigin() + '/upload/actions/bulk-move',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + getToken()
+            },
+            body: JSON.stringify({ fileIds: [uploaded.id], destinationFolderId: folderId })
+          }
+        );
+        console.log('[auto-cover] Moved cover to folder', folderId);
+      }
+    } catch (e) {
+      console.warn('[auto-cover] Failed to move to cover folder:', e);
+    }
+
+    return uploaded;
   }
 
   // 通过 Content API 把 cover 写回到当前条目
