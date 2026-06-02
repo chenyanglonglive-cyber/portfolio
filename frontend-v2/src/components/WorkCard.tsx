@@ -132,20 +132,19 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
           <div className="w-full h-full bg-zinc-900 animate-pulse" />
         )}
 
-        {/* Video preview — src injected lazily */}
-        {isVideo && !isCompressing && (
+        {/* Video preview — conditionally mounted on hover for GPU performance */}
+        {isVideo && !isCompressing && isHovered && (
           <video
             ref={videoRef}
-            src={videoSrc || undefined}
+            src={videoProxyUrl || undefined}
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             crossOrigin="anonymous"
             onLoadedMetadata={handleLoadedMetadata}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-              isHovered && videoSrc ? 'opacity-100' : 'opacity-0'
-            }`}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100"
+            autoPlay
           />
         )}
 

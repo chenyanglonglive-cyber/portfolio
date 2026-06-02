@@ -142,3 +142,38 @@ body {
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* 仅在桌面端设备（768px以上）开启 3D 滚动渐现 */
+@media (min-width: 768px) {
+  .perspective-grid {
+    perspective: 1200px;
+    transform-style: preserve-3d;
+  }
+
+  .reveal-card-3d {
+    animation: reveal-3d linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 40%;
+  }
+}
+
+/* 3D 展开折叠入场动效 */
+@keyframes reveal-3d {
+  from {
+    opacity: 0;
+    transform: 
+      translateZ(-150px) 
+      rotateX(18deg) 
+      translateY(40px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: 
+      translateZ(0) 
+      rotateX(0deg) 
+      translateY(0);
+    filter: blur(0);
+  }
+}
+

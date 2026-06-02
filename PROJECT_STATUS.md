@@ -713,6 +713,19 @@ npx @playwright/cli show --annotate
 ## 5. 验证与构建 (Build Verification)
 *   **本地编译**：本地运行 `npm run build` 打包 `frontend-v2` 成功，TypeScript 类型检查无任何报错，所有静态路由导出正常。
 
+---
 
+# 🚀 2026-06-02 夜间更新 (3D Scroll Reveal & Video Deferred Mount)
 
+## 1. 首页视频卡片 3D 滚动渐现展开 (3D Scroll-Driven Grid Reveal)
+*   **SDA 滚动翻转动效**：在 [globals.css](file:///d:/blog/portfolio/frontend-v2/src/app/globals.css) 中定义了 `.perspective-grid` (1200px 3D 景深) 与 `.reveal-card-3d` (通过关键帧 `reveal-3d` 控制 translateZ, rotateX, translateY)。
+*   **物理滚动关联**：使用 `animation-timeline: view()` 并配合 `animation-range: entry 10% cover 40%`，使卡片进入视口时动态翻转展开。
+*   **桌端/移动端响应式隔离**：使用 `@media (min-width: 768px)` 限制动效仅在桌面端生效，移动端自动保持标准平面流布局。
+*   **布局容器升级**：在 [WorkGrid.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkGrid.tsx) 中将 `perspective-grid` 类赋予视频网格容器，并将 `reveal-card-3d` 应用至各个卡片包装器。
 
+## 2. 视频节点延迟渲染与 GPU 性能优化 (Conditional Video Mounting)
+*   **视频卡片动态挂载**：重构了 [WorkCard.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkCard.tsx)，将 `<video>` 节点改为根据 `isHovered === true` 条件挂载。
+*   **静态占位图过渡**：在滚动和 3D 翻转入场动画期间，DOM 树中完全不挂载 `<video>`，仅保留轻量的静态封面 `Image`，利用 GPU 对静态纹理的高效矩阵变换，确保 3D 滚动阶段稳定在 60fps。悬停时瞬间挂载并自动静音循环播放。
+
+## 3. 本地构建与验证
+*   **构建无报错**：本地运行 `npm run build` 成功完成打包校验，所有静态路由导出正常，TypeScript 检查通过。
