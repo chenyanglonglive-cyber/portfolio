@@ -153,7 +153,7 @@ body {
   .reveal-card-3d {
     animation: reveal-3d linear both;
     animation-timeline: view();
-    animation-range: entry 10% cover 40%;
+    animation-range: entry 10% cover 28%;
   }
 }
 
@@ -167,7 +167,7 @@ body {
   .reveal-card-3d {
     animation: reveal-center-out linear both;
     animation-timeline: view();
-    animation-range: entry 10% cover 45%;
+    animation-range: entry 10% cover 28%;
   }
 
   /* 3x3 扩散偏移参数（40px 是 gap-10 的像素距离） */

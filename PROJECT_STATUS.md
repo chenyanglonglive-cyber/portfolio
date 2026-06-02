@@ -724,6 +724,7 @@ npx @playwright/cli show --annotate
     - **平板端 (768px <= width < 1024px)**：采用标准的 3D 倾斜渐现，不使用偏移（以兼容 2 列布局）。
     - **桌面端 (width >= 1024px)**：启用完美的 3x3 中心往四周扩散 3D 入场动效。
 *   **布局容器与关键帧**：在 [WorkGrid.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkGrid.tsx) 中将 `perspective-grid` 类赋予视频网格容器，并将 `reveal-card-3d` 应用至各个卡片包装器；在 [globals.css](file:///d:/blog/portfolio/frontend-v2/src/app/globals.css) 中新增了 `@keyframes reveal-center-out` 和各自的坐标配置。
+*   **动画行程微调 (Range Tuning)**：将 `animation-range` 的结束点统一缩短至 `cover 28%`，确保卡片在滚动到视口中下部时即完成扩散落位，避免了靠近顶部导航栏时的遮挡与未完成动效。
 
 ## 2. 视频节点延迟渲染与 GPU 性能优化 (Conditional Video Mounting)
 *   **视频卡片动态挂载**：重构了 [WorkCard.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkCard.tsx)，将 `<video>` 节点改为根据 `isHovered === true` 条件挂载。
