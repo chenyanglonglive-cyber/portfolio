@@ -699,6 +699,7 @@ npx @playwright/cli show --annotate
 ## 3. 联系方式按钮组右上角集成与底部栏清理 (Socials Layout Optimization)
 *   **右上角三按钮集成**：重构了 [Socials.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/Socials.tsx)，将“电话”、“邮箱”和“微信”三项联系方式从原本的布局彻底拆分，并在右上角以 `fixed` 控制台形式并排呈现。
 *   **独立的浮动玻璃态按钮**：三个按钮均采用极简的毛玻璃圆钮（`.glass` + `rounded-full`）设计，在移动端自适应收缩间距与尺寸，完美避开中部 Navbar 导航。
+*   **醒目翡翠绿配色与微光**：为了增强作为简历项目的导流效果，将按钮默认图标色调整为翡翠绿（`emerald-400`），底座辅以轻度翡翠绿氛围色（`border-emerald-500/25 bg-emerald-950/20`），Hover 时激发明显的微动及外发光动效（`shadow-[0_0_15px_rgba(52,211,153,0.2)]`），极具吸引力。
 *   **独立 Hover 悬浮气泡**：每个按钮均绑定了独立的 Hover 触发动画，悬浮时分别在按钮正下方淡入展示电话号码、邮箱地址和微信二维码，支持点击唤醒原生 `tel:` 及 `mailto:` 链接。
 *   **彻底移除底部栏**：全面清空并移除了底部的 Dock 联系栏，极大释放了全站各页面（特别是作品网格和工作流大屏）的首屏纵向视觉空间。
 

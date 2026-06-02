@@ -57,14 +57,18 @@ export default function Socials() {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 + i * 0.1, duration: 0.6, ease: "circOut" }}
-          className="glass p-2.5 md:p-3 rounded-full flex items-center justify-center shadow-2xl border border-white/10 relative cursor-pointer group"
+          className={`glass p-2.5 md:p-3 rounded-full flex items-center justify-center shadow-2xl border relative cursor-pointer group transition-all duration-300 ${
+            hovered === social.id 
+              ? 'border-emerald-400/50 bg-emerald-400/10 shadow-[0_0_15px_rgba(52,211,153,0.2)]' 
+              : 'border-emerald-500/25 bg-emerald-950/20'
+          }`}
           onMouseEnter={() => setHovered(social.id)}
           onMouseLeave={() => setHovered(null)}
         >
           <a
             href={social.href}
             className={`flex items-center justify-center transition-all duration-300 ${
-              hovered === social.id ? 'text-emerald-400 scale-105' : 'text-zinc-500 hover:text-emerald-400'
+              hovered === social.id ? 'text-emerald-300 scale-110' : 'text-emerald-400'
             }`}
           >
             {social.icon}
