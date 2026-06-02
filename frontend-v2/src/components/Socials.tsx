@@ -24,14 +24,9 @@ const Icons = {
 
 export default function Socials() {
   const [hovered, setHovered] = useState<number | null>(null);
+  const [phoneHovered, setPhoneHovered] = useState(false);
 
   const socials = [
-    { 
-      name: "电话", 
-      icon: <Icons.Phone />, 
-      href: "tel:13678178194", 
-      content: "13678178194" 
-    },
     { 
       name: "邮箱", 
       icon: <Icons.Email />, 
@@ -47,68 +42,110 @@ export default function Socials() {
   ];
 
   return (
-    <div className="fixed bottom-12 left-0 right-0 z-[60] flex justify-center px-4">
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.6, ease: "circOut" }}
-        className="glass px-8 py-2 rounded-full flex items-center gap-10 shadow-2xl border border-white/10 relative"
-      >
-        {socials.map((social, i) => (
-          <div
-            key={i}
-            className="relative flex flex-col items-center group"
-            onMouseEnter={() => setHovered(i)}
-            onMouseLeave={() => setHovered(null)}
+    <>
+      {/* 右上角“电话”悬浮按钮 */}
+      <div className="fixed top-8 right-4 md:right-8 z-50">
+        <motion.div
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.6, ease: "circOut" }}
+          className="glass p-3 rounded-full flex items-center justify-center shadow-2xl border border-white/10 relative cursor-pointer group"
+          onMouseEnter={() => setPhoneHovered(true)}
+          onMouseLeave={() => setPhoneHovered(false)}
+        >
+          <a
+            href="tel:13678178194"
+            className="flex items-center justify-center transition-all duration-300 text-zinc-500 hover:text-emerald-400"
           >
-            {/* Popover */}
-            <AnimatePresence>
-              {hovered === i && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                  animate={{ opacity: 1, y: -10, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                  className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
-                >
-                  <div className="bg-zinc-900/90 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-2xl shadow-2xl min-w-max">
-                    {social.isQR ? (
-                      <div className="w-32 h-32 p-2 bg-white rounded-xl overflow-hidden">
-                        <img 
-                          src="/wechat-qr.png" 
-                          alt="Wechat QR" 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <span className="text-emerald-400 font-mono text-sm font-bold tracking-tight">
-                        {social.content}
-                      </span>
-                    )}
-                    {/* Arrow */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-zinc-900/90" />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <Icons.Phone />
+          </a>
 
-            <a
-              href={social.href}
-              className={`flex flex-col items-center gap-1 transition-all duration-300 ${
-                hovered === i ? 'text-emerald-400' : 'text-zinc-500 hover:text-emerald-400'
-              }`}
+          {/* Popover 弹出气泡 */}
+          <AnimatePresence>
+            {phoneHovered && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                animate={{ opacity: 1, y: 10, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                className="absolute top-full mt-4 right-0 z-50 pointer-events-none"
+              >
+                <div className="bg-zinc-900/90 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-2xl shadow-2xl min-w-max relative">
+                  <span className="text-emerald-400 font-mono text-sm font-bold tracking-tight">
+                    13678178194
+                  </span>
+                  {/* 指向上方的箭头 */}
+                  <div className="absolute bottom-full right-5 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] border-b-zinc-900/90" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
+      {/* 底部联系栏 Dock (只保留邮箱、微信) */}
+      <div className="fixed bottom-12 left-0 right-0 z-[60] flex justify-center px-4">
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.6, ease: "circOut" }}
+          className="glass px-8 py-2 rounded-full flex items-center gap-10 shadow-2xl border border-white/10 relative"
+        >
+          {socials.map((social, i) => (
+            <div
+              key={i}
+              className="relative flex flex-col items-center group"
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
             >
-              <div className={`p-2 rounded-xl transition-colors ${
-                hovered === i ? 'bg-emerald-400/10' : 'group-hover:bg-emerald-400/10'
-              }`}>
-                {social.icon}
-              </div>
-              <span className="text-[10px] font-bold tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
-                {social.name}
-              </span>
-            </a>
-          </div>
-        ))}
-      </motion.div>
-    </div>
+              {/* Popover */}
+              <AnimatePresence>
+                {hovered === i && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: 1, y: -10, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                    className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+                  >
+                    <div className="bg-zinc-900/90 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-2xl shadow-2xl min-w-max">
+                      {social.isQR ? (
+                        <div className="w-32 h-32 p-2 bg-white rounded-xl overflow-hidden">
+                          <img 
+                            src="/wechat-qr.png" 
+                            alt="Wechat QR" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-emerald-400 font-mono text-sm font-bold tracking-tight">
+                          {social.content}
+                        </span>
+                      )}
+                      {/* Arrow */}
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-zinc-900/90" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <a
+                href={social.href}
+                className={`flex flex-col items-center gap-1 transition-all duration-300 ${
+                  hovered === i ? 'text-emerald-400' : 'text-zinc-500 hover:text-emerald-400'
+                }`}
+              >
+                <div className={`p-2 rounded-xl transition-colors ${
+                  hovered === i ? 'bg-emerald-400/10' : 'group-hover:bg-emerald-400/10'
+                }`}>
+                  {social.icon}
+                </div>
+                <span className="text-[10px] font-bold tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                  {social.name}
+                </span>
+              </a>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </>
   );
 }

@@ -684,5 +684,32 @@ npx @playwright/cli show --annotate
 *   **本地构建与验证**：
     - 在本地执行 `npm run build` 进行编译，前端项目构建打包及 TS 类型校验成功通过。
 
+---
+
+# 🚀 2026-06-02 晚间更新 (Infinite Scroll, Socials Layout & Cursorrules)
+
+## 1. Works页客户端虚拟无限滚动加载 (Works Page Client-side Infinite Scroll)
+*   **无限滚动机制**：在 [WorksFilterGrid.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorksFilterGrid.tsx) 中重构了作品列表展示逻辑，由原来的一次性全量渲染改为每页 12 条数据的客户端虚拟滑动加载。
+*   **哨兵监听与动效**：使用 `IntersectionObserver` 监听页面底部哨兵（Sentinel）节点以触发下一页加载，并结合 Framer Motion 实现了波浪式（staggered）渐显滑入动效，提升了在大数据量下的首屏加载性能与交互流畅度。
+
+## 2. 交互大屏 Case 10 重构与滚动重绘 (AI Workflow Case 10 Refactor & Scroll Redraw)
+*   **布局与节点优化**：重构了 AI 工作流交互大屏 Case 10（“AI素材资产中心”）的 10 个节点和分叉 Grid 连线布局。
+*   **滚动重绘机制**：修复了在 iframe 容器中发生 `scrollTop`/`scrollLeft` 滚动时，SVG 物理连线偏移的问题，实现了基于滚动的连接线动态重绘。
+
+## 3. 联系栏电话按钮右上角分离 (Socials Layout Optimization)
+*   **右上角悬浮电话按钮**：重构了 [Socials.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/Socials.tsx)，将“电话”按钮从底部联系栏中拆离出来，置于页面右上角，采用 `.glass` 浮动圆形按钮设计，支持 Hover 展示电话号码的 Popover 气泡，完美融入当前站点的 UI 规范。
+*   **自适应底部联系栏**：底部联系栏自适应宽度，只保留邮箱和微信二维码展示。
+
+## 4. 全局 AI 规则与规范升级 (Global AI Rules Upgrade)
+*   **.cursorrules 中文化与卡帕西原则集成**：对根目录下的 [.cursorrules](file:///d:/blog/portfolio/.cursorrules) 进行了全面的中文重写。
+*   **原则与约束写入**：
+    1. 第一条集成卡帕西编码原则（先规划、再追问、最后去修改）。
+    2. 明确规定所有 AI 助手在对话和生成 Markdown 时默认使用中文。
+    3. 修正第三条“阿里云服务器部署流程”：服务器位于华北地区，本地构建后打包为 `.zip` 上传解压覆盖，严禁在远端进行任何高内存编译操作。
+
+## 5. 验证与构建 (Build Verification)
+*   **本地编译**：本地运行 `npm run build` 打包 `frontend-v2` 成功，TypeScript 类型检查无任何报错，所有静态路由导出正常。
+
+
 
 

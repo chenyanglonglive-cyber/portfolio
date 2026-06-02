@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import WorkCard from '@/components/WorkCard';
 import WorkModal from '@/components/WorkModal';
 import { Work, Tag, Project } from '@/types/work';
@@ -26,6 +27,7 @@ export default function WorksFilterGrid({
   const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [displayCount, setDisplayCount] = useState(12);
 
   const handleWorkClick = (work: Work) => {
     setSelectedWork(work);
@@ -58,6 +60,24 @@ export default function WorksFilterGrid({
     return result;
   }, [currentWorks, sortBy, selectedTagId, selectedProjectId]);
 
+  // Intersection Observer for Client-side Infinite Scroll
+  useEffect(() => {
+    const sentinel = document.getElementById('infinite-scroll-sentinel');
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setDisplayCount((prev) => prev + 12);
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [filteredAndSortedWorks.length, displayCount]);
+
   const isProjectActive = selectedProjectId !== 'all';
 
   return (
@@ -70,8 +90,7 @@ export default function WorksFilterGrid({
               key={t}
               onClick={() => {
                 setFilter(t);
-                // Switch tabs should preserve filters, or we can reset them if needed,
-                // but keeping them is standard
+                setDisplayCount(12);
               }}
               className={`px-8 py-2.5 rounded-full text-xs font-black tracking-widest transition-all duration-300 uppercase ${
                 filter === t
@@ -88,7 +107,10 @@ export default function WorksFilterGrid({
 
         {/* 排序按钮 */}
         <button
-          onClick={() => setSortBy(sortBy === 'spend' ? 'default' : 'spend')}
+          onClick={() => {
+            setSortBy(sortBy === 'spend' ? 'default' : 'spend');
+            setDisplayCount(12);
+          }}
           className={`px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wider transition-all border ${
             sortBy === 'spend'
               ? 'bg-emerald-400/10 border-emerald-400/30 text-emerald-400'
@@ -103,7 +125,10 @@ export default function WorksFilterGrid({
           <div className="relative">
             <select
               value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
+              onChange={(e) => {
+                setSelectedProjectId(e.target.value);
+                setDisplayCount(12);
+              }}
               className={`appearance-none bg-zinc-950/80 backdrop-blur-md border font-semibold rounded-lg py-2.5 pl-4 pr-10 text-xs tracking-wider transition-all outline-none cursor-pointer ${
                 isProjectActive 
                   ? 'border-emerald-400/50 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.1)]' 
@@ -132,7 +157,10 @@ export default function WorksFilterGrid({
           <div className="w-full flex flex-wrap items-center gap-2 mt-4 py-2 border-t border-white/5">
             <span className="text-[10px] text-zinc-500 uppercase tracking-widest mr-2">标签过滤:</span>
             <button
-              onClick={() => setSelectedTagId(null)}
+              onClick={() => {
+                setSelectedTagId(null);
+                setDisplayCount(12);
+              }}
               className={`px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wider transition-all duration-300 ${
                 selectedTagId === null
                   ? 'bg-emerald-400/20 text-emerald-400 border border-emerald-400/30 shadow-[0_0_12px_rgba(52,211,153,0.15)]'
@@ -144,7 +172,10 @@ export default function WorksFilterGrid({
             {tags.map((t) => (
               <button
                 key={t.documentId}
-                onClick={() => setSelectedTagId(t.documentId)}
+                onClick={() => {
+                  setSelectedTagId(t.documentId);
+                  setDisplayCount(12);
+                }}
                 className={`px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wider transition-all duration-300 ${
                   selectedTagId === t.documentId
                     ? 'bg-emerald-400/20 text-emerald-400 border border-emerald-400/30 shadow-[0_0_12px_rgba(52,211,153,0.15)]'
@@ -171,13 +202,38 @@ export default function WorksFilterGrid({
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredAndSortedWorks.map((work) => (
-            <div key={work.documentId} onClick={() => handleWorkClick(work)} className="cursor-pointer">
-              <WorkCard work={work} />
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredAndSortedWorks.slice(0, displayCount).map((work, idx) => (
+              <motion.div
+                key={work.documentId}
+                onClick={() => handleWorkClick(work)}
+                className="cursor-pointer"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: Math.min((idx % 12) * 0.05, 0.3) }}
+              >
+                <WorkCard work={work} />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Sentinel element for infinite scroll */}
+          {filteredAndSortedWorks.length > displayCount && (
+            <div
+              id="infinite-scroll-sentinel"
+              className="w-full flex items-center justify-center py-10 mt-6 col-span-full"
+            >
+              <div className="flex flex-col items-center gap-3">
+                {/* Emerald premium loader spinner */}
+                <div className="w-6 h-6 border-2 border-emerald-400/30 border-t-emerald-400 rounded-full animate-spin" />
+                <span className="text-[10px] text-zinc-500 font-bold tracking-widest uppercase">
+                  正在加载更多...
+                </span>
+              </div>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       <WorkModal

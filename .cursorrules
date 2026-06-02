@@ -2,7 +2,14 @@
 
 As a developer AI agent working on this repository, you MUST follow these guidelines and user preferences at all times.
 
-## 1. 每日状态更新与 Git 推送 (Daily Status Update & Git Push)
+## 1. 卡帕西原则约束 (Karpathy Guidelines)
+- **要求**：在处理中大型开发任务或任何非微调的代码更改时，必须遵循“卡帕西编码准则”。
+- **步骤**：
+  1. **先规划**：进行详尽的调研与设计，编写或更新 `implementation_plan.md` 实施计划文档。
+  2. **再追问**：若遇到不确定或有歧义的需求，必须列出问题先向用户提问、讨论并获得显式授权/答复。
+  3. **最后去做**：在方案被用户批准后，创建 `task.md` 任务清单并在其跟踪下完成具体的代码编写 and 修改。
+
+## 2. 每日状态更新与 Git 推送 (Daily Status Update & Git Push)
 - **要求**：每次完成开发任务、或者每天开发结束推送代码前，**必须先更新项目状态文档**。
 - **状态文件路径**：
   - `PROJECT_STATUS.md` — 项目开发进度、部署和移交清单（包含 AI 工作流大屏项目状态）
@@ -11,15 +18,20 @@ As a developer AI agent working on this repository, you MUST follow these guidel
   2. 在 `PROJECT_STATUS.md` 状态文档的最新一章（或新建当天日志）中详细记录开发内容、已完成项、未完成待办及注意事项。
   3. 执行 `git add` 将修改后的状态文档和代码一同提交，并推送至远程仓库（`git push`）。
 
-## 2. 阿里云 ECS 部署约束 (No Remote Builds on ECS)
-- **背景**：阿里云新加坡 ECS (47.95.242.40) **只有 2GB 内存**。
+## 3. 阿里云 ECS 部署约束 (No Remote Builds on ECS)
+- **背景**：阿里云华北地区 ECS **只有 2GB 内存**。
 - **禁忌**：**绝对禁止在 ECS 服务器上执行任何编译、解析或构建操作**（例如 `npm run build`、`strapi build` 等）。这样做会导致服务器 OOM（内存溢出）宕机崩溃。
 - **正确流程**：
   1. 所有前端和 Strapi Admin 面板的构建动作必须在本地（Windows 环境）执行。
-  2. 构建完成后，将本地生成的 `dist` 或相应编译目录通过 SCP / SFTP 同步到 ECS 相应位置（如 `/var/www/strapi/dist/`）。
-  3. 在 ECS 上重启 PM2 服务即可：`pm2 restart strapi`。
+  2. **打包压缩**：构建完成后，必须在本地将生成的 `dist` 或编译输出目录进行**打包压缩**（如 `.zip` 包）。**绝对不要直接上传零散文件**（有时包含上千个文件，直传效率极低且易出错）。
+  3. **传输与解压覆盖**：将压缩包上传至远端服务器后，在远端执行解压并覆盖至对应部署路径（如 `/var/www/strapi/` 目录）。
+  4. 在 ECS 上重启 PM2 服务：`pm2 restart strapi`。
 
-## 3. 提示音偏好 (Automation Audio Alerts)
+## 4. 提示音偏好 (Automation Audio Alerts)
 - **要求**：在特定的自动化/命令执行节点运行提示音脚本：
-  1. **授权前提示**：在所有可能引发用户授权或卡住的命令执行前，运行 `G:\blog\scripts\auth_alert.ps1` 提示音。
-  2. **任务完成提示**：在所有任务彻底完成前，运行 `G:\blog\scripts\task_complete.ps1` 提示音。
+  1. **授权前提示**：在所有可能引发用户授权或卡住的命令/操作（如 run_command, replace_file_content）执行前，运行 `powershell -ExecutionPolicy Bypass -File C:\Users\leave\.gemini\antigravity\scratch\auth_alert.ps1` 提示音。
+  2. **任务完成提示**：在所有任务彻底完成前，运行 `powershell -ExecutionPolicy Bypass -File C:\Users\leave\.gemini\antigravity\scratch\task_complete.ps1` 提示音。
+
+## 5. 语言偏好 (Language Preference)
+- **要求**：在生成所有 Artifacts 文件（包括 `implementation_plan.md`, `task.md`, `walkthrough.md`, `usage.md` 等）时，必须**始终使用中文**。
+- **日常交流**：日常回复与技术讨论也优先使用中文。
