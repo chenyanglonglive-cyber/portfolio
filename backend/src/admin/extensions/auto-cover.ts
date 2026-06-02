@@ -23,7 +23,11 @@ export function injectAutoCover() {
   // ---------- helpers ----------
 
   function getToken() {
-    return sessionStorage.getItem(JWT_KEY) || localStorage.getItem(JWT_KEY) || '';
+    let token = sessionStorage.getItem(JWT_KEY) || localStorage.getItem(JWT_KEY) || '';
+    if (token.startsWith('"') && token.endsWith('"')) {
+      token = token.slice(1, -1);
+    }
+    return token;
   }
 
   function getStrapiOrigin() {
