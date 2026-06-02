@@ -38,7 +38,7 @@ export default async function WorksPage() {
     "fields[6]=Story",
     "fields[7]=LaunchDate",
     "fields[8]=Currency",
-    "pagination[pageSize]=50",
+    "pagination[pageSize]=200",
   ].join("&");
 
   const imageFields = [
@@ -55,7 +55,7 @@ export default async function WorksPage() {
     "fields[6]=Story",
     "fields[7]=LaunchDate",
     "fields[8]=Currency",
-    "pagination[pageSize]=50",
+    "pagination[pageSize]=200",
   ].join("&");
 
   const [videosResult, imagesResult, tags, projects] = await Promise.all([

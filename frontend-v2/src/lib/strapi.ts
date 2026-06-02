@@ -150,7 +150,7 @@ export async function getWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
-    "pagination[pageSize]=50",
+    "pagination[pageSize]=200",
   ].join("&");
 
   const imageFields = [
@@ -163,7 +163,7 @@ export async function getWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
-    "pagination[pageSize]=50",
+    "pagination[pageSize]=200",
   ].join("&");
 
   try {
@@ -190,7 +190,7 @@ export async function getFeaturedWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
-    "pagination[pageSize]=50",
+    "pagination[pageSize]=200",
   ].join("&");
   const imageFields = [
     "populate[image][fields][0]=url",
@@ -202,7 +202,7 @@ export async function getFeaturedWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
-    "pagination[pageSize]=50",
+    "pagination[pageSize]=200",
   ].join("&");
 
   try {

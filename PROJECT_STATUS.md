@@ -671,4 +671,18 @@ npx @playwright/cli show --annotate
 *   **全量构建与部署**：在本地测试通过 Vite 打包后，运行 `deploy.ps1` 部署至 ECS 服务器并安全重启，经测试封面自动抽帧和批量文件夹关联完全正常。
 *   **代码追踪**：最新代码已安全推送至 GitHub `main` 分支。
 
+---
+
+# 🚀 2026-06-02 更新日志 (Frontend Pagination Limit Fix)
+
+## 1. 前端作品展示截断缺陷修复 (Works Pagination Limit Fix)
+*   **问题定位**：在后台通过“批量导入文件夹至项目”功能导入媒体文件后，虽然数据库和 Strapi 后台已确认 `bingo frenzy` 关联了 11 个已发布的视频，但前端页面在选择该项目时仅能展示 2 个视频。经排查，原因是前端在 `works/page.tsx` 与 `lib/strapi.ts` 中向 Strapi 请求数据时，使用的分页大小上限默认为 50 (`pagination[pageSize]=50`)。由于数据库中已发布的视频总数已达 81 个，导致新关联的 `bingo frenzy` 视频（数据库 ID 较新，排在 50 之外）被截断丢弃。
+*   **缺陷修复**：
+    - 修改了前端 [works/page.tsx](file:///g:/blog/frontend-v2/src/app/works/page.tsx) 中的 2 处数据获取 URL 参数。
+    - 修改了前端 [lib/strapi.ts](file:///g:/blog/frontend-v2/src/lib/strapi.ts) 中 `getWorks()` 和 `getFeaturedWorks()` 的共 4 处数据获取 URL 参数。
+    - 将上述 6 处 `"pagination[pageSize]=50"` 统一升级调整为 `"pagination[pageSize]=200"`，预留了足够的量。
+*   **本地构建与验证**：
+    - 在本地执行 `npm run build` 进行编译，前端项目构建打包及 TS 类型校验成功通过。
+
+
 
