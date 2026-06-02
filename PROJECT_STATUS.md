@@ -718,10 +718,12 @@ npx @playwright/cli show --annotate
 # 🚀 2026-06-02 夜间更新 (3D Scroll Reveal & Video Deferred Mount)
 
 ## 1. 首页视频卡片 3D 滚动渐现展开 (3D Scroll-Driven Grid Reveal)
-*   **SDA 滚动翻转动效**：在 [globals.css](file:///d:/blog/portfolio/frontend-v2/src/app/globals.css) 中定义了 `.perspective-grid` (1200px 3D 景深) 与 `.reveal-card-3d` (通过关键帧 `reveal-3d` 控制 translateZ, rotateX, translateY)。
-*   **物理滚动关联**：使用 `animation-timeline: view()` 并配合 `animation-range: entry 10% cover 40%`，使卡片进入视口时动态翻转展开。
-*   **桌端/移动端响应式隔离**：使用 `@media (min-width: 768px)` 限制动效仅在桌面端生效，移动端自动保持标准平面流布局。
-*   **布局容器升级**：在 [WorkGrid.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkGrid.tsx) 中将 `perspective-grid` 类赋予视频网格容器，并将 `reveal-card-3d` 应用至各个卡片包装器。
+*   **中心往四周扩散动画 (Center-Out Reveal)**：重构了入场逻辑，利用 CSS 变量（`--x` 和 `--y`）配合 `:nth-child(1)` 到 `:nth-child(9)` 选择器，将 9 个卡片的初始入场位置全部收拢聚集在正中心（第 5 个卡片处）。随着向下滚动，8 个周边的卡片会像花瓣一样平滑地向各自的 3x3 网格格点扩散定位。
+*   **多端响应式断点隔离**：
+    - **移动端 (width < 768px)**：完全屏蔽 3D 和滚动展开动效，以标准垂直流平面排布。
+    - **平板端 (768px <= width < 1024px)**：采用标准的 3D 倾斜渐现，不使用偏移（以兼容 2 列布局）。
+    - **桌面端 (width >= 1024px)**：启用完美的 3x3 中心往四周扩散 3D 入场动效。
+*   **布局容器与关键帧**：在 [WorkGrid.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkGrid.tsx) 中将 `perspective-grid` 类赋予视频网格容器，并将 `reveal-card-3d` 应用至各个卡片包装器；在 [globals.css](file:///d:/blog/portfolio/frontend-v2/src/app/globals.css) 中新增了 `@keyframes reveal-center-out` 和各自的坐标配置。
 
 ## 2. 视频节点延迟渲染与 GPU 性能优化 (Conditional Video Mounting)
 *   **视频卡片动态挂载**：重构了 [WorkCard.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/WorkCard.tsx)，将 `<video>` 节点改为根据 `isHovered === true` 条件挂载。

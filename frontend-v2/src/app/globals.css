@@ -143,8 +143,8 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* 仅在桌面端设备（768px以上）开启 3D 滚动渐现 */
-@media (min-width: 768px) {
+/* 在 tablet (768px ~ 1023px) 开启通用的 3D 滚动渐现 */
+@media (min-width: 768px) and (max-width: 1023px) {
   .perspective-grid {
     perspective: 1200px;
     transform-style: preserve-3d;
@@ -157,7 +157,34 @@ body {
   }
 }
 
-/* 3D 展开折叠入场动效 */
+/* 仅在桌面端大屏设备（1024px以上，3列网格）开启 3D 从中心往四周扩散动效 */
+@media (min-width: 1024px) {
+  .perspective-grid {
+    perspective: 1500px;
+    transform-style: preserve-3d;
+  }
+
+  .reveal-card-3d {
+    animation: reveal-center-out linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 45%;
+  }
+
+  /* 3x3 扩散偏移参数（40px 是 gap-10 的像素距离） */
+  .reveal-card-3d:nth-child(1) { --x: calc(100% + 40px); --y: calc(100% + 40px); }
+  .reveal-card-3d:nth-child(2) { --x: 0px;               --y: calc(100% + 40px); }
+  .reveal-card-3d:nth-child(3) { --x: calc(-100% - 40px); --y: calc(100% + 40px); }
+  
+  .reveal-card-3d:nth-child(4) { --x: calc(100% + 40px); --y: 0px; }
+  .reveal-card-3d:nth-child(5) { --x: 0px;               --y: 0px; } /* 正中心原地展开 */
+  .reveal-card-3d:nth-child(6) { --x: calc(-100% - 40px); --y: 0px; }
+  
+  .reveal-card-3d:nth-child(7) { --x: calc(100% + 40px); --y: calc(-100% - 40px); }
+  .reveal-card-3d:nth-child(8) { --x: 0px;               --y: calc(-100% - 40px); }
+  .reveal-card-3d:nth-child(9) { --x: calc(-100% - 40px); --y: calc(-100% - 40px); }
+}
+
+/* 通用 3D 展开关键帧 (用于平板端) */
 @keyframes reveal-3d {
   from {
     opacity: 0;
@@ -173,6 +200,28 @@ body {
       translateZ(0) 
       rotateX(0deg) 
       translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* 3x3 中心扩散入场关键帧 */
+@keyframes reveal-center-out {
+  from {
+    opacity: 0;
+    transform: 
+      translate(var(--x, 0), var(--y, 0)) 
+      scale(0.55) 
+      rotateX(12deg)
+      translateZ(-200px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: 
+      translate(0, 0) 
+      scale(1) 
+      rotateX(0deg)
+      translateZ(0);
     filter: blur(0);
   }
 }
