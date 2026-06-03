@@ -740,8 +740,11 @@ npx @playwright/cli show --annotate
 *   **用户痛点**：在 Strapi 后台管理系统的视频（Video）和图片（Image） Collection Types 数据列表中，`COVER` 字段和 `IMAGE` 字段的缩略图默认被渲染为圆形，导致原本的长屏（如 9:16、4:5）或宽屏媒体文件发生严重裁剪变形、无法看清。
 *   **解决方案**：
     - 在 [app.tsx](file:///g:/blog/backend/src/admin/app.tsx) 的 `bootstrap` 方法中动态向 document 注入全局 `<style>` 样式。
-    - 针对表格中 (`td` 容器内) 的 `img` 标签以及具有 `Avatar` 类名的包装器，清空 `border-radius: 50%`，覆盖重写为 `border-radius: 4px` 的微圆角矩形。
-    - 启用 `object-fit: contain` 并设置深色微透明底色（`rgba(255, 255, 255, 0.05)`），确保不同纵横比的图片/视频首帧能以其原始比例完整、不拉伸且契合亮暗色主题地呈现在表格单元格中。
+    - 针对表格单元格和模拟的 `gridcell` 中的 `img` 标签以及具有 `Avatar` 类名或无类名的包装器，清空 `border-radius: 50%` 并覆盖重写为 `border-radius: 4px` 的微圆角矩形。
+    - 利用 CSS 的 `:has` 选择器（如 `:has(img)`），解除外层所有限制为 1:1 的正方形包裹容器的 `width` 和 `height`，重置为 `width: auto; height: 40px`。这确保了不同纵横比的缩略图能够完全按照其原本的长屏（如 9:16、4:5）或宽屏（如 16:9）的物理比例自适应伸展显示，而不会因 1:1 的盒子束缚而被压缩或呈现为正方形。
+    - 启用 `object-fit: contain` 并搭配 `rgba(255, 255, 255, 0.05)` 的微量底色。
+    - **调试绿点指示器**：在后台管理系统的右上角注入了 `#admin-code-v2-indicator` 翡翠绿呼吸闪烁小圆点，用以帮助排查和确认浏览器本地缓存是否已成功清空并读取最新版代码。
 *   **本地编译与部署**：
     - 在 `backend` 目录下重新运行 `npm run build` 进行 Admin 端的 Vite 编译。
     - 通过本地打包成 `backend.tar.gz` 整体上传并安全重启 ECS 的 Strapi 服务，使改动生效。
+
