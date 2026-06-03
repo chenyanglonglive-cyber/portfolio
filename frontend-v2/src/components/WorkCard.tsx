@@ -125,7 +125,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
             alt={work.Title}
             fill
             priority={priority}
-            className="object-cover opacity-80 group-hover:opacity-40 transition-opacity duration-500"
+            className="object-cover opacity-100 group-hover:opacity-40 transition-opacity duration-500"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (

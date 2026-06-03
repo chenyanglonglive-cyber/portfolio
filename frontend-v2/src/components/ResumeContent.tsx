@@ -235,7 +235,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
         {/* Project Section */}
         <motion.section variants={itemVariants} className="space-y-12">
           <h2 className="text-2xl font-bold flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 pb-1">
-            <FolderKanban className="text-emerald-400 shrink-0" size={24} /> 核心专项项目
+            <FolderKanban className="text-emerald-400 shrink-0" size={24} /> 核心项目
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {PROJECTS.map((project, i) => (
