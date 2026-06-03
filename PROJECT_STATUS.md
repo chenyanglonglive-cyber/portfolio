@@ -748,3 +748,12 @@ npx @playwright/cli show --annotate
     - 在 `backend` 目录下重新运行 `npm run build` 进行 Admin 端的 Vite 编译。
     - 通过本地打包成 `backend.tar.gz` 整体上传并安全重启 ECS 的 Strapi 服务，使改动生效。
 
+## 2. 前端作品页图片卡片展示与悬停动效微调 (Frontend Works Page Card Polish)
+*   **去除 `IMAGE` 时长标签**：重构了 [WorkCard.tsx](file:///g:/blog/frontend-v2/src/components/WorkCard.tsx)，当检测到当前卡片非视频（即图片）时，不再于左上角渲染 `IMAGE` 这个多余的类型指示 Badge，仅在视频资源上常驻展示时长标签，净化视觉版面。
+*   **底部信息遮罩悬停渐现 (Slide-up Hover Overlay)**：
+    - 将作品卡片（视频与图片）底部的标题与消耗/数据遮罩栏由原来的常驻展示调整为 **默认隐藏、悬停展示**。
+    - 在 CSS 中应用了 `transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out` 渐变动画。
+    - 鼠标划过卡片时，底部黑透毛玻璃遮罩会伴随着 300 毫秒的平滑曲线从下往上优雅地滑入并淡入，与中心的“查看案例”小药丸联动，极具交互呼吸感。
+*   **图片分页滚动同步**：确认了前台图片分页及滚动加载（一次 12 个）的数据管道在 Works 虚拟网格中同步运行，支持以极高的首屏响应加载大批量的图片资产。
+
+

@@ -158,11 +158,13 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
           </div>
         )}
 
-        {/* Duration / type badge */}
-        <div className="absolute top-3 left-3 z-20 px-2 py-1 rounded-md text-[10px] font-bold bg-black/50 backdrop-blur-md text-white border border-white/10 flex items-center gap-1.5 uppercase tracking-wider">
-          {isVideo ? <Play size={10} fill="currentColor" /> : null}
-          {isCompressing ? '排队中' : (isVideo ? duration : 'IMAGE')}
-        </div>
+        {/* Duration / type badge (only rendered for videos) */}
+        {isVideo && (
+          <div className="absolute top-3 left-3 z-20 px-2 py-1 rounded-md text-[10px] font-bold bg-black/50 backdrop-blur-md text-white border border-white/10 flex items-center gap-1.5 uppercase tracking-wider">
+            <Play size={10} fill="currentColor" />
+            {isCompressing ? '排队中' : duration}
+          </div>
+        )}
 
         {/* Hover overlay (Centered Case Study Badge) */}
         <div
@@ -175,8 +177,8 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
           </div>
         </div>
 
-        {/* Bottom persistent info overlay (semi-transparent black) */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 bg-zinc-950/70 backdrop-blur-md border-t border-white/5 px-4 py-3 flex items-center justify-between gap-3 select-none">
+        {/* Bottom info overlay (hidden by default, slide up and fade in on hover) */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 bg-zinc-950/70 backdrop-blur-md border-t border-white/5 px-4 py-3 flex items-center justify-between gap-3 select-none transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
           <span className="text-xs font-bold text-white truncate max-w-[65%] tracking-tight">
             {work.Title}
           </span>
