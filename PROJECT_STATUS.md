@@ -683,7 +683,6 @@ npx @playwright/cli show --annotate
     - 将上述 6 处 `"pagination[pageSize]=50"` 统一升级调整为 `"pagination[pageSize]=200"`，预留了足够的量。
 *   **本地构建与验证**：
     - 在本地执行 `npm run build` 进行编译，前端项目构建打包及 TS 类型校验成功通过。
-
 ---
 
 # 🚀 2026-06-02 晚间更新 (Infinite Scroll, Socials Layout & Cursorrules)
@@ -732,3 +731,17 @@ npx @playwright/cli show --annotate
 
 ## 3. 本地构建与验证
 *   **构建无报错**：本地运行 `npm run build` 成功完成打包校验，所有静态路由导出正常，TypeScript 检查通过。
+
+---
+
+# 🚀 2026-06-03 更新日志 (Strapi Admin Avatar Original Aspect Ratio)
+
+## 1. 后台列表媒体缩略图圆形截断修复 (Strapi Admin Table Thumbnail Original Ratio)
+*   **用户痛点**：在 Strapi 后台管理系统的视频（Video）和图片（Image） Collection Types 数据列表中，`COVER` 字段和 `IMAGE` 字段的缩略图默认被渲染为圆形，导致原本的长屏（如 9:16、4:5）或宽屏媒体文件发生严重裁剪变形、无法看清。
+*   **解决方案**：
+    - 在 [app.tsx](file:///g:/blog/backend/src/admin/app.tsx) 的 `bootstrap` 方法中动态向 document 注入全局 `<style>` 样式。
+    - 针对表格中 (`td` 容器内) 的 `img` 标签以及具有 `Avatar` 类名的包装器，清空 `border-radius: 50%`，覆盖重写为 `border-radius: 4px` 的微圆角矩形。
+    - 启用 `object-fit: contain` 并设置深色微透明底色（`rgba(255, 255, 255, 0.05)`），确保不同纵横比的图片/视频首帧能以其原始比例完整、不拉伸且契合亮暗色主题地呈现在表格单元格中。
+*   **本地编译与部署**：
+    - 在 `backend` 目录下重新运行 `npm run build` 进行 Admin 端的 Vite 编译。
+    - 通过本地打包成 `backend.tar.gz` 整体上传并安全重启 ECS 的 Strapi 服务，使改动生效。
