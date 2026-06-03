@@ -150,6 +150,7 @@ export async function getWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "fields[8]=Currency",
     "pagination[pageSize]=200",
   ].join("&");
 
@@ -163,6 +164,7 @@ export async function getWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "fields[8]=Currency",
     "pagination[pageSize]=200",
   ].join("&");
 
@@ -190,6 +192,7 @@ export async function getFeaturedWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "fields[8]=Currency",
     "pagination[pageSize]=200",
   ].join("&");
   const imageFields = [
@@ -202,6 +205,7 @@ export async function getFeaturedWorks(): Promise<Work[]> {
     "fields[5]=CTR",
     "fields[6]=Story",
     "fields[7]=LaunchDate",
+    "fields[8]=Currency",
     "pagination[pageSize]=200",
   ].join("&");
 
