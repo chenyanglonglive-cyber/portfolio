@@ -30,39 +30,7 @@ export async function uploadToStrapi(formData: FormData) {
   return data[0];
 }
 
-/**
- * Upload video to ECS compression endpoint, which runs FFmpeg and
- * returns the Strapi media-library file object for the compressed video.
- *
- * Progress note: this is a single long-running request (upload + compress).
- * The caller should show an "uploading + compressing" stage.
- */
-export async function compressAndUploadVideo(formData: FormData): Promise<{
-  id: number;
-  url: string;
-  name: string;
-  size: number;
-}> {
-  if (!STRAPI_TOKEN) throw new Error("Missing Strapi Admin Token");
 
-  const response = await fetch(`${STRAPI_URL}/compress`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: formData,
-  });
-
-  if (!response.ok) {
-    let msg = `Compression failed (${response.status})`;
-    try {
-      const err = await response.json();
-      msg = err.error?.message || msg;
-    } catch { /* ok */ }
-    throw new Error(msg);
-  }
-
-  const json = await response.json();
-  return Array.isArray(json) ? json[0] : (json.data || json);
-}
 
 /**
  * Create a Video entry in Strapi.

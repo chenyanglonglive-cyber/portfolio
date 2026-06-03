@@ -10,9 +10,11 @@ export async function generateStaticParams() {
   const articles = await getArticles();
   if (!articles) return [];
 
-  return articles.map((article) => ({
-    slug: article.Slug,
-  }));
+  return articles
+    .filter((article) => typeof article.Slug === "string" && article.Slug.trim() !== "")
+    .map((article) => ({
+      slug: article.Slug,
+    }));
 }
 
 export default async function ArticleDetail({ params }: { params: Promise<{ slug: string }> }) {

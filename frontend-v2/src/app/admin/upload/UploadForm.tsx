@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Video, Image as ImageIcon, CheckCircle2, AlertCircle, Loader2, Shrink, FileImage } from "lucide-react";
-import { uploadToStrapi, createVideoEntry, createImageEntry, compressAndUploadVideo } from "./actions";
+import { uploadToStrapi, createVideoEntry, createImageEntry } from "./actions";
 import { compressImageToWebP } from "@/lib/compress";
 
 type Mode = "video" | "image";
@@ -176,9 +176,9 @@ export default function UploadForm() {
     thumbFD.append("files", thumbnail);
     const thumbData = await uploadToStrapi(thumbFD);
 
-    // Stage 2: upload video to ECS compression endpoint
+    // Stage 2: upload video to Strapi media library
     setProgress(15);
-    setStageText("正在上传视频至压缩服务（ECS FFmpeg H.264 CRF 23）...");
+    setStageText("正在上传视频至 Strapi 媒体库...");
 
     const videoFD = new FormData();
     videoFD.append("files", file);
@@ -186,20 +186,16 @@ export default function UploadForm() {
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 85) return prev;
-        // Slow progress ramp during upload+compress
-        if (prev < 40) return prev + 2;
-        if (prev < 70) return prev + 1;
-        return prev + 0.5;
+        // Slow progress ramp during upload
+        if (prev < 40) return prev + 3;
+        if (prev < 70) return prev + 2;
+        return prev + 1;
       });
-      setStageText((prev) => {
-        if (prev.includes("压缩")) return prev;
-        return "正在压缩视频（FFmpeg H.264 CRF 23）...";
-      });
-    }, 800);
+    }, 500);
 
     let videoData: { id: number; url: string };
     try {
-      videoData = await compressAndUploadVideo(videoFD);
+      videoData = await uploadToStrapi(videoFD);
     } finally {
       clearInterval(progressInterval);
     }
@@ -325,7 +321,7 @@ export default function UploadForm() {
                   </p>
                   <p className="text-zinc-500 text-xs mt-1">
                     {mode === "video"
-                      ? "支持 MP4, MOV（上传后自动 FFmpeg 压缩）"
+                      ? "支持 MP4, MOV（直接上传至 Strapi 媒体库，建议本地预先压制）"
                       : "支持 JPG, PNG（自动压缩为 WebP 100-200KB）"}
                   </p>
                 </div>
@@ -400,8 +396,8 @@ export default function UploadForm() {
 
                 {mode === "video" && (
                   <p className="text-zinc-500 text-xs leading-relaxed italic">
-                    * 已从视频第 1 秒提取画面并压缩为 WebP。
-                    {" "}视频上传后将通过 ECS FFmpeg（H.264 CRF 23）二次压缩以保证码率一致性。
+                    * 已从视频第 1 秒提取画面并压缩为 WebP 作为封面。
+                    {" "}视频文件将直接原样上传，建议上传前在本地压制以优化码率。
                   </p>
                 )}
               </div>

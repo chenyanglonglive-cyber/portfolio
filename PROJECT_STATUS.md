@@ -763,5 +763,26 @@ npx @playwright/cli show --annotate
     - 前端通过 `normalizeWork` 自动解析该枚举，WorkCard 接收到 `Currency` 字段后，动态在首页卡片上展示正确的币种符号（`CNY` -> `￥`，`USD` -> `$`）。
 *   **验证与推送**：本地成功编译打包通过，已推送到 GitHub `origin/main` 节点（commit `596a101`），自动重构 Vercel 静态页上线。
 
+---
+
+# 🚀 2026-06-04 更新日志 (Bypass Backend Video Compression & ECS PM2 Cleanup)
+
+## 1. 废弃后端视频压缩服务，改为用户端直传 (Bypass Backend Video Compression)
+*   **性能考虑**：因阿里云 ECS 服务器仅有 2GB 内存，运行 FFmpeg 进行视频压缩会造成 CPU 满载和 OOM 宕机风险。为了确保服务器稳定性，将视频压缩完全下放到用户端（用户在本地电脑使用剪映/FFmpeg 压缩好视频再上传），后台不再跑 heavy 的 FFmpeg。
+*   **前端上传逻辑重构**：
+    - 在 [actions.ts](file:///d:/blog/portfolio/frontend-v2/src/app/admin/upload/actions.ts) 中彻底删除了冗余的 `compressAndUploadVideo` 接口函数。
+    - 在 [UploadForm.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/admin/upload/UploadForm.tsx) 中重构了 `submitVideoPipeline` 视频上传管线。在 Stage 2 视频上传时，替换为直接调用 `uploadToStrapi` 直传到 Strapi 媒体库的 `/api/upload` 接口，原样保存用户已压制好的高品质视频。
+    - 更新了前端上传表单的文本提示和说明信息，指引用户“建议本地预先压制后上传”。
+*   **保留浏览器端自动抽帧业务 (Client-side Frame Extraction)**：
+    - 基于 HTML5 Canvas 的本地视频第 1 秒首帧截取和 WebP 压缩上传业务流完全保留在用户端运行，封面图片上传不受任何影响。
+
+## 2. 后端 ECS 压缩服务常驻进程清理 (ECS PM2 Cleanup)
+*   **PM2 进程注销**：通过 SSH 安全秘钥（`agent.pem`）连接阿里云 ECS 主机，执行了 `pm2 delete compress`，成功注销了原用于视频排队压缩的常驻后台服务 `compress`，并执行 `pm2 save` 持久化配置，彻底释放了该进程占用的内存空间，降低了服务器常驻负载。
+
+## 3. 前端博客页面 Slug 构建容错修复 (Blog GenerateStaticParams Build Fix)
+*   **构建崩溃排查**：在本地编译时遇到了 `/blog/[slug]` 的静态参数生成崩溃问题，排查后发现是由于远程数据库中 ID 为 6 的文章 `Slug` 字段值为 `null`。
+*   **防崩溃修复**：在 [page.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/blog/[slug]/page.tsx) 的 `generateStaticParams` 静态生成方法中加入了防御性过滤，自动剔除 null 或空字符串的 Slug 条目，防止数据库脏数据导致 Next.js 打包中断。
+
+
 
 
