@@ -177,8 +177,12 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
           </div>
         </div>
 
-        {/* Bottom info overlay (hidden by default, slide up and fade in on hover) */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 bg-zinc-950/70 backdrop-blur-md border-t border-white/5 px-4 py-3 flex items-center justify-between gap-3 select-none transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
+        {/* Bottom info overlay (hidden by default only for images to preserve vertical space) */}
+        <div className={`absolute bottom-0 left-0 right-0 z-20 bg-zinc-950/70 backdrop-blur-md border-t border-white/5 px-4 py-3 flex items-center justify-between gap-3 select-none transition-all duration-300 ease-out ${
+          isVideo 
+            ? '' 
+            : 'transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
+        }`}>
           <span className="text-xs font-bold text-white truncate max-w-[65%] tracking-tight">
             {work.Title}
           </span>

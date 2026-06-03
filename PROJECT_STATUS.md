@@ -750,10 +750,9 @@ npx @playwright/cli show --annotate
 
 ## 2. 前端作品页图片卡片展示与悬停动效微调 (Frontend Works Page Card Polish)
 *   **去除 `IMAGE` 时长标签**：重构了 [WorkCard.tsx](file:///g:/blog/frontend-v2/src/components/WorkCard.tsx)，当检测到当前卡片非视频（即图片）时，不再于左上角渲染 `IMAGE` 这个多余的类型指示 Badge，仅在视频资源上常驻展示时长标签，净化视觉版面。
-*   **底部信息遮罩悬停渐现 (Slide-up Hover Overlay)**：
-    - 将作品卡片（视频与图片）底部的标题与消耗/数据遮罩栏由原来的常驻展示调整为 **默认隐藏、悬停展示**。
-    - 在 CSS 中应用了 `transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out` 渐变动画。
-    - 鼠标划过卡片时，底部黑透毛玻璃遮罩会伴随着 300 毫秒的平滑曲线从下往上优雅地滑入并淡入，与中心的“查看案例”小药丸联动，极具交互呼吸感。
+*   **图片卡片底部遮罩悬停显示 (Slide-up Hover Overlay for Images)**：
+    - **独立分离**：明确区分了视频与图片卡片的布局呈现。视频卡片底部的标题与消耗信息依然保持原样常驻展示，不受悬停动作影响，避免影响原视频卡片的布局。
+    - **图片卡片悬停渐现**：针对高度较小的图片卡片，其底部的标题与消耗信息默认设置为 **完全隐藏**，仅在鼠标悬停在卡片上时触发向上滑入渐现动效。这完美解决了由于图片卡片高度较小，常驻遮罩遮挡画面导致看不清图片数据和标题的问题。
 *   **图片分页滚动同步**：确认了前台图片分页及滚动加载（一次 12 个）的数据管道在 Works 虚拟网格中同步运行，支持以极高的首屏响应加载大批量的图片资产。
 
 
