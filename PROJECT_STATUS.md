@@ -755,4 +755,13 @@ npx @playwright/cli show --annotate
     - **图片卡片悬停渐现**：针对高度较小的图片卡片，其底部的标题与消耗信息默认设置为 **完全隐藏**，仅在鼠标悬停在卡片上时触发向上滑入渐现动效。这完美解决了由于图片卡片高度较小，常驻遮罩遮挡画面导致看不清图片数据和标题的问题。
 *   **图片分页滚动同步**：确认了前台图片分页及滚动加载（一次 12 个）的数据管道在 Works 虚拟网格中同步运行，支持以极高的首屏响应加载大批量的图片资产。
 
+## 3. 首页精选视频与图片币种动态数据绑定修复 (Homepage Featured Works Currency Symbol Fix)
+*   **问题定位**：用户反馈在后台将精选视频/图片消耗单位修改为美元（`USD`）时，首页精选卡片上的货币符号依然硬编码显示为人民币 `¥`，而作品页（`/works`）显示正常。
+*   **根因分析**：在 [strapi.ts](file:///d:/blog/portfolio/frontend-v2/src/lib/strapi.ts) 的 `getFeaturedWorks()` 和 `getWorks()` 查询参数中，没有包含对 `Currency` 字段的拉取。这导致前端拿到的 `Currency` 变量始终为 `undefined`，最终由 `normalizeWork` 回退初始化为 `'CNY'` (￥)。
+*   **修复方案**：
+    - 在 [strapi.ts](file:///d:/blog/portfolio/frontend-v2/src/lib/strapi.ts#L153) 的 `getWorks()` 方法以及 `getFeaturedWorks()` 方法的 `videoFields` 与 `imageFields` 数组中，统一追加 `"fields[8]=Currency"` 请求字段。
+    - 前端通过 `normalizeWork` 自动解析该枚举，WorkCard 接收到 `Currency` 字段后，动态在首页卡片上展示正确的币种符号（`CNY` -> `￥`，`USD` -> `$`）。
+*   **验证与推送**：本地成功编译打包通过，已推送到 GitHub `origin/main` 节点（commit `596a101`），自动重构 Vercel 静态页上线。
+
+
 
