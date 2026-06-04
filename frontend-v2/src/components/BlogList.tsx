@@ -102,7 +102,7 @@ export default function BlogList({ articles }: BlogListProps) {
                       </span>
                     </div>
                     
-                    <h2 className={`${isFeatured ? "text-3xl md:text-5xl" : "text-2xl md:text-3xl"} font-bold text-white group-hover:text-emerald-400 transition-colors duration-300 leading-tight`}>
+                    <h2 className={`${isFeatured ? "text-2xl md:text-3xl" : "text-xl md:text-2xl"} font-bold text-white group-hover:text-emerald-400 transition-colors duration-300 leading-tight truncate w-full`}>
                       {article.Title}
                     </h2>
                     

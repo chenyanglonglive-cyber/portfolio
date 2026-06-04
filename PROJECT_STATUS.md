@@ -846,3 +846,11 @@ npx @playwright/cli show --annotate
     - 这使得手记（Blog）板块下的全部页面版心宽度，均与首页和 Works（作品）页的 `max-w-5xl` 保持了高度完美的几何对齐与比例一致，优化了在大屏幕下的阅读与整体视觉体验。
 *   **本地构建与验证**：
     - 在本地执行 `npm run build` 进行编译，静态 HTML 预渲染及 TypeScript 编译检查成功通过，无任何报错。
+
+## 2. 手记列表页文章标题字号与单行省略优化 (Blog List Title Scaling & Ellipsis)
+*   **字号层级优化**：
+    - 重构了 [BlogList.tsx](file:///g:/blog/frontend-v2/src/components/BlogList.tsx)，将列表首篇精选文章标题的字号由原 `text-3xl md:text-5xl` 降低为 **`text-2xl md:text-3xl`**，避免其尺寸反客为主甚至盖过页面主标题。
+    - 将其余常规文章的标题字号由原 `text-2xl md:text-3xl` 降低为 **`text-xl md:text-2xl`**，使界面比例与文本层级错落有致。
+*   **单行超出截断**：
+    - 为列表文章标题 `h2` 组件统一新增了 `truncate w-full` 类名。在列表项中，任何极长的文章标题只显示为精简的单行，超长部分自动截断并显示为 `...`，优化了列表页面的清爽度；详情页中保留原样完整展示全标题。
+
