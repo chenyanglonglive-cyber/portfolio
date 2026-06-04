@@ -56,29 +56,27 @@ async function syncFeaturedVideo(result: any) {
     const isFeatured = !!result.IsFeatured;
     const videoId = result.id;
 
-    const existing = await strapi.db.query('api::fea-video.fea-video').findOne({
-      where: { video: videoId }
+    const existing = await strapi.documents('api::fea-video.fea-video').findFirst({
+      filters: { video: videoId }
     });
 
     if (isFeatured) {
       if (!existing) {
-        const crypto = require('crypto');
-        const documentId = crypto.randomUUID().replace(/-/g, '').slice(0, 20);
-        await strapi.db.query('api::fea-video.fea-video').create({
+        await strapi.documents('api::fea-video.fea-video').create({
           data: {
             Rank: Number(result.Rank) || 0,
-            video: videoId,
-            documentId
-          }
+            video: videoId
+          },
+          status: 'published'
         });
-        console.log(`[Featured Sync] Auto created fea-video item for Video ID: ${videoId} with Rank: ${result.Rank}`);
+        console.log(`[Featured Sync] Auto created published fea-video item for Video ID: ${videoId} with Rank: ${result.Rank}`);
       }
     } else {
       if (existing) {
-        await strapi.db.query('api::fea-video.fea-video').delete({
-          where: { id: existing.id }
+        await strapi.documents('api::fea-video.fea-video').delete({
+          documentId: existing.documentId
         });
-        console.log(`[Featured Sync] Auto deleted fea-video item for Video ID: ${videoId}`);
+        console.log(`[Featured Sync] Auto deleted fea-video item (DocID: ${existing.documentId}) for Video ID: ${videoId}`);
       }
     }
   } catch (err: any) {
@@ -90,15 +88,25 @@ async function handleFeaturedVideoDelete(event: any) {
   try {
     const videoId = event.result?.id;
     if (videoId) {
-      await strapi.db.query('api::fea-video.fea-video').deleteMany({
-        where: { video: videoId }
+      const entries = await strapi.documents('api::fea-video.fea-video').findMany({
+        filters: { video: videoId }
       });
+      for (const entry of entries) {
+        await strapi.documents('api::fea-video.fea-video').delete({
+          documentId: entry.documentId
+        });
+      }
       console.log(`[Featured Sync] Auto deleted fea-video items for deleted Video ID: ${videoId}`);
     } else if (event.params?.where?.id) {
       const idCond = event.params.where.id;
-      await strapi.db.query('api::fea-video.fea-video').deleteMany({
-        where: { video: idCond }
+      const entries = await strapi.documents('api::fea-video.fea-video').findMany({
+        filters: { video: idCond }
       });
+      for (const entry of entries) {
+        await strapi.documents('api::fea-video.fea-video').delete({
+          documentId: entry.documentId
+        });
+      }
       console.log(`[Featured Sync] Auto deleted fea-video items for deleted Video ID:`, idCond);
     }
   } catch (err: any) {

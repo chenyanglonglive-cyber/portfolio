@@ -153,20 +153,21 @@ async function backfillFeaturedVideos(strapi: Core.Strapi) {
     console.log(`[Backfill] Found ${featuredVideos.length} featured videos. Ensuring they exist in fea-video…`);
 
     for (const v of featuredVideos) {
-      const existing = await strapi.db.query('api::fea-video.fea-video').findOne({
-        where: { video: v.id }
+      const existing = await strapi.documents('api::fea-video.fea-video').findFirst({
+        filters: {
+          video: v.id
+        }
       });
 
       if (!existing) {
-        const documentId = crypto.randomUUID().replace(/-/g, '').slice(0, 20);
-        await strapi.db.query('api::fea-video.fea-video').create({
+        const entry = await strapi.documents('api::fea-video.fea-video').create({
           data: {
             Rank: Number(v.Rank) || 0,
-            video: v.id,
-            documentId
-          }
+            video: v.id
+          },
+          status: 'published'
         });
-        console.log(`[Backfill] Created fea-video for Video "${v.Title}" (ID: ${v.id}) with Rank: ${v.Rank}`);
+        console.log(`[Backfill] Created published fea-video for Video "${v.Title}" (ID: ${v.id}, DocID: ${entry.documentId}) with Rank: ${v.Rank}`);
       }
     }
     console.log('[Backfill] Featured videos backfill check completed.');
