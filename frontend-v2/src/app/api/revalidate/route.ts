@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 async function handleRevalidate(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get("secret");
@@ -17,10 +17,12 @@ async function handleRevalidate(req: NextRequest) {
   }
 
   try {
+    // Revalidate the data cache for Strapi requests
+    revalidateTag("strapi", "default");
     // Revalidate the root layout recursively (which clears the cache for all pages)
     revalidatePath("/", "layout");
     
-    console.log("[Revalidate] Successfully triggered revalidation for root layout");
+    console.log("[Revalidate] Successfully triggered revalidation for root layout and strapi tag");
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (err: any) {
     return NextResponse.json(

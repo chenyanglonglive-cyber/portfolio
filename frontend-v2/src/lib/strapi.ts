@@ -17,7 +17,7 @@ const FETCH_TIMEOUT = 30_000;
 async function strapiFetch(url: string, revalidate: number): Promise<Response> {
   const opts: Record<string, unknown> = {
     signal: AbortSignal.timeout(FETCH_TIMEOUT),
-    next: { revalidate },
+    next: { revalidate, tags: ["strapi"] },
   };
   // Force IPv4 — Strapi Cloud's Cloudflare CDN uses IPv6-only DNS, and
   // IPv6 paths from Vercel's Asia-Pacific edge can suffer 15s+ timeouts.
