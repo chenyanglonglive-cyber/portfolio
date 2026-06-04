@@ -141,6 +141,22 @@ export default {
 
 async function backfillFeaturedVideos(strapi: Core.Strapi) {
   try {
+    // 1. 清理没有关联视频（或视频已被删除）的孤儿 fea-video 记录
+    const allFeas = await strapi.documents('api::fea-video.fea-video').findMany({
+      populate: ['video']
+    });
+    const orphans = allFeas.filter((item: any) => !item.video || !item.video.id);
+    if (orphans.length > 0) {
+      console.log(`[Backfill] Found ${orphans.length} orphan fea-video entries. Cleaning up…`);
+      for (const orphan of orphans) {
+        await strapi.documents('api::fea-video.fea-video').delete({
+          documentId: orphan.documentId
+        });
+        console.log(`[Backfill] Cleaned orphan fea-video (DocID: ${orphan.documentId})`);
+      }
+    }
+
+    // 2. 正常进行视频回填
     const featuredVideos = await strapi.documents('api::video.video').findMany({
       filters: { IsFeatured: true }
     });
