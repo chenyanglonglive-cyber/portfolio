@@ -43,7 +43,7 @@ export default async function ArticleDetail({ params }: { params: Promise<{ slug
     <main className="relative">
       <ReadingProgressBar />
       
-      <div className="container mx-auto max-w-3xl px-8 py-20">
+      <div className="container mx-auto max-w-5xl px-8 py-20">
         <Link href="/blog" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-16 text-xs font-bold tracking-widest uppercase group">
           <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> BACK TO INSIGHTS
         </Link>

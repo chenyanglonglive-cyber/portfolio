@@ -5,7 +5,7 @@ export default async function BlogPage() {
   const articles = await getArticles();
 
   return (
-    <main className="container mx-auto max-w-4xl px-8 py-20">
+    <main className="container mx-auto max-w-5xl px-8 py-20">
       <div className="mb-20 space-y-4">
         <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
           Insights <span className="text-emerald-400 ml-2">.手记</span>

@@ -755,6 +755,7 @@ npx @playwright/cli show --annotate
     - **图片卡片悬停渐现**：针对高度较小的图片卡片，其底部的标题与消耗信息默认设置为 **完全隐藏**，仅在鼠标悬停在卡片上时触发向上滑入渐现动效。这完美解决了由于图片卡片高度较小，常驻遮罩遮挡画面导致看不清图片数据和标题的问题。
 *   **图片分页滚动同步**：确认了前台图片分页及滚动加载（一次 12 个）的数据管道在 Works 虚拟网格中同步运行，支持以极高的首屏响应加载大批量的图片资产。
 
+<<<<<<< HEAD
 ## 3. 首页精选视频与图片币种动态数据绑定修复 (Homepage Featured Works Currency Symbol Fix)
 *   **问题定位**：用户反馈在后台将精选视频/图片消耗单位修改为美元（`USD`）时，首页精选卡片上的货币符号依然硬编码显示为人民币 `¥`，而作品页（`/works`）显示正常。
 *   **根因分析**：在 [strapi.ts](file:///d:/blog/portfolio/frontend-v2/src/lib/strapi.ts) 的 `getFeaturedWorks()` 和 `getWorks()` 查询参数中，没有包含对 `Currency` 字段的拉取。这导致前端拿到的 `Currency` 变量始终为 `undefined`，最终由 `normalizeWork` 回退初始化为 `'CNY'` (￥)。
@@ -782,7 +783,66 @@ npx @playwright/cli show --annotate
 ## 3. 前端博客页面 Slug 构建容错修复 (Blog GenerateStaticParams Build Fix)
 *   **构建崩溃排查**：在本地编译时遇到了 `/blog/[slug]` 的静态参数生成崩溃问题，排查后发现是由于远程数据库中 ID 为 6 的文章 `Slug` 字段值为 `null`。
 *   **防崩溃修复**：在 [page.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/blog/[slug]/page.tsx) 的 `generateStaticParams` 静态生成方法中加入了防御性过滤，自动剔除 null 或空字符串的 Slug 条目，防止数据库脏数据导致 Next.js 打包中断。
+=======
+---
 
+# 🚀 2026-06-03 更新日志 (Backend Video Titles Reorganization)
 
+## 1. 整理后端视频作品标题数据 (Backend Video Titles Reorganization)
+*   **标题数据批量更新**：
+    - 针对阿里云 ECS 上的 PostgreSQL 生产数据库中的 `videos` 表，编写并安全执行了一次性更新脚本。
+    - 使用数据库事务，将所有标题中带有 `WLM`/`wlm` 或 `WB`/`wb` 的视频条目自动更改为 `WCY`/`wcy`。
+    - 该操作一共安全更新了 14 条记录（包含 7 个作品对应的草稿与发布版本）。
+    - 验证结果显示，数据库中已无 any 标题含有 `WLM`/`wlm` 或 `WB`/`wb` 的视频记录，所有受影响 of 视频名称（包括 `WBYN` -> `WCYYN` 复合名字）均符合更名规则，实现全站数据的干净与统一。
+*   **标题去除日期并增加项目前缀**：
+    - 针对 `videos` 表，编写并安全执行了二次清洗与关联逻辑更新脚本。
+    - 利用自定义正则规则自动匹配并去除了标题中所有形式的日期标签（如 `2023-07-04`、`10-25`、`220530`、`20260428` 等），同时结合占位符保护机制，完美规避了对 `9-16`、`4-5` 等分辨率标识以及 `30s`、`24s` 等时长标签的误删。
+    - 针对所有视频条目（排除 "其他" 项目），自动检测并确保其标题均以对应的项目名称（如 `雷霆战机-`、`bingo clash-`）作为开头。
+    - 此轮清洗基于先前备份的原始数据共处理并更新了 164 条记录，已通过 SQL 采样校验，完全达到净化前台展示名称的业务目标。
+*   **作品优先级梯度（Rank 权重）调整**：
+    - 编写并执行了 Rank 权重重组脚本，对 PostgreSQL 中的 `videos` 表 and `images` 表的 `rank` 字段进行了批量分类更新。
+    - 成功应用了以下业务优先梯度（从高到低）：
+      1. **第一梯队 (Rank 50)**：`bingo clash` (18个视频)
+      2. **第二梯队 (Rank 40)**：`雷霆战机` (70个视频, 98个图片)
+      3. **第三梯队 (Rank 30)**：`Solitaire Clash` (24个视频)
+      4. **第四梯队 (Rank 20)**：`bingo tour` (24个视频)
+      5. **第五梯队 (Rank 10)**：`bingo frenzy` (22个视频)
+      6. **第六梯队 (Rank 5)**：`无敌冲冲冲` (10个视频)
+      7. **其他项目 (Rank 0)**：`Movie puzzle`, `奇幻魔力消`, `其他`
+    - 此操作让前台作品展示顺序完全与指定的项目级别优先级看齐，实现高内聚展示。
+*   **清理废弃的 Work/Works 模型与数据表**：
+    - 在 ECS 生产数据库中彻底删除了历史遗留的 `works` 空数据表（`DROP TABLE IF EXISTS works;`）。
+    - 清理了 ECS 生产服务器上编译残留的 `/var/www/strapi/dist/src/api/work` 目录，并安全重启了 PM2 托管的 Strapi 后端服务。
+    - 在本地执行了 `npm run build` 清理编译目录，并重新运行 `npx strapi ts:generate-types` 重新生成了 TypeScript 类型文件，彻底清除了 `contentTypes.d.ts` 中的 `ApiWorkWork` 和 `api::work.work` 废弃类型定义，实现了全站代码与数据库结构的极简与纯净。
 
+---
 
+# 🚀 2026-06-03 更新日志 (Backend Video & Image Tags Synchronization)
+
+## 1. 批量同步视频与图片作品 Tag 标签关系 (Backend Video & Image Tags Sync)
+*   **分配规则与关联建立**：
+    - 针对阿里云 ECS 上的 PostgreSQL 数据库，编写并安全执行了批量 Tag 绑定脚本。
+    - **国内 (Tag ID: 9)**：已为 `无敌冲冲冲` (冲冲冲)、`雷霆战机` 和 `奇幻魔力消` 项目名下的所有视频和图片资源建立关联，累计新增 96 个视频标签关联与 96 个图片标签关联。
+    - **益智 (Tag ID: 11)**：已为标题中包含 `bible`、`movie` 的资源（含已下线的 `Movie puzzle` 遗留视频）自动建立关联，累计新增 12 个视频标签关联。
+    - **超休 (Tag ID: 10)**：已为所有以 `bingo`（`bingo clash`、`bingo tour`、`bingo frenzy` 等）、`buble buzz`（新项目 `buble buzz`）及 `Solitaire Clash` 开头或包含这些名字的资源自动建立关联，累计新增 112 个视频标签关联。
+*   **关系完整性与排重**：
+    - 使用数据库事务进行安全批处理，在插入 `tags_videos_lnk` 和 `tags_images_lnk` 之前进行去重校验，避免任何重复关联的产生。
+    - 自动为每个关联关系生成单调递增的排序权值 `ord`（基于 `COALESCE(MAX(ord), 0) + 1`），确保后台及前台渲染的顺序与完整性。
+*   **清洗与验证**：
+    - 验证结果显示，数据库关联插入完全正确：
+      - `国内` 标签（ID: 9）包含 96 条视频、96 条图片；
+      - `超休` 标签（ID: 10）包含 112 条视频；
+      - `益智` 标签（ID: 11）包含 12 条视频。
+    - 操作完成后，已彻底清除本地和 ECS 上的所有临时运行与数据预览脚本，确保环境安全整洁。
+
+---
+
+# 🚀 2026-06-04 更新日志 (Blog Layout Optimization)
+
+## 1. 手记页面版心宽度优化与全站对齐 (Blog Container Width Realignment)
+*   **页面宽度升级**：
+    - 修改了手记列表页 [page.tsx](file:///g:/blog/frontend-v2/src/app/blog/page.tsx)，将其外层包裹容器的宽度由原来的 `max-w-4xl` 扩展为 **`max-w-5xl`**。
+    - 修改了手记详情（文章阅读）页 [page.tsx](file:///g:/blog/frontend-v2/src/app/blog/[slug]/page.tsx)，将外层包裹容器的宽度由原来的 `max-w-3xl` 大幅扩展升级为 **`max-w-5xl`**。
+    - 这使得手记（Blog）板块下的全部页面版心宽度，均与首页和 Works（作品）页的 `max-w-5xl` 保持了高度完美的几何对齐与比例一致，优化了在大屏幕下的阅读与整体视觉体验。
+*   **本地构建与验证**：
+    - 在本地执行 `npm run build` 进行编译，静态 HTML 预渲染及 TypeScript 编译检查成功通过，无任何报错。
