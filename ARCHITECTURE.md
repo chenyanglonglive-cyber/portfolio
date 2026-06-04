@@ -89,10 +89,16 @@ pm2 logs strapi           # 日志
 nginx -t                  # 测试配置
 systemctl reload nginx    # 重载
 
-# 本地构建 + 部署（ECS 内存不足无法 npm build）
+# 本地构建 + 部署（ECS 内存不足无法 npm build，必须本地 build）
 cd backend && npm run build
-scp -i agent.pem -r dist root@47.95.242.40:/var/www/strapi/
-ssh -i agent.pem root@47.95.242.40 "pm2 restart strapi"
+
+# ✅ 正确做法：打包成单个 tar.gz 再传（比 scp -r 快 10x）
+tar -czf admin_build.tar.gz -C dist build
+scp -i agent.pem admin_build.tar.gz root@47.95.242.40:/var/www/strapi/dist/
+ssh -i agent.pem root@47.95.242.40 "cd /var/www/strapi/dist && tar -xzf admin_build.tar.gz && rm admin_build.tar.gz && pm2 restart strapi"
+
+# ❌ 慢做法（勿用）：scp -r 会逐文件传输 292 个文件
+# scp -i agent.pem -r dist root@47.95.242.40:/var/www/strapi/
 ```
 
 ---

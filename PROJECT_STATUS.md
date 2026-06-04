@@ -26,6 +26,31 @@
 
 ---
 
+# 🚨 2026-06-05 事故复盘与修复 (ECS OOM 宕机)
+
+## 事故原因
+ECS 服务器上执行了 `npm run build` / `strapi build` 等编译操作，导致 1.6GB 内存耗尽（OOM Kill）。Linux Kernel OOM Killer 随机杀进程，sshd、Strapi 均被杀死，SSH 连接超时、所有 API 全挂，前端 Vercel ISR 缓存持有空数据快照，精选视频全部消失。
+
+## 修复步骤
+1. 阿里云控制台重启 ECS 实例
+2. PM2 自动拉起 Strapi，但 `dist/build/`（Admin 前端资源）丢失 → `/admin` 404
+3. 本地打包 `dist/build` 为 `admin_build.tar.gz`（3.5MB），scp 上传 ECS，解压后 `pm2 restart strapi`
+4. 调用 `POST /api/revalidate` 强制清除 Vercel ISR 缓存
+5. 前端数据全部恢复正常
+
+## 防范措施
+- ECS `~/.bashrc` 加入 `npm run build` 拦截守卫，执行时直接报错提示
+- `ARCHITECTURE.md` 更新部署命令：改用 `tar.gz` 单文件传输（比 `scp -r` 快 10x）
+- 新建 Skill：`C:\Users\leave\.gemini\config\skills\portfolio-rules\SKILL.md`，确保 AI 每次识别 Portfolio 项目时自动加载 ECS 铁律
+
+## 当前状态
+- ✅ ECS 运行正常（内存 663MB / 1.6GB，磁盘 9.9GB / 40GB）
+- ✅ Strapi PM2 online，API 全部 200
+- ✅ strapi.wcyblog.space/admin 可正常访问
+- ✅ 前端 wcyblog.space 数据恢复
+
+---
+
 # 🚀 2026-06-05 更新日志 (Feishu Approval Resume & Personal CLI Binding)
 
 ## 1. 飞书审批发送简历功能 (Feishu Approval Resume Workflow)
