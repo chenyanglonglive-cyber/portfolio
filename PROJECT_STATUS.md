@@ -26,6 +26,21 @@
 
 ---
 
+# 🚀 2026-06-05 更新日志 (Feishu Approval Resume & Personal CLI Binding)
+
+## 1. 飞书审批发送简历功能 (Feishu Approval Resume Workflow)
+*   **后端开发 (Strapi 5)**：定义了 `api::resume-request.resume-request` 集合模型，用于记录下载申请。实现了自定义路由与控制器，包括 `POST /api/resume-requests/apply`（前端申请发卡片）和 `POST /api/feishu/card-callback`（飞书卡片按钮点击回调）。
+*   **发件逻辑 (Gmail SMTP/OAuth2)**：在控制器中基于 `nodemailer` 实现了 Gmail 发信逻辑。完美兼容了 **Gmail App Password (SMTP)** 以及 **Google OAuth2** (检测到 Refresh Token 时自动切换) 两种登录认证，发信附件配置读取服务器本地路径。
+*   **文件上传**：使用 base64 字节流管道将简历 PDF `"D:\AIcode-hub\MyKB\王晨阳-游戏创意2026..pdf"` 安全复制到了 ECS `/var/www/strapi/public/uploads/resumes/wangchenyang-resume-2026.pdf` 路径中。
+*   **前端Modal升级**：更新了 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx) 的简历获取弹窗。表单字段从“你的身份”变更为收集“身份证号”，并增加严格的邮箱及身份证号正则校验，最后对接了后端申请接口。
+*   **后续待办**：等待配置 Gmail 发信密码/授权（在 ECS `.env` 追加配置 `SMTP_USER` / `SMTP_PASS` 或 `GMAIL_REFRESH_TOKEN` 即可直接激活）。
+
+## 2. 本地飞书 CLI 重新绑定 (Feishu CLI Reconfiguration)
+*   **企业至个人账号切换**：清理了原有企业租户配置与 Token，使用用户的个人自建应用 `cli_aa9b718719389bdd` 重新初始化了本地 `lark-cli` 配置，成功扫码授权登录用户个人账号。
+*   **消息发送测试**：成功使用 Bot 身份向用户的 `open_id` 推送了“比奇堡科学家机器人”测试消息并已送达。
+
+---
+
 # 🚀 2026-06-04 更新日志 (Video Ranking & Covers Enlargement)
 
 ## 1. 列表默认排序与排序功能 (Covers & Rank Sorting)

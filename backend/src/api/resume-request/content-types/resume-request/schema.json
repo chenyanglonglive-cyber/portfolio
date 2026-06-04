@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "resume_requests",
+  "info": {
+    "singularName": "resume-request",
+    "pluralName": "resume-requests",
+    "displayName": "Resume Request",
+    "description": "简历下载申请与审批记录"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "idCard": {
+      "type": "string",
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "required": true
+    },
+    "token": {
+      "type": "string",
+      "required": true
+    },
+    "feishuMessageId": {
+      "type": "string"
+    }
+  }
+}

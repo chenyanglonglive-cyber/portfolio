@@ -155,8 +155,8 @@ export default {
     } catch (err: any) {
       console.error('[Lifecycles] afterCreate error:', err.message);
     }
-    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
-    syncFeaturedVideo(result).catch(err => console.error('[Featured Sync] Async sync error:', err));
+    await syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    await syncFeaturedVideo(result).catch(err => console.error('[Featured Sync] Async sync error:', err));
   },
 
   async afterUpdate(event: any) {
@@ -172,13 +172,13 @@ export default {
     } catch (err: any) {
       console.error('[Lifecycles] afterUpdate error:', err.message);
     }
-    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
-    syncFeaturedVideo(result).catch(err => console.error('[Featured Sync] Async sync error:', err));
+    await syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    await syncFeaturedVideo(result).catch(err => console.error('[Featured Sync] Async sync error:', err));
   },
 
   async afterDelete(event: any) {
-    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
-    handleFeaturedVideoDelete(event).catch(err => console.error('[Featured Sync] Async delete error:', err));
+    await syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    await handleFeaturedVideoDelete(event).catch(err => console.error('[Featured Sync] Async delete error:', err));
   }
 };
 

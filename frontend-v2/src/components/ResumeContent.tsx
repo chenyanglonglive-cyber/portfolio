@@ -154,8 +154,10 @@ interface ResumeContentProps {
 export default function ResumeContent({ about }: ResumeContentProps) {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
-  const [identity, setIdentity] = useState("");
+  const [idCard, setIdCard] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -165,6 +167,50 @@ export default function ResumeContent({ about }: ResumeContentProps) {
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !idCard.trim()) return;
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMsg("请输入有效的邮箱地址");
+      return;
+    }
+
+    // Validate ID Card
+    const idCardRegex = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+    if (!idCardRegex.test(idCard)) {
+      setErrorMsg("请输入有效的身份证号");
+      return;
+    }
+
+    setSubmitting(true);
+    setErrorMsg("");
+
+    try {
+      const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "https://strapi.wcyblog.space";
+      const response = await fetch(`${strapiUrl}/api/resume-requests/apply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, idCard }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error?.message || "提交失败，请稍后重试");
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      setErrorMsg(err.message || "请求发送失败，请重试");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -306,6 +352,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
               onClick={() => {
                 setShowModal(false);
                 setSubmitted(false);
+                setErrorMsg("");
               }}
             />
 
@@ -321,6 +368,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                 onClick={() => {
                   setShowModal(false);
                   setSubmitted(false);
+                  setErrorMsg("");
                 }}
                 className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white transition-colors"
               >
@@ -334,22 +382,18 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-white">发送成功</h3>
-                  <p className="text-zinc-400 text-sm">简历将会发送到你的邮箱，请留意查收。</p>
+                  <h3 className="text-xl font-bold text-white">申请已提交</h3>
+                  <p className="text-zinc-400 text-sm">已将申请发送至博主审批，审批通过后简历将发送到您的邮箱。</p>
                 </div>
               ) : (
                 <>
                   <div>
                     <h3 className="text-xl font-bold text-white">获取简历</h3>
-                    <p className="text-zinc-400 text-sm mt-1">请填写以下信息，简历将会发送到你的邮箱。</p>
+                    <p className="text-zinc-400 text-sm mt-1">请填写以下信息，经过飞书审批同意后简历将发送到您的邮箱。</p>
                   </div>
 
                   <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (!email.trim() || !identity.trim()) return;
-                      setSubmitted(true);
-                    }}
+                    onSubmit={handleSubmit}
                     className="space-y-5"
                   >
                     <div className="space-y-2">
@@ -358,30 +402,36 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="请输入你的邮箱"
+                        placeholder="请输入您的接收邮箱"
                         required
                         className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-emerald-400/50 transition-colors"
                       />
-                      <p className="text-xs text-zinc-500">简历将会发送到你的邮箱</p>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-300">你的身份</label>
+                      <label className="text-sm font-medium text-zinc-300">身份证号</label>
                       <input
                         type="text"
-                        value={identity}
-                        onChange={(e) => setIdentity(e.target.value)}
-                        placeholder="请说明您的身份"
+                        value={idCard}
+                        onChange={(e) => setIdCard(e.target.value)}
+                        placeholder="请输入身份证号（仅用于审批记录）"
                         required
                         className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-emerald-400/50 transition-colors"
                       />
                     </div>
 
+                    {errorMsg && (
+                      <div className="text-red-400 text-xs font-semibold bg-red-950/20 border border-red-900/30 px-3 py-2 rounded-lg">
+                        ⚠️ {errorMsg}
+                      </div>
+                    )}
+
                     <button
                       type="submit"
-                      className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors text-sm"
+                      disabled={submitting}
+                      className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors text-sm disabled:opacity-50"
                     >
-                      发送简历
+                      {submitting ? "提交中..." : "申请发送"}
                     </button>
                   </form>
                 </>
