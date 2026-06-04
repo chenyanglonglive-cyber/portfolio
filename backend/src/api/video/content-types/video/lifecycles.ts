@@ -58,13 +58,26 @@ async function syncFeaturedVideo(result: any) {
 
     if (!videoDocId) return;
 
-    const existing = await strapi.documents('api::fea-video.fea-video').findFirst({
+    // 分别在草稿和发布版本中查询，避免漏掉导致重复创建
+    let existing = await strapi.documents('api::fea-video.fea-video').findFirst({
+      status: 'draft',
       filters: {
         video: {
           documentId: videoDocId
         }
       }
     });
+
+    if (!existing) {
+      existing = await strapi.documents('api::fea-video.fea-video').findFirst({
+        status: 'published',
+        filters: {
+          video: {
+            documentId: videoDocId
+          }
+        }
+      });
+    }
 
     const videoEntry = await strapi.documents('api::video.video').findOne({
       documentId: videoDocId,
