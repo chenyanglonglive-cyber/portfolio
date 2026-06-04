@@ -66,16 +66,31 @@ async function syncFeaturedVideo(result: any) {
       }
     });
 
+    const videoEntry = await strapi.documents('api::video.video').findOne({
+      documentId: videoDocId,
+      populate: ['cover']
+    });
+
     if (isFeatured) {
       if (!existing) {
         await strapi.documents('api::fea-video.fea-video').create({
           data: {
             Rank: Number(result.Rank) || 0,
-            video: videoDocId
+            video: videoDocId,
+            cover: videoEntry?.cover ? videoEntry.cover.id : null
           },
           status: result.publishedAt ? 'published' : 'draft'
         });
         console.log(`[Featured Sync] Auto created fea-video item for Video DocID: ${videoDocId} with Rank: ${result.Rank}`);
+      } else {
+        // 同步更新已存在精选记录的 cover
+        await strapi.documents('api::fea-video.fea-video').update({
+          documentId: existing.documentId,
+          data: {
+            cover: videoEntry?.cover ? videoEntry.cover.id : null
+          }
+        });
+        console.log(`[Featured Sync] Auto updated cover for existing fea-video of Video DocID: ${videoDocId}`);
       }
     } else {
       if (existing) {

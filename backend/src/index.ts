@@ -75,17 +75,29 @@ async function ensureContentManagerConfigs(strapi: Core.Strapi) {
       config.settings.defaultSortOrder = 'DESC';
       changed = true;
     }
-    if (config.layouts && config.layouts.list && !config.layouts.list.includes('Rank')) {
-      config.layouts.list.splice(2, 0, 'Rank');
+
+    // 重新组合布局列展示顺序为 ['cover', 'video', 'Rank']
+    const requiredCols = ['cover', 'video', 'Rank'];
+    const currentList = config.layouts?.list || [];
+    let updatedList = [...currentList];
+
+    for (const col of requiredCols) {
+      if (!updatedList.includes(col)) {
+        updatedList.push(col);
+      }
+    }
+
+    const filteredList = updatedList.filter(col => !requiredCols.includes(col));
+    updatedList = [...requiredCols, ...filteredList];
+
+    if (JSON.stringify(currentList) !== JSON.stringify(updatedList)) {
+      config.layouts.list = updatedList;
       changed = true;
     }
-    if (config.layouts && config.layouts.list && !config.layouts.list.includes('video')) {
-      config.layouts.list.splice(1, 0, 'video');
-      changed = true;
-    }
+
     if (changed) {
       await contentTypeService.updateConfiguration('api::fea-video.fea-video', config);
-      console.log('[Config] Updated api::fea-video.fea-video configuration.');
+      console.log('[Config] Updated api::fea-video.fea-video configuration with cover/rank layout.');
     }
   } catch (err: any) {
     console.error('[Config] Failed to configure api::fea-video.fea-video:', err.message);
@@ -158,7 +170,8 @@ async function backfillFeaturedVideos(strapi: Core.Strapi) {
 
     // 2. 正常进行视频回填
     const featuredVideos = await strapi.documents('api::video.video').findMany({
-      filters: { IsFeatured: true }
+      filters: { IsFeatured: true },
+      populate: ['cover']
     });
 
     if (featuredVideos.length === 0) {
@@ -174,18 +187,31 @@ async function backfillFeaturedVideos(strapi: Core.Strapi) {
           video: {
             documentId: v.documentId
           }
-        }
+        },
+        populate: ['cover']
       });
 
       if (!existing) {
         const entry = await strapi.documents('api::fea-video.fea-video').create({
           data: {
             Rank: Number(v.Rank) || 0,
-            video: v.documentId
+            video: v.documentId,
+            cover: v.cover ? v.cover.id : null
           },
           status: v.publishedAt ? 'published' : 'draft'
         });
         console.log(`[Backfill] Created fea-video for Video "${v.Title}" (DocID: ${v.documentId}) with Rank: ${v.Rank}`);
+      } else {
+        // 如果精选记录已存在但缺乏封面关联，温和补全，不破坏原有的排序 Rank
+        if (!existing.cover && v.cover) {
+          await strapi.documents('api::fea-video.fea-video').update({
+            documentId: existing.documentId,
+            data: {
+              cover: v.cover.id
+            }
+          });
+          console.log(`[Backfill] Repopulated cover for existing fea-video of "${v.Title}"`);
+        }
       }
     }
     console.log('[Backfill] Featured videos backfill check completed.');
