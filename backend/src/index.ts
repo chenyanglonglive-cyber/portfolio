@@ -141,8 +141,8 @@ export default {
 
 async function backfillFeaturedVideos(strapi: Core.Strapi) {
   try {
-    const featuredVideos = await strapi.db.query('api::video.video').findMany({
-      where: { IsFeatured: true }
+    const featuredVideos = await strapi.documents('api::video.video').findMany({
+      filters: { IsFeatured: true }
     });
 
     if (featuredVideos.length === 0) {
@@ -155,7 +155,9 @@ async function backfillFeaturedVideos(strapi: Core.Strapi) {
     for (const v of featuredVideos) {
       const existing = await strapi.documents('api::fea-video.fea-video').findFirst({
         filters: {
-          video: v.id
+          video: {
+            documentId: v.documentId
+          }
         }
       });
 
@@ -163,11 +165,11 @@ async function backfillFeaturedVideos(strapi: Core.Strapi) {
         const entry = await strapi.documents('api::fea-video.fea-video').create({
           data: {
             Rank: Number(v.Rank) || 0,
-            video: v.id
+            video: v.documentId
           },
-          status: 'published'
+          status: v.publishedAt ? 'published' : 'draft'
         });
-        console.log(`[Backfill] Created published fea-video for Video "${v.Title}" (ID: ${v.id}, DocID: ${entry.documentId}) with Rank: ${v.Rank}`);
+        console.log(`[Backfill] Created fea-video for Video "${v.Title}" (DocID: ${v.documentId}) with Rank: ${v.Rank}`);
       }
     }
     console.log('[Backfill] Featured videos backfill check completed.');
