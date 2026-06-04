@@ -873,4 +873,15 @@ npx @playwright/cli show --annotate
     - 将其余常规文章的标题字号由原 `text-2xl md:text-3xl` 降低为 **`text-xl md:text-2xl`**，使界面比例与文本层级错落有致。
 *   **单行超出截断**：
     - 为列表文章标题 `h2` 组件统一新增了 `truncate w-full` 类名。在列表项中，任何极长的文章标题只显示为精简的单行，超长部分自动截断并显示为 `...`，优化了列表页面的清爽度；详情页中保留原样完整展示全标题。
-
+## 3. Strapi 后台 Fea Video 列表 Rank 排序与 Cover 缩略图显示优化
+* **Fea Video 模型与列表升级**：
+  - 在 `api::fea-video.fea-video` schema.json 中增加了 `cover` (media) 属性。
+  - 在 `bootstrap` 中配置 `ensureContentManagerConfigs` 自动将 Fea Video 后台内容管理器列表列重排为 `['cover', 'video', 'Rank']`，并设置默认按 `Rank` 降序 (`Rank:desc`) 排序且支持表头点击排序。
+  - 表格的 `Cover` 列以 80px 高度贴紧分割线的原比例大图形式自适应展示视频封面，提供高级的视觉和管理体验。
+* **双向自动同步与数据自愈（Self-Healing Backfill）**：
+  - 在视频创建/更新/删除生命周期（`syncFeaturedVideo`）中，自动实现视频封面 ID 同步到 `fea-video` 的 `cover` 字段上。当勾选精选、修改封面或删除视频时，两端数据完全保持一致。
+  - 在服务 `bootstrap` 启动时，自动对现有精选视频进行数据温和回填：当已存在对应精选记录但缺乏 `cover` 时，温和更新其 `cover` 关联而不破坏管理员已单独设定的 `Rank` 排序。
+  - 新增自愈清理机制：自动检测并删除无关联视频（因历史原因或视频直接被物理删除）的孤儿 `fea-video` 空/破折号记录，自动清理了 9 条 blank 历史记录，使数据列表恢复绝对纯净。
+* **部署与上线运行**：
+  - 本地 TS 生成类型及 `npm run build` 全无错编译成功。
+  - 通过 `deploy.ps1` 一键打包部署至阿里云 ECS 并成功重启 PM2，生产环境服务状态健康。
