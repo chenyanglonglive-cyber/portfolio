@@ -181,20 +181,15 @@ export async function getWorks(): Promise<Work[]> {
 }
 
 export async function getFeaturedWorks(): Promise<Work[]> {
-  const videoFields = [
-    "populate[video][fields][0]=url",
-    "populate[cover][fields][0]=url",
-    "fields[0]=Title",
-    "fields[1]=IsFeatured",
-    "fields[2]=Rank",
-    "fields[3]=Spend",
-    "fields[4]=ROI_7D",
-    "fields[5]=CTR",
-    "fields[6]=Story",
-    "fields[7]=LaunchDate",
-    "fields[8]=Currency",
+  const feaVideoFields = [
+    "populate[video][populate][0]=video",
+    "populate[video][populate][1]=cover",
+    "populate[video][populate][2]=project",
+    "populate[video][populate][3]=tags",
+    "fields[0]=Rank",
     "pagination[pageSize]=200",
   ].join("&");
+
   const imageFields = [
     "populate[image][fields][0]=url",
     "fields[0]=Title",
@@ -210,16 +205,26 @@ export async function getFeaturedWorks(): Promise<Work[]> {
   ].join("&");
 
   try {
-    const [videos, images] = await Promise.all([
-      queryStrapi<Work[]>(
-        `videos?filters[IsFeatured][$eq]=true&${videoFields}`
+    const [feaVideos, images] = await Promise.all([
+      queryStrapi<any[]>(
+        `fea-videos?${feaVideoFields}`
       ),
       queryStrapi<Work[]>(
         `images?filters[IsFeatured][$eq]=true&${imageFields}`
       ),
     ]);
-    const allFeatured = [...(videos || []), ...(images || [])];
-    return allFeatured.map(normalizeWork).sort((a, b) => b.Rank - a.Rank);
+
+    const videos = (feaVideos || [])
+      .filter((item: any) => item.video)
+      .map((item: any) => {
+        const w = normalizeWork(item.video);
+        w.Rank = Number(item.Rank) || 0; // 用独立的 rank 覆盖，进行排序
+        return w;
+      });
+
+    const normalizedImages = (images || []).map(normalizeWork);
+    const allFeatured = [...videos, ...normalizedImages];
+    return allFeatured.sort((a, b) => b.Rank - a.Rank);
   } catch {
     return [];
   }

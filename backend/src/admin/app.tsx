@@ -24,8 +24,8 @@ export default {
         td img[src*="uploads"],
         [class*="Avatar"] img {
           width: auto !important;
-          height: 40px !important;
-          max-width: 80px !important;
+          height: 80px !important;
+          max-width: 150px !important;
           object-fit: contain !important;
           border-radius: 4px !important;
           background-color: rgba(255, 255, 255, 0.05) !important;
@@ -40,13 +40,19 @@ export default {
         td [class*="Avatar"] > div,
         td [class*="Avatar"] > span {
           width: auto !important;
-          height: 40px !important;
-          max-width: 80px !important;
+          height: 80px !important;
+          max-width: 150px !important;
           border-radius: 4px !important;
           overflow: hidden !important;
           display: inline-flex !important;
           align-items: center !important;
           justify-content: center !important;
+        }
+
+        /* 清减表格单元格的上下 padding，以支持缩略图拉大贴合分割线 */
+        table tbody tr td {
+          padding-top: 2px !important;
+          padding-bottom: 2px !important;
         }
       `;
       document.head.appendChild(style);

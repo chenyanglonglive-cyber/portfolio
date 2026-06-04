@@ -488,6 +488,36 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFeaVideoFeaVideo extends Struct.CollectionTypeSchema {
+  collectionName: 'fea_videos';
+  info: {
+    description: 'Featured videos for homepage';
+    displayName: 'Fea Video';
+    pluralName: 'fea-videos';
+    singularName: 'fea-video';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::fea-video.fea-video'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Rank: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    video: Schema.Attribute.Relation<'oneToOne', 'api::video.video'>;
+  };
+}
+
 export interface ApiImageImage extends Struct.CollectionTypeSchema {
   collectionName: 'images';
   info: {
@@ -504,6 +534,8 @@ export interface ApiImageImage extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     CTR: Schema.Attribute.Decimal;
+    Currency: Schema.Attribute.Enumeration<['CNY', 'USD']> &
+      Schema.Attribute.DefaultTo<'CNY'>;
     image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     IsFeatured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     LaunchDate: Schema.Attribute.Date;
@@ -605,6 +637,8 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     CTR: Schema.Attribute.Decimal;
+    Currency: Schema.Attribute.Enumeration<['CNY', 'USD']> &
+      Schema.Attribute.DefaultTo<'CNY'>;
     IsFeatured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     LaunchDate: Schema.Attribute.Date;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -622,49 +656,6 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     video: Schema.Attribute.Media<'videos'> & Schema.Attribute.Required;
-  };
-}
-
-export interface ApiWorkWork extends Struct.CollectionTypeSchema {
-  collectionName: 'works';
-  info: {
-    displayName: 'work';
-    pluralName: 'works';
-    singularName: 'work';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    CTR: Schema.Attribute.Decimal;
-    IsFeatured: Schema.Attribute.Boolean;
-    LaunchDate: Schema.Attribute.Date;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::work.work'> &
-      Schema.Attribute.Private;
-    Media: Schema.Attribute.DynamicZone<
-      ['media.video-item', 'media.image-item']
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMax<
-        {
-          max: 1;
-          min: 1;
-        },
-        number
-      >;
-    publishedAt: Schema.Attribute.DateTime;
-    Rank: Schema.Attribute.Integer;
-    ROI_7D: Schema.Attribute.Decimal;
-    Spend: Schema.Attribute.BigInteger;
-    Story: Schema.Attribute.Text;
-    Title: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
   };
 }
 
@@ -1181,11 +1172,11 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
       'api::article.article': ApiArticleArticle;
+      'api::fea-video.fea-video': ApiFeaVideoFeaVideo;
       'api::image.image': ApiImageImage;
       'api::project.project': ApiProjectProject;
       'api::tag.tag': ApiTagTag;
       'api::video.video': ApiVideoVideo;
-      'api::work.work': ApiWorkWork;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
