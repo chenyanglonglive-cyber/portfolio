@@ -51,6 +51,61 @@ async function syncVideoUsedStatuses() {
   }
 }
 
+async function syncFeaturedVideo(result: any) {
+  try {
+    const isFeatured = !!result.IsFeatured;
+    const videoId = result.id;
+
+    const existing = await strapi.db.query('api::fea-video.fea-video').findOne({
+      where: { video: videoId }
+    });
+
+    if (isFeatured) {
+      if (!existing) {
+        const crypto = require('crypto');
+        const documentId = crypto.randomUUID().replace(/-/g, '').slice(0, 20);
+        await strapi.db.query('api::fea-video.fea-video').create({
+          data: {
+            Rank: Number(result.Rank) || 0,
+            video: videoId,
+            documentId
+          }
+        });
+        console.log(`[Featured Sync] Auto created fea-video item for Video ID: ${videoId} with Rank: ${result.Rank}`);
+      }
+    } else {
+      if (existing) {
+        await strapi.db.query('api::fea-video.fea-video').delete({
+          where: { id: existing.id }
+        });
+        console.log(`[Featured Sync] Auto deleted fea-video item for Video ID: ${videoId}`);
+      }
+    }
+  } catch (err: any) {
+    console.error('[Featured Sync] Failed to sync featured video:', err.message);
+  }
+}
+
+async function handleFeaturedVideoDelete(event: any) {
+  try {
+    const videoId = event.result?.id;
+    if (videoId) {
+      await strapi.db.query('api::fea-video.fea-video').deleteMany({
+        where: { video: videoId }
+      });
+      console.log(`[Featured Sync] Auto deleted fea-video items for deleted Video ID: ${videoId}`);
+    } else if (event.params?.where?.id) {
+      const idCond = event.params.where.id;
+      await strapi.db.query('api::fea-video.fea-video').deleteMany({
+        where: { video: idCond }
+      });
+      console.log(`[Featured Sync] Auto deleted fea-video items for deleted Video ID:`, idCond);
+    }
+  } catch (err: any) {
+    console.error('[Featured Sync] Failed to handle featured video deletion:', err.message);
+  }
+}
+
 export default {
   async afterCreate(event: any) {
     const { result } = event;
@@ -66,6 +121,7 @@ export default {
       console.error('[Lifecycles] afterCreate error:', err.message);
     }
     syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    syncFeaturedVideo(result).catch(err => console.error('[Featured Sync] Async sync error:', err));
   },
 
   async afterUpdate(event: any) {
@@ -82,10 +138,12 @@ export default {
       console.error('[Lifecycles] afterUpdate error:', err.message);
     }
     syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    syncFeaturedVideo(result).catch(err => console.error('[Featured Sync] Async sync error:', err));
   },
 
   async afterDelete(event: any) {
     syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    handleFeaturedVideoDelete(event).catch(err => console.error('[Featured Sync] Async delete error:', err));
   }
 };
 

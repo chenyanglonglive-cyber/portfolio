@@ -133,5 +133,44 @@ export default {
 
     // 自动确保 Content Manager 配置
     await ensureContentManagerConfigs(strapi);
+
+    // 自动回填精选视频数据
+    await backfillFeaturedVideos(strapi);
   },
 };
+
+async function backfillFeaturedVideos(strapi: Core.Strapi) {
+  try {
+    const featuredVideos = await strapi.db.query('api::video.video').findMany({
+      where: { IsFeatured: true }
+    });
+
+    if (featuredVideos.length === 0) {
+      console.log('[Backfill] No featured videos found in api::video.video.');
+      return;
+    }
+
+    console.log(`[Backfill] Found ${featuredVideos.length} featured videos. Ensuring they exist in fea-video…`);
+
+    for (const v of featuredVideos) {
+      const existing = await strapi.db.query('api::fea-video.fea-video').findOne({
+        where: { video: v.id }
+      });
+
+      if (!existing) {
+        const documentId = crypto.randomUUID().replace(/-/g, '').slice(0, 20);
+        await strapi.db.query('api::fea-video.fea-video').create({
+          data: {
+            Rank: Number(v.Rank) || 0,
+            video: v.id,
+            documentId
+          }
+        });
+        console.log(`[Backfill] Created fea-video for Video "${v.Title}" (ID: ${v.id}) with Rank: ${v.Rank}`);
+      }
+    }
+    console.log('[Backfill] Featured videos backfill check completed.');
+  } catch (err: any) {
+    console.error('[Backfill] Failed to backfill featured videos:', err.message);
+  }
+}

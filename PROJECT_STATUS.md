@@ -26,6 +26,26 @@
 
 ---
 
+# 🚀 2026-06-04 更新日志 (Video Ranking & Covers Enlargement)
+
+## 1. 列表默认排序与排序功能 (Covers & Rank Sorting)
+*   **Video 列表按 Rank 排序**：通过在后端 `bootstrap` 中新增自动化配置机制，在后台启动时自动检查并更新 `content-manager` 插件中 `api::video.video` 的布局配置，设置其默认以 `Rank` 字段进行降序排序 (`Rank:desc`)，并确保 `Rank` 列默认呈现在内容列表中。
+*   **Fea Video 列表排序**：同样在 `bootstrap` 中自动针对新建的 `api::fea-video.fea-video` 进行 Content Manager 视图配置，使其默认以 `Rank` 字段降序排序，并默认展示 `Rank` 和关联的 `video` 字段。
+
+## 2. 后台缩略图尺寸增大 (Admin Style Optimization)
+*   **自适应高度增大**：将 `backend/src/admin/app.tsx` 中注入的全局样式中，缩略图的 `height` 限制从 `40px` 调高为 `80px`，`max-width` 调整为 `150px`。
+*   **贴合分割线**：重置了表格每行单元格 `td` 的上下 padding 为 `2px !important`，使图片在垂直方向最大化利用空间并贴紧行分割线。
+
+## 3. 首页精选视频集合 `fea-video` (Homepage Featured Decoupling)
+*   **数据模型新建**：新建 `api::fea-video.fea-video` 集合模型，字段包含精选排序权重 `Rank` (Integer) 以及与普通视频模型的 `oneToOne` 单向关系 `video`。
+*   **自动公开授权**：在 `bootstrap` 时通过 `grantPublicPermissions` 机制自动检查并为 Authenticated 和 Public 角色授予 `api::fea-video.fea-video.find` 和 `api::fea-video.fea-video.findOne` 权限，实现免维护免手动配置。
+*   **前台数据对接**：重构了前台 [strapi.ts:getFeaturedWorks()](file:///g:/blog/frontend-v2/src/lib/strapi.ts)，将原有的精选视频源从 `videos?filters[IsFeatured][$eq]=true` 切换至 `fea-videos`。
+*   **排序值合并**：对从 `fea-videos` 拉取的数据进行映射转换时，自动提取其外层 `Rank` 并覆盖到标准化的 `Work` 实体中，使首页精选网格按照该独立 Rank 降序排列，实现了与普通视频 Rank 的彻底解耦。
+*   **自动化数据回填 (Database Backfill)**：在 `bootstrap` 启动时新增 `backfillFeaturedVideos` 自动化机制，自动抓取 `IsFeatured: true` 的已有 `Video` 实体并在 `fea-video` 中创建对应的关联记录，其 `Rank` 初始化为该视频的 Rank 值，实现了对历史精选数据的一键无缝回填。
+*   **生命周期双向同步联动 (Lifecycle Auto-Sync)**：在 `api::video.video` 的 `lifecycles.ts` 中新增状态同步，当新建或更新 `Video` 并勾选开启精选（`IsFeatured: true`）时，自动在 `fea-video` 关联创建记录；当取消精选时，自动删除；当删除 `Video` 时，亦联动从 `fea-video` 列表中彻底清除关联，保证两端数据的实时一致性。
+
+---
+
 # 🚀 2026-05-13 更新日志 (Latest Progress)
 
 ## 1. 核心架构与部署 (COMPLETED)
