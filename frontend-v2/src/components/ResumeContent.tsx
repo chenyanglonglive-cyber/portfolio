@@ -190,8 +190,8 @@ export default function ResumeContent({ about }: ResumeContentProps) {
     setErrorMsg("");
 
     try {
-      const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "https://strapi.wcyblog.space";
-      const response = await fetch(`${strapiUrl}/api/resume-requests/apply`, {
+      // 通过 Next.js 代理路由发送（解决 HTTPS 页面无法直接请求 HTTP Strapi 的 Mixed Content 问题）
+      const response = await fetch(`/api/resume-apply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
