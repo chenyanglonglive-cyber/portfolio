@@ -26,6 +26,15 @@
 
 ---
 
+# ✅ 2026-06-06 飞书卡片回调代理 (解决域名未备案导致 url invalid)
+
+## 改动内容
+- **`frontend-v2/src/app/api/feishu/card-callback/route.ts`**：在 Next.js 前端（Vercel，部署于国外，免受阿里云备案系统封锁）新增了 API 代理路由。
+- 该代理将飞书的 HTTPS 请求转发给 ECS 上的 Strapi 原始地址（`http://47.95.242.40/api/feishu/card-callback`）。
+- **可填写的飞书请求地址**：`https://wcyblog.space/api/feishu/card-callback` （或 `https://www.wcyblog.space/api/feishu/card-callback`）。
+
+---
+
 # ✅ 2026-06-06 邮件服务通用化 (Gmail SMTP → 通用 SMTP)
 
 ## 改动内容
