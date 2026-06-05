@@ -815,10 +815,9 @@ npx @playwright/cli show --annotate
     - **图片卡片悬停渐现**：针对高度较小的图片卡片，其底部的标题与消耗信息默认设置为 **完全隐藏**，仅在鼠标悬停在卡片上时触发向上滑入渐现动效。这完美解决了由于图片卡片高度较小，常驻遮罩遮挡画面导致看不清图片数据和标题的问题。
 *   **图片分页滚动同步**：确认了前台图片分页及滚动加载（一次 12 个）的数据管道在 Works 虚拟网格中同步运行，支持以极高的首屏响应加载大批量的图片资产。
 
-<<<<<<< HEAD
 ## 3. 首页精选视频与图片币种动态数据绑定修复 (Homepage Featured Works Currency Symbol Fix)
 *   **问题定位**：用户反馈在后台将精选视频/图片消耗单位修改为美元（`USD`）时，首页精选卡片上的货币符号依然硬编码显示为人民币 `¥`，而作品页（`/works`）显示正常。
-*   **根因分析**：在 [strapi.ts](file:///d:/blog/portfolio/frontend-v2/src/lib/strapi.ts) 的 `getFeaturedWorks()` 和 `getWorks()` 查询参数中，没有包含对 `Currency` 字段的拉取。这导致前端拿到的 `Currency` 变量始终为 `undefined`，最终由 `normalizeWork` 回退初始化为 `'CNY'` (￥)。
+*   **根因分析**：在 [strapi.ts](file:///d:/blog/portfolio/frontend-v2/src/lib/strapi.ts) 的 `getFeaturedWorks()` 和 `getWorks()` 查询参数中，没有包含对 `Currency` 字段前台数据的拉取。这导致前端拿到的 `Currency` 变量始终为 `undefined`，最终由 `normalizeWork` 回退初始化为 `'CNY'` (￥)。
 *   **修复方案**：
     - 在 [strapi.ts](file:///d:/blog/portfolio/frontend-v2/src/lib/strapi.ts#L153) 的 `getWorks()` 方法以及 `getFeaturedWorks()` 方法的 `videoFields` 与 `imageFields` 数组中，统一追加 `"fields[8]=Currency"` 请求字段。
     - 前端通过 `normalizeWork` 自动解析该枚举，WorkCard 接收到 `Currency` 字段后，动态在首页卡片上展示正确的币种符号（`CNY` -> `￥`，`USD` -> `$`）。
@@ -826,27 +825,7 @@ npx @playwright/cli show --annotate
 
 ---
 
-# 🚀 2026-06-04 更新日志 (Bypass Backend Video Compression & ECS PM2 Cleanup)
-
-## 1. 废弃后端视频压缩服务，改为用户端直传 (Bypass Backend Video Compression)
-*   **性能考虑**：因阿里云 ECS 服务器仅有 2GB 内存，运行 FFmpeg 进行视频压缩会造成 CPU 满载和 OOM 宕机风险。为了确保服务器稳定性，将视频压缩完全下放到用户端（用户在本地电脑使用剪映/FFmpeg 压缩好视频再上传），后台不再跑 heavy 的 FFmpeg。
-*   **前端上传逻辑重构**：
-    - 在 [actions.ts](file:///d:/blog/portfolio/frontend-v2/src/app/admin/upload/actions.ts) 中彻底删除了冗余的 `compressAndUploadVideo` 接口函数。
-    - 在 [UploadForm.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/admin/upload/UploadForm.tsx) 中重构了 `submitVideoPipeline` 视频上传管线。在 Stage 2 视频上传时，替换为直接调用 `uploadToStrapi` 直传到 Strapi 媒体库的 `/api/upload` 接口，原样保存用户已压制好的高品质视频。
-    - 更新了前端上传表单的文本提示和说明信息，指引用户“建议本地预先压制后上传”。
-*   **保留浏览器端自动抽帧业务 (Client-side Frame Extraction)**：
-    - 基于 HTML5 Canvas 的本地视频第 1 秒首帧截取和 WebP 压缩上传业务流完全保留在用户端运行，封面图片上传不受任何影响。
-
-## 2. 后端 ECS 压缩服务常驻进程清理 (ECS PM2 Cleanup)
-*   **PM2 进程注销**：通过 SSH 安全秘钥（`agent.pem`）连接阿里云 ECS 主机，执行了 `pm2 delete compress`，成功注销了原用于视频排队压缩的常驻后台服务 `compress`，并执行 `pm2 save` 持久化配置，彻底释放了该进程占用的内存空间，降低了服务器常驻负载。
-
-## 3. 前端博客页面 Slug 构建容错修复 (Blog GenerateStaticParams Build Fix)
-*   **构建崩溃排查**：在本地编译时遇到了 `/blog/[slug]` 的静态参数生成崩溃问题，排查后发现是由于远程数据库中 ID 为 6 的文章 `Slug` 字段值为 `null`。
-*   **防崩溃修复**：在 [page.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/blog/[slug]/page.tsx) 的 `generateStaticParams` 静态生成方法中加入了防御性过滤，自动剔除 null 或空字符串的 Slug 条目，防止数据库脏数据导致 Next.js 打包中断。
-=======
----
-
-# 🚀 2026-06-03 更新日志 (Backend Video Titles Reorganization)
+# 🚀 2026-06-03 更新日志 (Backend Video Titles Reorganization & Tags Sync)
 
 ## 1. 整理后端视频作品标题数据 (Backend Video Titles Reorganization)
 *   **标题数据批量更新**：
@@ -870,24 +849,20 @@ npx @playwright/cli show --annotate
       6. **第六梯队 (Rank 5)**：`无敌冲冲冲` (10个视频)
       7. **其他项目 (Rank 0)**：`Movie puzzle`, `奇幻魔力消`, `其他`
     - 此操作让前台作品展示顺序完全与指定的项目级别优先级看齐，实现高内聚展示。
-*   **清理废弃的 Work/Works 模型与数据表**：
+*   **清理废弃 of Work/Works 模型与数据表**：
     - 在 ECS 生产数据库中彻底删除了历史遗留的 `works` 空数据表（`DROP TABLE IF EXISTS works;`）。
     - 清理了 ECS 生产服务器上编译残留的 `/var/www/strapi/dist/src/api/work` 目录，并安全重启了 PM2 托管的 Strapi 后端服务。
     - 在本地执行了 `npm run build` 清理编译目录，并重新运行 `npx strapi ts:generate-types` 重新生成了 TypeScript 类型文件，彻底清除了 `contentTypes.d.ts` 中的 `ApiWorkWork` 和 `api::work.work` 废弃类型定义，实现了全站代码与数据库结构的极简与纯净。
 
----
-
-# 🚀 2026-06-03 更新日志 (Backend Video & Image Tags Synchronization)
-
-## 1. 批量同步视频与图片作品 Tag 标签关系 (Backend Video & Image Tags Sync)
+## 2. 批量同步视频与图片作品 Tag 标签关系 (Backend Video & Image Tags Sync)
 *   **分配规则与关联建立**：
     - 针对阿里云 ECS 上的 PostgreSQL 数据库，编写并安全执行了批量 Tag 绑定脚本。
-    - **国内 (Tag ID: 9)**：已为 `无敌冲冲冲` (冲冲冲)、`雷霆战机` 和 `奇幻魔力消` 项目名下的所有视频和图片资源建立关联，累计新增 96 个视频标签关联与 96 个图片标签关联。
+    - **国内 (Tag ID: 9)**：已为 `无敌冲冲冲` (冲冲冲)、`雷霆战机` 和 `奇幻魔力消` 项目名下的所有视频 and 图片资源建立关联，累计新增 96 个视频标签关联与 96 个图片标签关联。
     - **益智 (Tag ID: 11)**：已为标题中包含 `bible`、`movie` 的资源（含已下线的 `Movie puzzle` 遗留视频）自动建立关联，累计新增 12 个视频标签关联。
-    - **超休 (Tag ID: 10)**：已为所有以 `bingo`（`bingo clash`、`bingo tour`、`bingo frenzy` 等）、`buble buzz`（新项目 `buble buzz`）及 `Solitaire Clash` 开头或包含这些名字的资源自动建立关联，累计新增 112 个视频标签关联。
+    - **超休 (Tag ID: 10)**：已为所有以 `bingo`（`bingo clash`、`bingo tour`、`bingo frenzy` 等）、`buble buzz`（新项目 `buble buzz`）及 `Solitaire Clash` 开头或包含这些名字 of 资源自动建立关联，累计新增 112 个视频标签关联。
 *   **关系完整性与排重**：
     - 使用数据库事务进行安全批处理，在插入 `tags_videos_lnk` 和 `tags_images_lnk` 之前进行去重校验，避免任何重复关联的产生。
-    - 自动为每个关联关系生成单调递增的排序权值 `ord`（基于 `COALESCE(MAX(ord), 0) + 1`），确保后台及前台渲染的顺序与完整性。
+    - 自动为每个关联关系生成单调递增的排序权值 `ord`（基于 `COALESCE(MAX(ord), 0) + 1`），确保后台及前台渲染 of 顺序与完整性。
 *   **清洗与验证**：
     - 验证结果显示，数据库关联插入完全正确：
       - `国内` 标签（ID: 9）包含 96 条视频、96 条图片；
@@ -897,23 +872,40 @@ npx @playwright/cli show --annotate
 
 ---
 
-# 🚀 2026-06-04 更新日志 (Blog Layout Optimization)
+# 🚀 2026-06-04 更新日志 (Bypass Backend Video Compression & ECS PM2 Cleanup)
 
-## 1. 手记页面版心宽度优化与全站对齐 (Blog Container Width Realignment)
+## 1. 废弃后端视频压缩服务，改为用户端直传 (Bypass Backend Video Compression)
+*   **性能考虑**：因阿里云 ECS 服务器仅有 2GB 内存，运行 FFmpeg 进行视频压缩会造成 CPU 满载和 OOM 宕机风险。为了确保服务器稳定性，将视频压缩完全下放到用户端（用户在本地电脑使用剪映/FFmpeg 压缩好视频再上传），后台不再跑 heavy 的 FFmpeg。
+*   **前端上传逻辑重构**：
+    - 在 [actions.ts](file:///d:/blog/portfolio/frontend-v2/src/app/admin/upload/actions.ts) 中彻底删除了冗余的 `compressAndUploadVideo` 接口函数。
+    - 在 [UploadForm.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/admin/upload/UploadForm.tsx) 中重构了 `submitVideoPipeline` 视频上传管线。在 Stage 2 视频上传时，替换为直接调用 `uploadToStrapi` 直传到 Strapi 媒体库 of `/api/upload` 接口，原样保存用户已压制好的高品质视频。
+    - 更新了前端上传表单的文本提示和说明信息，指引用户“建议本地预先压制后上传”。
+*   **保留浏览器端自动抽帧业务 (Client-side Frame Extraction)**：
+    - 基于 HTML5 Canvas 的本地视频第 1 秒首帧截取和 WebP 压缩上传业务流完全保留在用户端运行，封面图片上传不受任何影响。
+
+## 2. 后端 ECS 压缩服务常驻进程清理 (ECS PM2 Cleanup)
+*   **PM2 进程注销**：通过 SSH 安全秘钥（`agent.pem`）连接阿里云 ECS 主机，执行了 `pm2 delete compress`，成功注销了原用于视频排队压缩的常驻后台服务 `compress`，并执行 `pm2 save` 持久化配置，彻底释放了该进程占用的内存空间，降低了服务器常驻负载。
+
+## 3. 前端博客页面 Slug 构建容错修复 (Blog GenerateStaticParams Build Fix)
+*   **构建崩溃排查**：在本地编译时遇到了 `/blog/[slug]` 的静态参数生成崩溃问题，排查后发现是由于远程数据库中 ID 为 6 的文章 `Slug` 字段值为 `null`。
+*   **防崩溃修复**：在 [page.tsx](file:///d:/blog/portfolio/frontend-v2/src/app/blog/[slug]/page.tsx) 的 `generateStaticParams` 静态生成方法中加入了防御性过滤，自动剔除 null 或空字符串 of Slug 条目，防止数据库脏数据导致 Next.js 打包中断。
+
+## 4. 手记页面版心宽度优化与全站对齐 (Blog Container Width Realignment)
 *   **页面宽度升级**：
     - 修改了手记列表页 [page.tsx](file:///g:/blog/frontend-v2/src/app/blog/page.tsx)，将其外层包裹容器的宽度由原来的 `max-w-4xl` 扩展为 **`max-w-5xl`**。
     - 修改了手记详情（文章阅读）页 [page.tsx](file:///g:/blog/frontend-v2/src/app/blog/[slug]/page.tsx)，将外层包裹容器的宽度由原来的 `max-w-3xl` 大幅扩展升级为 **`max-w-5xl`**。
-    - 这使得手记（Blog）板块下的全部页面版心宽度，均与首页和 Works（作品）页的 `max-w-5xl` 保持了高度完美的几何对齐与比例一致，优化了在大屏幕下的阅读与整体视觉体验。
+    - 这使得手记（Blog）板块下的全部页面版心宽度，均与首页 and Works（作品）页 of `max-w-5xl` 保持了高度完美的几何对齐与比例一致，优化了在大屏幕下的阅读与整体视觉体验。
 *   **本地构建与验证**：
     - 在本地执行 `npm run build` 进行编译，静态 HTML 预渲染及 TypeScript 编译检查成功通过，无任何报错。
 
-## 2. 手记列表页文章标题字号与单行省略优化 (Blog List Title Scaling & Ellipsis)
+## 5. 手记列表页文章标题字号与单行省略优化 (Blog List Title Scaling & Ellipsis)
 *   **字号层级优化**：
     - 重构了 [BlogList.tsx](file:///g:/blog/frontend-v2/src/components/BlogList.tsx)，将列表首篇精选文章标题的字号由原 `text-3xl md:text-5xl` 降低为 **`text-2xl md:text-3xl`**，避免其尺寸反客为主甚至盖过页面主标题。
     - 将其余常规文章的标题字号由原 `text-2xl md:text-3xl` 降低为 **`text-xl md:text-2xl`**，使界面比例与文本层级错落有致。
 *   **单行超出截断**：
     - 为列表文章标题 `h2` 组件统一新增了 `truncate w-full` 类名。在列表项中，任何极长的文章标题只显示为精简的单行，超长部分自动截断并显示为 `...`，优化了列表页面的清爽度；详情页中保留原样完整展示全标题。
-## 3. Strapi 后台 Fea Video 列表 Rank 排序与 Cover 缩略图显示优化
+
+## 6. Strapi 后台 Fea Video 列表 Rank 排序与 Cover 缩略图显示优化
 * **Fea Video 模型与列表升级**：
   - 在 `api::fea-video.fea-video` schema.json 中增加了 `cover` (media) 属性。
   - 在 `bootstrap` 中配置 `ensureContentManagerConfigs` 自动将 Fea Video 后台内容管理器列表列重排为 `['cover', 'video', 'Rank']`，并设置默认按 `Rank` 降序 (`Rank:desc`) 排序且支持表头点击排序。
@@ -925,3 +917,18 @@ npx @playwright/cli show --annotate
 * **部署与上线运行**：
   - 本地 TS 生成类型及 `npm run build` 全无错编译成功。
   - 通过 `deploy.ps1` 一键打包部署至阿里云 ECS 并成功重启 PM2，生产环境服务状态健康。
+
+---
+
+# 🚀 2026-06-06 更新日志 (Feishu Approval Identity Info Upgrade)
+
+## 1. 飞书简历下载申请由“身份证号”变更为“你的身份”
+*   **前端表单升级**：
+    - 修改了 [ResumeContent.tsx](file:///d:/blog/portfolio/frontend-v2/src/components/ResumeContent.tsx)，将下载申请弹窗中的输入项 Label 由“身份证号”改为“你的身份”，Placeholder 变更为“请输入您的公司/职位/姓名，仅用于审批记录”。
+    - 移除了原有的 15位/18位 身份证格式正则校验，改为了通用的非空和不低于 2 个字符的长度校验，当校验未通过时提供友好的错误提示。
+*   **后端验证与飞书审批卡片适配**：
+    - 修改了 [resume-request.ts](file:///d:/blog/portfolio/backend/src/api/resume-request/controllers/resume-request.ts) 控制器，移除了原有的身份证格式正则校验，确保非 ID card 格式文本的正常接收与存储。
+    - 更新了飞书交互式卡片中的字段文案，由原先的 `**身份证号：**` 统一更名为 `**申请人身份：**`。在收到审批消息和处理审批结果（已同意/已拒绝）的回显卡片中均已同步生效。
+*   **部署与验证**：
+    - 前端：本地运行 `npm run build` 完成静态和 TS 编译验证。
+    - 后端：本地运行 `npm run build` 进行 TS 编译，并使用 `deploy.ps1` 自动打包覆盖部署至 ECS 并安全重启 Strapi PM2。

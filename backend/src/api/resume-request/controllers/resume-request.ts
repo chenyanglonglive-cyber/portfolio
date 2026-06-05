@@ -48,7 +48,7 @@ async function sendFeishuCard(email: string, idCard: string, requestId: string, 
         tag: 'div',
         text: {
           tag: 'lark_md',
-          content: `**申请人邮箱：** ${email}\n**身份证号：** ${idCard}\n**申请时间：** ${timeStr}`
+          content: `**申请人邮箱：** ${email}\n**申请人身份：** ${idCard}\n**申请时间：** ${timeStr}`
         }
       },
       {
@@ -173,10 +173,9 @@ export default factories.createCoreController('api::resume-request.resume-reques
       return ctx.badRequest('Invalid email address format');
     }
 
-    // ID card simple check (usually 18 digits or ending with X/x)
-    const idCardRegex = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-    if (!idCardRegex.test(idCard)) {
-      return ctx.badRequest('Invalid ID card format');
+    // Basic verification for identity info
+    if (typeof idCard !== 'string' || idCard.trim().length < 2) {
+      return ctx.badRequest('Invalid identity info format');
     }
 
     try {
@@ -254,7 +253,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**身份证号：** ${record.idCard}\n**处理状态：** 该申请在此前已处理，当前状态为: **${record.status}**`
+                  content: `**申请人邮箱：** ${record.email}\n**申请人身份：** ${record.idCard}\n**处理状态：** 该申请在此前已处理，当前状态为: **${record.status}**`
                 }
               }
             ]
@@ -287,7 +286,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**身份证号：** ${record.idCard}\n**审批结果：** 🟢 已同意发送\n**发送时间：** ${timeStr}`
+                  content: `**申请人邮箱：** ${record.email}\n**申请人身份：** ${record.idCard}\n**审批结果：** 🟢 已同意发送\n**发送时间：** ${timeStr}`
                 }
               }
             ]
@@ -313,7 +312,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**身份证号：** ${record.idCard}\n**审批结果：** 🔴 已拒绝发送\n**处理时间：** ${timeStr}`
+                  content: `**申请人邮箱：** ${record.email}\n**申请人身份：** ${record.idCard}\n**审批结果：** 🔴 已拒绝发送\n**处理时间：** ${timeStr}`
                 }
               }
             ]

@@ -180,10 +180,9 @@ export default function ResumeContent({ about }: ResumeContentProps) {
       return;
     }
 
-    // Validate ID Card
-    const idCardRegex = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-    if (!idCardRegex.test(idCard)) {
-      setErrorMsg("请输入有效的身份证号");
+    // Validate Identity Info
+    if (idCard.trim().length < 2) {
+      setErrorMsg("请输入您的身份信息");
       return;
     }
 
@@ -409,12 +408,12 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-300">身份证号</label>
+                      <label className="text-sm font-medium text-zinc-300">你的身份</label>
                       <input
                         type="text"
                         value={idCard}
                         onChange={(e) => setIdCard(e.target.value)}
-                        placeholder="请输入身份证号（仅用于审批记录）"
+                        placeholder="请输入您的公司/职位/姓名，仅用于审批记录"
                         required
                         className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-emerald-400/50 transition-colors"
                       />
