@@ -104,6 +104,19 @@ async function syncFeaturedVideo(result: any) {
           }
         });
         console.log(`[Featured Sync] Auto updated cover for existing fea-video of Video DocID: ${videoDocId}`);
+
+        // 同步发布/下线状态
+        if (result.publishedAt && !existing.publishedAt) {
+          await strapi.documents('api::fea-video.fea-video').publish({
+            documentId: existing.documentId
+          });
+          console.log(`[Featured Sync] Published existing fea-video of Video DocID: ${videoDocId}`);
+        } else if (!result.publishedAt && existing.publishedAt) {
+          await strapi.documents('api::fea-video.fea-video').unpublish({
+            documentId: existing.documentId
+          });
+          console.log(`[Featured Sync] Unpublished existing fea-video of Video DocID: ${videoDocId}`);
+        }
       }
     } else {
       if (existing) {
@@ -122,19 +135,40 @@ async function handleFeaturedVideoDelete(event: any) {
   try {
     const videoDocId = event.result?.documentId || event.params?.where?.documentId;
     if (videoDocId) {
-      const entries = await strapi.documents('api::fea-video.fea-video').findMany({
-        filters: {
-          video: {
-            documentId: videoDocId
-          }
-        }
-      });
-      for (const entry of entries) {
-        await strapi.documents('api::fea-video.fea-video').delete({
-          documentId: entry.documentId
-        });
+      // 检查视频文档是否依然存在于数据库（不管是草稿还是发布状态，避免发布时被误删）
+      let videoExists = await strapi.documents('api::video.video').findOne({
+        status: 'draft',
+        documentId: videoDocId
+      }).catch(() => null);
+      
+      if (!videoExists) {
+        videoExists = await strapi.documents('api::video.video').findOne({
+          status: 'published',
+          documentId: videoDocId
+        }).catch(() => null);
       }
-      console.log(`[Featured Sync] Auto deleted fea-video items for deleted Video DocID: ${videoDocId}`);
+
+      // 如果视频文档确实被彻底删除了，才清理对应的 fea-video
+      if (!videoExists) {
+        const entries = await strapi.documents('api::fea-video.fea-video').findMany({
+          status: 'draft',
+          filters: { video: { documentId: videoDocId } }
+        });
+        const pubEntries = await strapi.documents('api::fea-video.fea-video').findMany({
+          status: 'published',
+          filters: { video: { documentId: videoDocId } }
+        });
+        
+        const allEntries = [...entries, ...pubEntries];
+        for (const entry of allEntries) {
+          await strapi.documents('api::fea-video.fea-video').delete({
+            documentId: entry.documentId
+          });
+        }
+        console.log(`[Featured Sync] Auto deleted fea-video items for completely deleted Video DocID: ${videoDocId}`);
+      } else {
+        console.log(`[Featured Sync] Video DocID: ${videoDocId} still exists, skipping fea-video deletion.`);
+      }
     }
   } catch (err: any) {
     console.error('[Featured Sync] Failed to handle featured video deletion:', err.message);
@@ -155,8 +189,12 @@ export default {
     } catch (err: any) {
       console.error('[Lifecycles] afterCreate error:', err.message);
     }
-    await syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
-    await syncFeaturedVideo(result).catch(err => console.error('[Featured Sync] Async sync error:', err));
+    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    try {
+      await syncFeaturedVideo(result);
+    } catch (err: any) {
+      console.error('[Featured Sync] Sync error in afterCreate:', err.message);
+    }
   },
 
   async afterUpdate(event: any) {
@@ -172,13 +210,21 @@ export default {
     } catch (err: any) {
       console.error('[Lifecycles] afterUpdate error:', err.message);
     }
-    await syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
-    await syncFeaturedVideo(result).catch(err => console.error('[Featured Sync] Async sync error:', err));
+    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    try {
+      await syncFeaturedVideo(result);
+    } catch (err: any) {
+      console.error('[Featured Sync] Sync error in afterUpdate:', err.message);
+    }
   },
 
   async afterDelete(event: any) {
-    await syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
-    await handleFeaturedVideoDelete(event).catch(err => console.error('[Featured Sync] Async delete error:', err));
+    syncVideoUsedStatuses().catch(err => console.error('[Used Status] Async sync error:', err));
+    try {
+      await handleFeaturedVideoDelete(event);
+    } catch (err: any) {
+      console.error('[Featured Sync] Delete error in afterDelete:', err.message);
+    }
   }
 };
 
