@@ -48,7 +48,7 @@ async function sendFeishuCard(email: string, idCard: string, requestId: string, 
         tag: 'div',
         text: {
           tag: 'lark_md',
-          content: `**申请人邮箱：** ${email}\n**申请人身份：** ${idCard}\n**申请时间：** ${timeStr}`
+          content: `**申请人邮箱：** ${email}\n**发给谁：** ${idCard}\n**申请时间：** ${timeStr}`
         }
       },
       {
@@ -99,52 +99,40 @@ async function sendFeishuCard(email: string, idCard: string, requestId: string, 
   return data.data.message_id;
 }
 
-// Nodemailer send email via Gmail
-async function sendGmail(toEmail: string) {
-  let transporter;
+// 通用 SMTP 发送邮件（支持 QQ Mail、163、Gmail 等任意服务商）
+// 环境变量配置（写在 ECS /var/www/strapi/.env，不进代码）：
+//   SMTP_HOST       = smtp.qq.com          (默认 smtp.gmail.com)
+//   SMTP_PORT       = 465                  (默认 465)
+//   SMTP_SECURE     = true                 (默认 true，false 则用 STARTTLS)
+//   SMTP_USER       = xxx@qq.com           (发件人邮箱)
+//   SMTP_PASS       = <授权码>              (SMTP/IMAP 授权码，非登录密码)
+//   RESUME_PDF_PATH = /var/www/.../xxx.pdf (简历 PDF 绝对路径，可选)
+async function sendEmail(toEmail: string) {
+  const host    = process.env.SMTP_HOST   || 'smtp.gmail.com';
+  const port    = parseInt(process.env.SMTP_PORT  || '465', 10);
+  const secure  = process.env.SMTP_SECURE !== 'false'; // 默认 true
+  const user    = process.env.SMTP_USER;
+  const pass    = process.env.SMTP_PASS;
+  const pdfPath = process.env.RESUME_PDF_PATH
+                  || '/var/www/strapi/public/uploads/resumes/wangchenyang-resume-2026.pdf';
 
-  const smtpUser = process.env.SMTP_USER; // e.g. xxx@gmail.com
-  const smtpPass = process.env.SMTP_PASS; // App Password
-
-  const gmailClientId = process.env.GMAIL_CLIENT_ID;
-  const gmailClientSecret = process.env.GMAIL_CLIENT_SECRET;
-  const gmailRefreshToken = process.env.GMAIL_REFRESH_TOKEN;
-
-  if (gmailRefreshToken && gmailClientId && gmailClientSecret) {
-    // Option 2: OAuth2 authentication
-    transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: smtpUser,
-        clientId: gmailClientId,
-        clientSecret: gmailClientSecret,
-        refreshToken: gmailRefreshToken
-      }
-    });
-  } else if (smtpUser && smtpPass) {
-    // Option 1: App Password / standard SMTP authentication
-    transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: smtpUser,
-        pass: smtpPass
-      }
-    });
-  } else {
-    throw new Error('Email credentials not configured. Please set SMTP_USER/SMTP_PASS or GMAIL_REFRESH_TOKEN in backend environment.');
+  if (!user || !pass) {
+    throw new Error('邮件凭证未配置，请在 ECS .env 中设置 SMTP_USER 和 SMTP_PASS。');
   }
 
-  // PDF path on ECS server
-  const pdfPath = '/var/www/strapi/public/uploads/resumes/wangchenyang-resume-2026.pdf';
   if (!fs.existsSync(pdfPath)) {
-    throw new Error(`Resume PDF file not found at: ${pdfPath}`);
+    throw new Error(`简历 PDF 文件不存在：${pdfPath}`);
   }
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: { user, pass }
+  });
 
   const mailOptions = {
-    from: `"王晨阳" <${smtpUser}>`,
+    from: `"王晨阳" <${user}>`,
     to: toEmail,
     subject: '王晨阳-游戏创意设计师简历',
     text: '您好，感谢您对我个人作品的关注。附件中是我的个人简历，请您查收。祝您工作顺利，生活愉快！',
@@ -253,7 +241,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**申请人身份：** ${record.idCard}\n**处理状态：** 该申请在此前已处理，当前状态为: **${record.status}**`
+                  content: `**申请人邮箱：** ${record.email}\n**发给谁：** ${record.idCard}\n**处理状态：** 该申请在此前已处理，当前状态为: **${record.status}**`
                 }
               }
             ]
@@ -265,7 +253,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
 
       if (action === 'approve') {
         // 1. Send the email with pdf attachment
-        await sendGmail(record.email);
+        await sendEmail(record.email);
 
         // 2. Update database record status to approved
         await strapi.documents('api::resume-request.resume-request').update({
@@ -286,7 +274,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**申请人身份：** ${record.idCard}\n**审批结果：** 🟢 已同意发送\n**发送时间：** ${timeStr}`
+                  content: `**申请人邮箱：** ${record.email}\n**发给谁：** ${record.idCard}\n**审批结果：** 🟢 已同意发送\n**发送时间：** ${timeStr}`
                 }
               }
             ]
@@ -312,7 +300,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**申请人身份：** ${record.idCard}\n**审批结果：** 🔴 已拒绝发送\n**处理时间：** ${timeStr}`
+                  content: `**申请人邮箱：** ${record.email}\n**发给谁：** ${record.idCard}\n**审批结果：** 🔴 已拒绝发送\n**处理时间：** ${timeStr}`
                 }
               }
             ]

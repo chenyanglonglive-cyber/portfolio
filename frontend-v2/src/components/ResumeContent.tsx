@@ -182,7 +182,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
 
     // Validate Identity Info
     if (idCard.trim().length < 2) {
-      setErrorMsg("请输入您的身份信息");
+      setErrorMsg("请填写该信息，让我知道简历是发给谁的");
       return;
     }
 
@@ -408,7 +408,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-300">你的身份</label>
+                      <label className="text-sm font-medium text-zinc-300">让我知道简历是发给谁的</label>
                       <input
                         type="text"
                         value={idCard}
