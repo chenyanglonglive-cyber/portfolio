@@ -182,7 +182,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
 
     // Validate Identity Info
     if (idCard.trim().length < 2) {
-      setErrorMsg("请填写该信息，让我知道简历是发给谁的");
+      setErrorMsg("请表明您的身份，让我知道简历是发给谁的");
       return;
     }
 
@@ -408,12 +408,12 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-300">让我知道简历是发给谁的</label>
+                      <label className="text-sm font-medium text-zinc-300">表明您的身份</label>
                       <input
                         type="text"
                         value={idCard}
                         onChange={(e) => setIdCard(e.target.value)}
-                        placeholder="请输入您的公司/职位/姓名，仅用于审批记录"
+                        placeholder="让我知道简历是发给谁的"
                         required
                         className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-emerald-400/50 transition-colors"
                       />
