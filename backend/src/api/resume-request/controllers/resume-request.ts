@@ -262,16 +262,26 @@ export default factories.createCoreController('api::resume-request.resume-reques
       const timeStr = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
 
       if (action === 'approve') {
-        // 1. Send the email with pdf attachment
-        await sendEmail(record.email);
+        // 异步在后台执行邮件发送和状态更新，避免阻塞飞书回调（3秒超时限制）
+        (async () => {
+          try {
+            await sendEmail(record.email);
+            await strapi.documents('api::resume-request.resume-request').update({
+              documentId: requestId,
+              data: { status: 'approved' }
+            });
+            console.log(`[Feishu Callback Async] Successfully sent email to ${record.email} and updated status to approved.`);
+          } catch (e: any) {
+            console.error(`[Feishu Callback Async Error]`, e);
+            // 失败时将数据库状态更新为 failed，以便后续排查
+            await strapi.documents('api::resume-request.resume-request').update({
+              documentId: requestId,
+              data: { status: 'failed' }
+            });
+          }
+        })();
 
-        // 2. Update database record status to approved
-        await strapi.documents('api::resume-request.resume-request').update({
-          documentId: requestId,
-          data: { status: 'approved' }
-        });
-
-        // 3. Return the approved card JSON to update Feishu card UI
+        // 3. Return the approved card JSON to update Feishu card UI immediately
         return ctx.send({
           card: {
             config: { wide_screen_mode: true },
@@ -284,7 +294,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**发给谁：** ${record.idCard}\n**审批结果：** 🟢 已同意发送\n**发送时间：** ${timeStr}`
+                  content: `**申请人邮箱：** ${record.email}\n**发给谁：** ${record.idCard}\n**审批结果：** 🟢 已同意发送\n**操作时间：** ${timeStr}\n*(正在后台发送邮件...)*`
                 }
               }
             ]

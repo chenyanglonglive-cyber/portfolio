@@ -33,6 +33,7 @@
 - 该代理将飞书的 HTTPS 请求转发给 ECS 上的 Strapi 原始地址（`http://47.95.242.40/api/feishu/card-callback`）。
 - **可填写的飞书请求地址**：`https://wcyblog.space/api/feishu/card-callback` （或 `https://www.wcyblog.space/api/feishu/card-callback`）。
 - **飞书事件架构 v2.0 兼容 (修复 200671 报错)**：修复了原本代码假定 `action` 位于 payload 根级而未适配新版事件架构（嵌套在 `payload.event.action` 下）的问题，使后端接口同时兼容新老版本的 Payload 结构。
+- **异步邮件发送 (修复 200341 超时报错)**：将发送邮件及状态更新改为后台异步 Promise 执行，接口可在 10ms 内立即向飞书响应 200 成功并更新卡片 UI，彻底杜绝由于连接 SMTP 和跨国网络往返耗时过长（超过3秒）造成的飞书 200341 超时提示。
 
 ---
 
