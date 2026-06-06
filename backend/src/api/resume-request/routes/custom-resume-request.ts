@@ -16,5 +16,21 @@ export default {
         auth: false,
       },
     },
+    {
+      method: 'GET',
+      path: '/feishu/approve',
+      handler: 'api::resume-request.resume-request.approveLink',
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: 'GET',
+      path: '/feishu/reject',
+      handler: 'api::resume-request.resume-request.rejectLink',
+      config: {
+        auth: false,
+      },
+    },
   ],
 };
