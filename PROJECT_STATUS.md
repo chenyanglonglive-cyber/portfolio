@@ -34,6 +34,7 @@
 - **可填写的飞书请求地址**：`https://wcyblog.space/api/feishu/card-callback` （或 `https://www.wcyblog.space/api/feishu/card-callback`）。
 - **飞书事件架构 v2.0 兼容 (修复 200671 报错)**：修复了原本代码假定 `action` 位于 payload 根级而未适配新版事件架构（嵌套在 `payload.event.action` 下）的问题，使后端接口同时兼容新老版本的 Payload 结构。
 - **异步邮件发送 (修复 200341 超时报错)**：将发送邮件及状态更新改为后台异步 Promise 执行，接口可在 10ms 内立即向飞书响应 200 成功并更新卡片 UI，彻底杜绝由于连接 SMTP 和跨国网络往返耗时过长（超过3秒）造成的飞书 200341 超时提示。
+- **精简回执卡片格式 (修复 200672 协议报错)**：将审批通过回执卡片的 template 颜色从 `green` 换成更通用的 `blue`，并简化卡片文本内容，移除可能造成飞书渲染引擎报错的 markdown 字符格式，确保响应 JSON 结构 100% 契合飞书协议。
 
 ---
 

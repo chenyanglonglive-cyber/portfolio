@@ -287,14 +287,14 @@ export default factories.createCoreController('api::resume-request.resume-reques
             config: { wide_screen_mode: true },
             header: {
               title: { tag: 'plain_text', content: '📋 简历下载审批 - 已同意' },
-              template: 'green'
+              template: 'blue'
             },
             elements: [
               {
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**发给谁：** ${record.idCard}\n**审批结果：** 🟢 已同意发送\n**操作时间：** ${timeStr}\n*(正在后台发送邮件...)*`
+                  content: `**申请人邮箱：** ${record.email}\n**发给谁：** ${record.idCard}\n**审批结果：** 已同意发送\n**处理时间：** ${timeStr}`
                 }
               }
             ]
