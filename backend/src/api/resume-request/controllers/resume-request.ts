@@ -200,18 +200,28 @@ export default factories.createCoreController('api::resume-request.resume-reques
 
   async cardCallback(ctx: any) {
     const payload = ctx.request.body;
+    console.log('[Feishu Callback Payload]', JSON.stringify(payload, null, 2));
 
     // Check challenge request from Feishu if configuring URL for the first time
     if (payload.type === 'url_verification') {
       return ctx.send({ challenge: payload.challenge });
     }
 
-    const actionValue = payload.action?.value;
+    let actionValue = payload.action?.value || payload.event?.action?.value;
+    if (typeof actionValue === 'string') {
+      try {
+        actionValue = JSON.parse(actionValue);
+      } catch (e: any) {
+        console.error('[Feishu Callback] Failed to parse actionValue JSON string:', e.message);
+      }
+    }
+
     if (!actionValue) {
       return ctx.badRequest('Invalid card callback payload');
     }
 
     const { action, requestId, token } = actionValue;
+    console.log('[Feishu Callback Action]', { action, requestId, token });
 
     try {
       // Find the record

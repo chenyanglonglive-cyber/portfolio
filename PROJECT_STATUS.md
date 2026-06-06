@@ -32,6 +32,7 @@
 - **`frontend-v2/src/app/api/feishu/card-callback/route.ts`**：在 Next.js 前端（Vercel，部署于国外，免受阿里云备案系统封锁）新增了 API 代理路由。
 - 该代理将飞书的 HTTPS 请求转发给 ECS 上的 Strapi 原始地址（`http://47.95.242.40/api/feishu/card-callback`）。
 - **可填写的飞书请求地址**：`https://wcyblog.space/api/feishu/card-callback` （或 `https://www.wcyblog.space/api/feishu/card-callback`）。
+- **飞书事件架构 v2.0 兼容 (修复 200671 报错)**：修复了原本代码假定 `action` 位于 payload 根级而未适配新版事件架构（嵌套在 `payload.event.action` 下）的问题，使后端接口同时兼容新老版本的 Payload 结构。
 
 ---
 
