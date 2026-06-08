@@ -6,6 +6,7 @@ import { X, Calendar, BarChart3, PenTool } from 'lucide-react';
 import { Work, getWorkType, getWorkCoverUrl, getWorkVideoUrl } from '@/types/work';
 
 import { getStrapiMedia, getStrapiProxyUrl } from '@/lib/strapi';
+import { trackVisit } from '@/lib/analytics';
 
 interface WorkModalProps {
   work: Work | null;
@@ -85,6 +86,17 @@ export default function WorkModal({ work, isOpen, onClose }: WorkModalProps) {
 
     return cleanup;
   }, [work, coverUrl, videoUrl, activeGeneratedCover, isCompressing]);
+
+  // 上报视频/作品访问日志
+  useEffect(() => {
+    if (isOpen && work) {
+      const isVideoType = getWorkType(work) === 'video';
+      trackVisit(window.location.pathname, {
+        id: work.documentId,
+        title: `${isVideoType ? '【视频】' : '【图片】'}${work.Title}`
+      });
+    }
+  }, [isOpen, work]);
 
   if (!work) return null;
 

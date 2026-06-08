@@ -49,6 +49,21 @@ ECS 服务器上执行了 `npm run build` / `strapi build` 等编译操作，导
 - ✅ strapi.wcyblog.space/admin 可正常访问
 - ✅ 前端 wcyblog.space 数据恢复
 
+# 🚀 2026-06-08 更新日志 (Blog Access Analytics & Video Views Tracking)
+
+## 1. 访客数据统计与隐私脱敏 (Visit Log Analytics)
+*   **后端数据模型 (Strapi 5)**：定义了 `api::visit-log.visit-log` 集合类型，用于记录全站页面访问和视频点击记录。字段包括 `visitorId` (访客UUID)、`path` (访问路径)、`videoId` (视频ID)、`videoTitle` (视频标题)、`ip` (脱敏IP) 和 `userAgent` (浏览器代号)。
+*   **IP 脱敏及 UA 自动填充**：重写了 `visit-log` 的 `create` 控制器，在后端自动获取客户端 IP（支持代理转发 `x-forwarded-for` 和 `ctx.ip`）并对最后一个网段进行脱敏（如 `112.97.234.xxx`），同时自动截取并安全储存 `user-agent` 及事件触发的精确服务器时间戳，保障用户隐私安全。
+*   **自动公开授权**：在 `index.ts` 的 `bootstrap` 中新增 `'api::visit-log.visit-log.create'` 公开权限自动下发逻辑，实现前端可直接静默 POST 上报日志。
+*   **前端埋点追踪 (Next.js App Router)**：
+    - **客户端 UUID 机制**：实现了客户端通用 Analytics 工具，当访客首次访问时自动在其 `localStorage` 生成并持久化一个唯一的 `visitor_uuid` 作为独立访客（UV）标识。
+    - **全局路径路由监控**：创建了全局客户端组件 `AnalyticsTracker.tsx`，通过侦听 `pathname` 及 `searchParams` 在每次页面载入与路由切换时向后端异步提交 POST 请求。
+    - **视频弹窗精准上报**：在 `WorkModal.tsx` 中嵌入 `useEffect`，当用户打开作品详情弹窗并渲染内容时，同步上报具体被查看的作品名称与 ID。
+
+## 2. 简历获取隐私与语义优化 (Resume Access Privacy Polish)
+*   **去身份证号化**：去除了简历获取 Modal 中收集“身份证号”的敏感机制，将其语义化优化为“身份”说明（例如：HR、项目负责人等），身份限制从格式校验修改为不超过 80 字符的长度校验。
+*   **全链路更新**：同步更新了前端 `ResumeContent.tsx` 页面表单文案与校验、后端 `resume-request` 模型的 schema 定义、以及飞书审批审批卡片的字段渲染逻辑，确保符合更优隐私与用户体验。
+
 ---
 
 # 🚀 2026-06-05 更新日志 (Feishu Approval Resume & Personal CLI Binding)
@@ -925,3 +940,41 @@ npx @playwright/cli show --annotate
 * **部署与上线运行**：
   - 本地 TS 生成类型及 `npm run build` 全无错编译成功。
   - 通过 `deploy.ps1` 一键打包部署至阿里云 ECS 并成功重启 PM2，生产环境服务状态健康。
+
+---
+
+# 🚀 2026-06-05 更新日志 (Resume Approval Identity & QQ Mail SMTP Local Test)
+
+## 1. 简历下载审批弹窗字段调整
+* **前端弹窗调整**：
+  - 明确需求范围为简历页“下载简历”按钮弹窗，而非右上角联系栏。
+  - 将弹窗第二个输入项从“身份证号”改为“身份”，用于访客填写 HR、项目负责人、招聘负责人等身份说明。
+  - 身份字段仅要求非空，并限制最长 80 个字符，不再做身份证格式校验，后续由飞书消息人工判断。
+  - 提交请求从 `{ email, idCard }` 调整为 `{ email, identity }`。
+
+## 2. 后端飞书审批链路兼容升级
+* **Strapi 模型与控制器更新**：
+  - 为 `resume-request` 模型新增 `identity` 字段，并保留旧 `idCard` 字段作为历史兼容。
+  - 后端 `apply` 接口优先读取 `identity`，旧请求仍可回退读取 `idCard`，避免旧数据和旧入口直接断裂。
+  - 飞书交互卡片、已处理卡片、同意/拒绝结果卡片均改为展示“申请人邮箱 + 身份”。
+  - 点击飞书卡片“同意发送”后，仍沿用原有邮件发送链路，将简历发送到申请人邮箱。
+
+## 3. QQ Mail SMTP 本地化配置准备
+* **邮件服务调整**：
+  - 将后端邮件发送从固定 Gmail SMTP 改为通用 SMTP 配置，支持 QQ Mail 等邮箱服务商。
+  - 新增支持环境变量：`SMTP_HOST`、`SMTP_PORT`、`SMTP_SECURE`、`RESUME_PDF_PATH`。
+  - QQ Mail 推荐本地配置为 `SMTP_HOST=smtp.qq.com`、`SMTP_PORT=465`、`SMTP_SECURE=true`。
+  - SMTP/IMAP 授权码已在本地测试中使用，但未写入代码、文档或提交记录。
+
+## 4. 本地验证结果与当前限制
+* **构建验证**：
+  - 本地执行 `frontend-v2` 的 `npm.cmd run build` 成功通过。
+  - 本地执行 `backend` 的 `npm.cmd run build` 成功通过。
+  - Strapi 构建过程中仍会出现一次用户目录 `EPERM stat` 提示，但 TypeScript 编译、build context 和 Admin panel 构建均成功完成。
+* **SMTP 发信测试**：
+  - 尝试从 QQ Mail SMTP 向测试邮箱发送本地测试邮件。
+  - `smtp.qq.com:465` 与 `smtp.qq.com:587` 的 TCP 连通性测试成功。
+  - 实际 SMTP/TLS 握手在建立前被断开；最小 TLS 握手测试也复现同样问题。
+  - 当前判断为本机 `Meta` 网络/代理环境对原生 SMTP/TLS 会话不友好，尚未进入账号密码认证阶段，因此不能证明授权码错误。
+* **部署状态**：
+  - 本次改动仅停留在本地工作区，未推送 ECS，未执行 SSH、上传、PM2 restart 或生产环境部署。

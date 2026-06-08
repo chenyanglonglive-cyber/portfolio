@@ -140,7 +140,8 @@ export default {
     // 自动授予 API 访问权限
     await grantPublicPermissions(strapi, [
       'api::fea-video.fea-video.find',
-      'api::fea-video.fea-video.findOne'
+      'api::fea-video.fea-video.findOne',
+      'api::visit-log.visit-log.create'
     ]);
 
     // 自动确保 Content Manager 配置

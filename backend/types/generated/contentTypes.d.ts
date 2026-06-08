@@ -591,6 +591,43 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiResumeRequestResumeRequest
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'resume_requests';
+  info: {
+    description: '\u7B80\u5386\u4E0B\u8F7D\u7533\u8BF7\u4E0E\u5BA1\u6279\u8BB0\u5F55';
+    displayName: 'Resume Request';
+    pluralName: 'resume-requests';
+    singularName: 'resume-request';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.String & Schema.Attribute.Required;
+    feishuMessageId: Schema.Attribute.String;
+    idCard: Schema.Attribute.String;
+    identity: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::resume-request.resume-request'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.Enumeration<['pending', 'approved', 'rejected']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'pending'>;
+    token: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTagTag extends Struct.CollectionTypeSchema {
   collectionName: 'tags';
   info: {
@@ -657,6 +694,41 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     video: Schema.Attribute.Media<'videos'> & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiVisitLogVisitLog extends Struct.CollectionTypeSchema {
+  collectionName: 'visit_logs';
+  info: {
+    description: '\u5168\u7AD9\u8BBF\u95EE\u65E5\u5FD7\u4E0E\u89C6\u9891\u70B9\u51FB\u91CF\u7EDF\u8BA1';
+    displayName: 'Visit Log';
+    pluralName: 'visit-logs';
+    singularName: 'visit-log';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ip: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::visit-log.visit-log'
+    > &
+      Schema.Attribute.Private;
+    path: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    timestamp: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    userAgent: Schema.Attribute.String;
+    videoId: Schema.Attribute.String;
+    videoTitle: Schema.Attribute.String;
+    visitorId: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -1176,8 +1248,10 @@ declare module '@strapi/strapi' {
       'api::fea-video.fea-video': ApiFeaVideoFeaVideo;
       'api::image.image': ApiImageImage;
       'api::project.project': ApiProjectProject;
+      'api::resume-request.resume-request': ApiResumeRequestResumeRequest;
       'api::tag.tag': ApiTagTag;
       'api::video.video': ApiVideoVideo;
+      'api::visit-log.visit-log': ApiVisitLogVisitLog;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

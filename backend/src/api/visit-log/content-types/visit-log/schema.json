@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "visit_logs",
+  "info": {
+    "singularName": "visit-log",
+    "pluralName": "visit-logs",
+    "displayName": "Visit Log",
+    "description": "全站访问日志与视频点击量统计"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "visitorId": {
+      "type": "string",
+      "required": true
+    },
+    "path": {
+      "type": "string",
+      "required": true
+    },
+    "videoId": {
+      "type": "string"
+    },
+    "videoTitle": {
+      "type": "string"
+    },
+    "ip": {
+      "type": "string"
+    },
+    "userAgent": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}

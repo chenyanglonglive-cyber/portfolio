@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { StarBackground } from "@/components/StarBackground";
 import Socials from "@/components/Socials";
 import LoadingScreen from "@/components/LoadingScreen";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -21,6 +22,9 @@ export default function RootLayout({
     <html lang="zh-CN" className="dark">
       <body className="antialiased selection:bg-accent-pink selection:text-white">
         <LoadingScreen />
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
         <Suspense fallback={null}>
           <TopProgressBar />
         </Suspense>

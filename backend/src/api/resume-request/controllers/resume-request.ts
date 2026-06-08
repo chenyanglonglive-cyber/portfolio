@@ -1,7 +1,6 @@
 import { factories } from '@strapi/strapi';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import path from 'path';
 import fs from 'fs';
 
 // Helper to fetch tenant access token
@@ -27,7 +26,7 @@ async function getFeishuAccessToken() {
 }
 
 // Send interactive card
-async function sendFeishuCard(email: string, idCard: string, requestId: string, token: string) {
+async function sendFeishuCard(email: string, identity: string, requestId: string, token: string) {
   const tokenAccess = await getFeishuAccessToken();
   const receiveId = process.env.FEISHU_OWNER_OPEN_ID;
 
@@ -48,7 +47,7 @@ async function sendFeishuCard(email: string, idCard: string, requestId: string, 
         tag: 'div',
         text: {
           tag: 'lark_md',
-          content: `**申请人邮箱：** ${email}\n**身份证号：** ${idCard}\n**申请时间：** ${timeStr}`
+          content: `**申请人邮箱：** ${email}\n**身份：** ${identity}\n**申请时间：** ${timeStr}`
         }
       },
       {
@@ -99,12 +98,15 @@ async function sendFeishuCard(email: string, idCard: string, requestId: string, 
   return data.data.message_id;
 }
 
-// Nodemailer send email via Gmail
-async function sendGmail(toEmail: string) {
+// Nodemailer send email via configured SMTP provider
+async function sendResumeEmail(toEmail: string) {
   let transporter;
 
-  const smtpUser = process.env.SMTP_USER; // e.g. xxx@gmail.com
-  const smtpPass = process.env.SMTP_PASS; // App Password
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = Number(process.env.SMTP_PORT || 465);
+  const smtpSecure = process.env.SMTP_SECURE !== 'false';
 
   const gmailClientId = process.env.GMAIL_CLIENT_ID;
   const gmailClientSecret = process.env.GMAIL_CLIENT_SECRET;
@@ -125,9 +127,9 @@ async function sendGmail(toEmail: string) {
   } else if (smtpUser && smtpPass) {
     // Option 1: App Password / standard SMTP authentication
     transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpSecure,
       auth: {
         user: smtpUser,
         pass: smtpPass
@@ -137,8 +139,7 @@ async function sendGmail(toEmail: string) {
     throw new Error('Email credentials not configured. Please set SMTP_USER/SMTP_PASS or GMAIL_REFRESH_TOKEN in backend environment.');
   }
 
-  // PDF path on ECS server
-  const pdfPath = '/var/www/strapi/public/uploads/resumes/wangchenyang-resume-2026.pdf';
+  const pdfPath = process.env.RESUME_PDF_PATH || '/var/www/strapi/public/uploads/resumes/wangchenyang-resume-2026.pdf';
   if (!fs.existsSync(pdfPath)) {
     throw new Error(`Resume PDF file not found at: ${pdfPath}`);
   }
@@ -161,10 +162,11 @@ async function sendGmail(toEmail: string) {
 
 export default factories.createCoreController('api::resume-request.resume-request' as any, ({ strapi }: any) => ({
   async apply(ctx: any) {
-    const { email, idCard } = ctx.request.body;
+    const { email, identity, idCard } = ctx.request.body;
+    const applicantIdentity = String(identity || idCard || '').trim();
 
-    if (!email || !idCard) {
-      return ctx.badRequest('Missing email or idCard in request body');
+    if (!email || !applicantIdentity) {
+      return ctx.badRequest('Missing email or identity in request body');
     }
 
     // Basic regex validation
@@ -173,10 +175,8 @@ export default factories.createCoreController('api::resume-request.resume-reques
       return ctx.badRequest('Invalid email address format');
     }
 
-    // ID card simple check (usually 18 digits or ending with X/x)
-    const idCardRegex = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-    if (!idCardRegex.test(idCard)) {
-      return ctx.badRequest('Invalid ID card format');
+    if (applicantIdentity.length > 80) {
+      return ctx.badRequest('Identity must be 80 characters or less');
     }
 
     try {
@@ -186,7 +186,8 @@ export default factories.createCoreController('api::resume-request.resume-reques
       const record = await strapi.documents('api::resume-request.resume-request').create({
         data: {
           email,
-          idCard,
+          idCard: applicantIdentity,
+          identity: applicantIdentity,
           status: 'pending',
           token: secureToken
         },
@@ -194,7 +195,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
       });
 
       // Send Feishu interactive card notification
-      const messageId = await sendFeishuCard(email, idCard, record.documentId, secureToken);
+      const messageId = await sendFeishuCard(email, applicantIdentity, record.documentId, secureToken);
 
       // Update record with Feishu message ID
       await strapi.documents('api::resume-request.resume-request').update({
@@ -240,6 +241,8 @@ export default factories.createCoreController('api::resume-request.resume-reques
         return ctx.badRequest('Invalid verification token');
       }
 
+      const applicantIdentity = record.identity || record.idCard || '未填写';
+
       if (record.status !== 'pending') {
         // Return already processed card layout
         return ctx.send({
@@ -254,7 +257,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**身份证号：** ${record.idCard}\n**处理状态：** 该申请在此前已处理，当前状态为: **${record.status}**`
+                  content: `**申请人邮箱：** ${record.email}\n**身份：** ${applicantIdentity}\n**处理状态：** 该申请在此前已处理，当前状态为: **${record.status}**`
                 }
               }
             ]
@@ -266,7 +269,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
 
       if (action === 'approve') {
         // 1. Send the email with pdf attachment
-        await sendGmail(record.email);
+        await sendResumeEmail(record.email);
 
         // 2. Update database record status to approved
         await strapi.documents('api::resume-request.resume-request').update({
@@ -287,7 +290,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**身份证号：** ${record.idCard}\n**审批结果：** 🟢 已同意发送\n**发送时间：** ${timeStr}`
+                  content: `**申请人邮箱：** ${record.email}\n**身份：** ${applicantIdentity}\n**审批结果：** 🟢 已同意发送\n**发送时间：** ${timeStr}`
                 }
               }
             ]
@@ -313,7 +316,7 @@ export default factories.createCoreController('api::resume-request.resume-reques
                 tag: 'div',
                 text: {
                   tag: 'lark_md',
-                  content: `**申请人邮箱：** ${record.email}\n**身份证号：** ${record.idCard}\n**审批结果：** 🔴 已拒绝发送\n**处理时间：** ${timeStr}`
+                  content: `**申请人邮箱：** ${record.email}\n**身份：** ${applicantIdentity}\n**审批结果：** 🔴 已拒绝发送\n**处理时间：** ${timeStr}`
                 }
               }
             ]

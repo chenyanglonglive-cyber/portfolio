@@ -154,7 +154,7 @@ interface ResumeContentProps {
 export default function ResumeContent({ about }: ResumeContentProps) {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
-  const [idCard, setIdCard] = useState("");
+  const [identity, setIdentity] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -171,7 +171,8 @@ export default function ResumeContent({ about }: ResumeContentProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !idCard.trim()) return;
+    const normalizedIdentity = identity.trim();
+    if (!email.trim() || !normalizedIdentity) return;
 
     // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -180,10 +181,8 @@ export default function ResumeContent({ about }: ResumeContentProps) {
       return;
     }
 
-    // Validate ID Card
-    const idCardRegex = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-    if (!idCardRegex.test(idCard)) {
-      setErrorMsg("请输入有效的身份证号");
+    if (normalizedIdentity.length > 80) {
+      setErrorMsg("身份说明请控制在 80 个字符以内");
       return;
     }
 
@@ -197,7 +196,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, idCard }),
+        body: JSON.stringify({ email, identity: normalizedIdentity }),
       });
 
       const data = await response.json();
@@ -409,13 +408,14 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-300">身份证号</label>
+                      <label className="text-sm font-medium text-zinc-300">身份</label>
                       <input
                         type="text"
-                        value={idCard}
-                        onChange={(e) => setIdCard(e.target.value)}
-                        placeholder="请输入身份证号（仅用于审批记录）"
+                        value={identity}
+                        onChange={(e) => setIdentity(e.target.value)}
+                        placeholder="例如：HR、项目负责人、招聘负责人"
                         required
+                        maxLength={80}
                         className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-emerald-400/50 transition-colors"
                       />
                     </div>
