@@ -154,7 +154,7 @@ interface ResumeContentProps {
 export default function ResumeContent({ about }: ResumeContentProps) {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
-  const [identity, setIdentity] = useState("");
+  const [idCard, setIdCard] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -171,8 +171,7 @@ export default function ResumeContent({ about }: ResumeContentProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const normalizedIdentity = identity.trim();
-    if (!email.trim() || !normalizedIdentity) return;
+    if (!email.trim() || !idCard.trim()) return;
 
     // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -181,8 +180,9 @@ export default function ResumeContent({ about }: ResumeContentProps) {
       return;
     }
 
-    if (normalizedIdentity.length > 80) {
-      setErrorMsg("身份说明请控制在 80 个字符以内");
+    // Validate Identity Info
+    if (idCard.trim().length < 2) {
+      setErrorMsg("请表明您的身份，让我知道简历是发给谁的");
       return;
     }
 
@@ -190,13 +190,13 @@ export default function ResumeContent({ about }: ResumeContentProps) {
     setErrorMsg("");
 
     try {
-      const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "https://strapi.wcyblog.space";
-      const response = await fetch(`${strapiUrl}/api/resume-requests/apply`, {
+      // 通过 Next.js 代理路由发送（解决 HTTPS 页面无法直接请求 HTTP Strapi 的 Mixed Content 问题）
+      const response = await fetch(`/api/resume-apply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, identity: normalizedIdentity }),
+        body: JSON.stringify({ email, idCard }),
       });
 
       const data = await response.json();
@@ -408,14 +408,13 @@ export default function ResumeContent({ about }: ResumeContentProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-300">身份</label>
+                      <label className="text-sm font-medium text-zinc-300">表明您的身份</label>
                       <input
                         type="text"
-                        value={identity}
-                        onChange={(e) => setIdentity(e.target.value)}
-                        placeholder="例如：HR、项目负责人、招聘负责人"
+                        value={idCard}
+                        onChange={(e) => setIdCard(e.target.value)}
+                        placeholder="让我知道简历是发给谁的"
                         required
-                        maxLength={80}
                         className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-emerald-400/50 transition-colors"
                       />
                     </div>

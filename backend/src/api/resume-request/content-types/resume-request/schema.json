@@ -17,9 +17,6 @@
       "required": true
     },
     "idCard": {
-      "type": "string"
-    },
-    "identity": {
       "type": "string",
       "required": true
     },
