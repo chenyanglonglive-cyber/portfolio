@@ -968,3 +968,31 @@ npx @playwright/cli show --annotate
     - 将飞书审批互动式卡片和回调处理结果中的对应属性标签由 `**申请人身份：**` 更新为更简练和自然的 `**发给谁：**`。
 *   **部署与验证**：
     - 前端代码已重新本地打包编译，并推送至 GitHub 触发 Vercel 自动部署更新。
+
+---
+
+# 🚀 2026-06-08 更新日志 (Blog Access Visitor Tracking & Database Config Support)
+
+## 1. 博客访问数据统计与分析功能实现 (Blog Access Visitor Tracking)
+*   **全站 UV、PV 与视频播放统计**：
+    - 在后端设计并新建了 `api::visit-log.visit-log` 集合类型，用于存储访客浏览日志。记录字段包括 `visitorId`（访客浏览器 UUID，用于 UV 独立访客计算）、`path`（页面访问路径）、`videoId`（所点击的视频 ID）、`videoTitle`（视频标题）、`ip`（客户端 IP）、`userAgent`（用户浏览器标识）和 `timestamp`（服务端精准时间戳）。
+    - 编写了后端自定义核心控制器，在生成访客日志时，自动从 Request Headers / Context 中提取客户端真实 IP 和 User-Agent。
+    - **IP 隐私脱敏合规**：为遵循隐私保护与 GDPR 等合规条例，对获取到的客户端 IPv4/IPv6 地址进行了最后一个网段的掩码脱敏（例如 IPv4 脱敏为 `112.97.234.xxx`，IPv6 脱敏为 `fe80::1ff:xxxx`），仅保留分析访客大致地域与运营商网段的无害能力。
+    - **自动免登录权限授予**：在后台 `bootstrap` 启动项的 `grantPublicPermissions` 中加入了 `api::visit-log.visit-log.create` 动作授权，使得访客前台能在无登录状态下正常提交浏览与视频点击上报。
+*   **前端数据追踪注入**：
+    - 封装了客户端 analytics 工具 [analytics.ts](file:///g:/blog/frontend-v2/src/lib/analytics.ts)，自动管理浏览器本地 `visitor_uuid` 的缓存与按需静默异步上报（采用 `fetch` with `keepalive: true` 保证页面切换时未发送完的请求仍可继续）。
+    - 实现了全局客户端追踪组件 [AnalyticsTracker.tsx](file:///g:/blog/frontend-v2/src/components/AnalyticsTracker.tsx)（已使用 `<Suspense>` 包裹防 Next.js 静态编译报错），在检测到 `pathname` 或 `searchParams` 变更时上报全路径（带 query 参数）。
+    - 在 [WorkModal.tsx](file:///g:/blog/frontend-v2/src/components/WorkModal.tsx) 的 `useEffect` 中，当作品模态弹窗被打开且项目为视频/图片时，自动追加一次访问记录，从而能精准统计各视频被点击和播放的频次。
+
+## 2. 后端数据库配置兼容性升级 (DATABASE_URL Support)
+*   **连接字符串智能解析**：
+    - 重构了后端 [database.ts](file:///g:/blog/backend/config/database.ts) 配置。除原有的 individual 环境变量（HOST, PORT 等）外，新增对 `DATABASE_URL` 的解析逻辑。
+    - 服务运行如果检测到 `DATABASE_URL`，将自动通过 `new URL` 解析并提取其中的 host、port、database、username、password 等连接参数。这使得本地运行可直连 Neon PostgreSQL 数据库自动完成模式同步。
+
+## 3. 合并解决冲突与生产部署 (Merge & Deployment)
+*   **Git 冲突解决**：拉取远程最新代码时与本地修改 of Resume Request 审批卡片重构冲突，通过 Git 协作进行了合并：保留远程添加的异步飞书回调（免 3s 超时宕机）、SMTP 邮件直发与 `approveLink/rejectLink` 静态 HTML 回调反馈功能，并将“身份证号”继续通过原 `idCard` 字段无感复用为前端的“表明您的身份”字段，消除了数据库冗余表单迁移风险。
+*   **编译与打包上线**：
+    - 前后端已全部通过本地 TypeScript 类型编译和优化构建校验（`npm run build`）。
+    - 运行 `deploy.ps1` 将编译后的后端服务安全上传并重启 ECS PM2 常驻进程 `strapi`（端口 1337，状态 online 运行平稳）。
+    - 推送合并后代码至 GitHub 主分支，自动触发 Vercel 生产端前端页面的静默编译构建与发布。
+
