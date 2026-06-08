@@ -8,3 +8,10 @@ dist/
 .env*.local
 agent.pem
 .codegraph/
+task_plan.md
+progress.md
+findings.md
+scratch/
+backend/scratch_*.js
+*.tar.gz
+
