@@ -11,8 +11,13 @@ export default factories.createCoreController('api::visit-log.visit-log' as any,
       return ctx.badRequest('Missing visitorId or path in data');
     }
 
-    // Extract IP
-    let ip = ctx.ip || ctx.headers['x-forwarded-for'] || ctx.socket?.remoteAddress || '';
+    // Extract client IP. Prefer forwarded headers because Strapi runs behind Nginx/Vercel proxies.
+    let ip =
+      ctx.headers['x-forwarded-for'] ||
+      ctx.headers['x-real-ip'] ||
+      ctx.ip ||
+      ctx.socket?.remoteAddress ||
+      '';
     if (Array.isArray(ip)) {
       ip = ip[0];
     }
@@ -20,29 +25,7 @@ export default factories.createCoreController('api::visit-log.visit-log' as any,
       ip = ip.split(',')[0].trim();
     }
 
-    // Mask IP address for privacy
-    let maskedIp = 'unknown';
-    if (ip) {
-      if (ip.includes('.')) {
-        // IPv4 (e.g., 112.97.234.45 -> 112.97.234.xxx)
-        const parts = ip.split('.');
-        if (parts.length === 4) {
-          maskedIp = `${parts[0]}.${parts[1]}.${parts[2]}.xxx`;
-        } else {
-          maskedIp = ip;
-        }
-      } else if (ip.includes(':')) {
-        // IPv6 (e.g., fe80::1ff:fe23:4567:890a -> fe80::1ff:xxxx)
-        const parts = ip.split(':');
-        if (parts.length > 2) {
-          maskedIp = `${parts.slice(0, Math.min(parts.length - 2, 4)).join(':')}:xxxx`;
-        } else {
-          maskedIp = ip;
-        }
-      } else {
-        maskedIp = ip;
-      }
-    }
+    const clientIp = ip || 'unknown';
 
     const userAgent = ctx.headers['user-agent'] || '';
 
@@ -52,7 +35,7 @@ export default factories.createCoreController('api::visit-log.visit-log' as any,
       path: String(data.path).slice(0, 255),
       videoId: data.videoId ? String(data.videoId).slice(0, 80) : null,
       videoTitle: data.videoTitle ? String(data.videoTitle).slice(0, 255) : null,
-      ip: maskedIp.slice(0, 80),
+      ip: String(clientIp).slice(0, 80),
       userAgent: userAgent.slice(0, 500),
       timestamp: new Date().toISOString()
     };

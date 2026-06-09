@@ -102,6 +102,36 @@ async function ensureContentManagerConfigs(strapi: Core.Strapi) {
   } catch (err: any) {
     console.error('[Config] Failed to configure api::fea-video.fea-video:', err.message);
   }
+
+  // 3. 配置 api::visit-log.visit-log
+  try {
+    const config = await contentTypeService.findConfiguration('api::visit-log.visit-log');
+    let changed = false;
+    const requiredCols = ['timestamp', 'ip', 'path', 'videoTitle', 'visitorId'];
+    const currentList = config.layouts?.list || [];
+    const remainingCols = currentList.filter((col: string) => !requiredCols.includes(col));
+    const updatedList = [...requiredCols, ...remainingCols];
+
+    if (config.settings.defaultSortBy !== 'timestamp') {
+      config.settings.defaultSortBy = 'timestamp';
+      changed = true;
+    }
+    if (config.settings.defaultSortOrder !== 'DESC') {
+      config.settings.defaultSortOrder = 'DESC';
+      changed = true;
+    }
+    if (JSON.stringify(currentList) !== JSON.stringify(updatedList)) {
+      config.layouts.list = updatedList;
+      changed = true;
+    }
+
+    if (changed) {
+      await contentTypeService.updateConfiguration('api::visit-log.visit-log', config);
+      console.log('[Config] Updated api::visit-log.visit-log list layout.');
+    }
+  } catch (err: any) {
+    console.error('[Config] Failed to configure api::visit-log.visit-log:', err.message);
+  }
 }
 
 export default {

@@ -1,4 +1,4 @@
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+const ANALYTICS_ENDPOINT = "/api/visit";
 
 /**
  * 获取或生成唯一的访客 ID（存入 localStorage 以追踪 UV）
@@ -44,7 +44,7 @@ export async function trackVisit(path: string, video?: VideoDetails): Promise<vo
     };
 
     // 采用异步上报，静默失败，绝不阻塞用户主线程
-    fetch(`${STRAPI_URL}/api/visit-logs`, {
+    fetch(ANALYTICS_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
