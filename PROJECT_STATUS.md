@@ -996,3 +996,14 @@ npx @playwright/cli show --annotate
     - 运行 `deploy.ps1` 将编译后的后端服务安全上传并重启 ECS PM2 常驻进程 `strapi`（端口 1337，状态 online 运行平稳）。
     - 推送合并后代码至 GitHub 主分支，自动触发 Vercel 生产端前端页面的静默编译构建与发布。
 
+---
+
+# 🚀 2026-06-23 更新日志 (Visit Log default sort order fix)
+
+## 1. 修复后台访问日志（Visit Log）排序与布局无法在数据库持久化生效的缺陷
+*   **缺陷定位**：排查发现，在 `backend/src/index.ts` 文件的 `ensureContentManagerConfigs` 函数中，对后台访问日志 `api::visit-log.visit-log` 以及 `api::video.video` 等内容类型的布局与默认排序进行初始化配置时，均将 UID 字符串（如 `'api::visit-log.visit-log'`) 误当作第一个参数传递给了 Strapi 的 `findConfiguration` 和 `updateConfiguration` 函数。这在 Strapi 5 中会导致读取/写入到的 core store 键值解析为 `undefined`（对应数据库中出现 `plugin_content_manager_configuration_content_types::undefined` 的脏键），而数据库中正确的 content type 专属配置键值未能得到实际应用与持久化修改。
+*   **逻辑重构与修复**：将调用参数修改为包含 `uid` 属性的实体类型对象（如 `{ uid: 'api::visit-log.visit-log' }`），以完全适配 Strapi 5 的底层接口签名。
+*   **排序及列表列调整**：配置应用后，在生产数据库中已完美持久化生效：
+    - 访问日志（Visit Log）默认排序字段正确更新为 **`timestamp`**，默认排序顺序为 **`DESC`（时间倒序排序）**。
+    - 列表展示列重新整理为 `['timestamp', 'ip', 'path', 'videoTitle', 'visitorId']` 的直观布局。
+*   **本地编译与安全部署**：按照开发偏好在本地独立完成 `npm run build` TypeScript 编译，打包后上传并在 ECS 生产端安全解压并重启 PM2 `strapi` 进程，线上各项配置均已正常运行。
