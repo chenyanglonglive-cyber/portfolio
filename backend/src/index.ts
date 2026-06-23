@@ -41,7 +41,8 @@ async function ensureContentManagerConfigs(strapi: Core.Strapi) {
 
   // 1. 配置 api::video.video
   try {
-    const config = await contentTypeService.findConfiguration('api::video.video');
+    const ct = { uid: 'api::video.video' };
+    const config = await contentTypeService.findConfiguration(ct);
     let changed = false;
     if (config.settings.defaultSortBy !== 'Rank') {
       config.settings.defaultSortBy = 'Rank';
@@ -56,7 +57,7 @@ async function ensureContentManagerConfigs(strapi: Core.Strapi) {
       changed = true;
     }
     if (changed) {
-      await contentTypeService.updateConfiguration('api::video.video', config);
+      await contentTypeService.updateConfiguration(ct, config);
       console.log('[Config] Updated api::video.video configuration.');
     }
   } catch (err: any) {
@@ -65,7 +66,8 @@ async function ensureContentManagerConfigs(strapi: Core.Strapi) {
 
   // 2. 配置 api::fea-video.fea-video
   try {
-    const config = await contentTypeService.findConfiguration('api::fea-video.fea-video');
+    const ct = { uid: 'api::fea-video.fea-video' };
+    const config = await contentTypeService.findConfiguration(ct);
     let changed = false;
     if (config.settings.defaultSortBy !== 'Rank') {
       config.settings.defaultSortBy = 'Rank';
@@ -96,7 +98,7 @@ async function ensureContentManagerConfigs(strapi: Core.Strapi) {
     }
 
     if (changed) {
-      await contentTypeService.updateConfiguration('api::fea-video.fea-video', config);
+      await contentTypeService.updateConfiguration(ct, config);
       console.log('[Config] Updated api::fea-video.fea-video configuration with cover/rank layout.');
     }
   } catch (err: any) {
@@ -105,7 +107,8 @@ async function ensureContentManagerConfigs(strapi: Core.Strapi) {
 
   // 3. 配置 api::visit-log.visit-log
   try {
-    const config = await contentTypeService.findConfiguration('api::visit-log.visit-log');
+    const ct = { uid: 'api::visit-log.visit-log' };
+    const config = await contentTypeService.findConfiguration(ct);
     let changed = false;
     const requiredCols = ['timestamp', 'ip', 'path', 'videoTitle', 'visitorId'];
     const currentList = config.layouts?.list || [];
@@ -126,7 +129,7 @@ async function ensureContentManagerConfigs(strapi: Core.Strapi) {
     }
 
     if (changed) {
-      await contentTypeService.updateConfiguration('api::visit-log.visit-log', config);
+      await contentTypeService.updateConfiguration(ct, config);
       console.log('[Config] Updated api::visit-log.visit-log list layout.');
     }
   } catch (err: any) {
