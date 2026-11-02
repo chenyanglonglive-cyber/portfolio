@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play } from 'lucide-react';
+import { Play, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
 import { Work, getWorkType, getWorkCoverUrl, getWorkVideoUrl } from '@/types/work';
 import { getStrapiMedia, getStrapiProxyUrl } from '@/lib/strapi';
@@ -16,6 +16,7 @@ import {
 interface WorkCardProps {
   work: Work;
   priority?: boolean;
+  sizes?: string;
 }
 
 function fmtDuration(seconds: number): string {
@@ -25,7 +26,7 @@ function fmtDuration(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-export default function WorkCard({ work, priority = false }: WorkCardProps) {
+export default function WorkCard({ work, priority = false, sizes = '(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 384px' }: WorkCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -33,6 +34,7 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
   const isCompressing = isVideo && 'video' in work && work.video?.alternativeText === 'compressing';
   const rawCoverUrl = getWorkCoverUrl(work);
   const coverUrl = getStrapiMedia(rawCoverUrl);
+  const publicCover = coverUrl.match(/^https:\/\/strapi\.wcyblog\.space\/uploads\/(cover_[a-zA-Z0-9_-]+\.(?:jpg|jpeg|png|webp))$/);
   const videoProxyUrl = isVideo && !isCompressing ? getStrapiProxyUrl(getWorkVideoUrl(work)) : null;
 
   // Restore cached state on mount (survives page navigation)
@@ -46,6 +48,9 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
     return '00:30';
   });
   const [isHovered, setIsHovered] = useState(false);
+  const [loadedCover, setLoadedCover] = useState('');
+  const [failedCover, setFailedCover] = useState('');
+  const [coverAttempt, setCoverAttempt] = useState(0);
 
   // Keep duration in sync when cached duration updates (e.g. preload completes
   // after mount but before hover)
@@ -119,14 +124,35 @@ export default function WorkCard({ work, priority = false }: WorkCardProps) {
         className={`${isVideo ? 'aspect-[4/5]' : 'aspect-[16/9]'} relative bg-black`}
       >
         {/* Cover */}
+        {displayCover && loadedCover !== displayCover && (
+          <div role="status" className="absolute inset-0 flex items-center justify-center bg-zinc-900 text-xs text-zinc-400">
+            {failedCover === displayCover ? (
+              <button
+                type="button"
+                className="relative z-30 flex items-center gap-2 p-3"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setFailedCover('');
+                  setCoverAttempt((attempt) => attempt + 1);
+                }}
+              >
+                <RefreshCw size={14} />重新加载封面
+              </button>
+            ) : <span className="animate-pulse">封面加载中</span>}
+          </div>
+        )}
         {displayCover ? (
           <Image
-            src={displayCover}
+            key={`${displayCover}:${coverAttempt}`}
+            src={publicCover ? `/cover-media/${publicCover[1]}` : displayCover}
+            unoptimized={Boolean(publicCover)}
             alt={work.Title}
             fill
             priority={priority}
-            className="object-cover opacity-100 group-hover:opacity-40 transition-opacity duration-500"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onLoad={() => { setLoadedCover(displayCover); setFailedCover(''); }}
+            onError={() => setFailedCover(displayCover)}
+            className={`object-cover transition-opacity duration-500 ${loadedCover === displayCover ? 'opacity-100 group-hover:opacity-40' : 'opacity-0 pointer-events-none'}`}
+            sizes={sizes}
           />
         ) : (
           <div className="w-full h-full bg-zinc-900 animate-pulse" />

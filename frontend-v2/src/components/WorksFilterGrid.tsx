@@ -213,7 +213,11 @@ export default function WorksFilterGrid({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: Math.min((idx % 12) * 0.05, 0.3) }}
               >
-                <WorkCard work={work} />
+                <WorkCard
+                  work={work}
+                  priority={idx < 4}
+                  sizes="(max-width: 639px) calc(100vw - 64px), (max-width: 767px) calc((100vw - 88px) / 2), (max-width: 1023px) calc((100vw - 112px) / 3), 222px"
+                />
               </motion.div>
             ))}
           </div>
